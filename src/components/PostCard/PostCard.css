@@ -1,0 +1,18 @@
+.posts-card{
+    width:1050px;
+    height: 120px;
+    background-color: whitesmoke;
+    margin-top: 30px;
+    border:1px solid #b7b7b7;
+    border-radius:7px;
+    display:flex;
+    align-items: center;
+    padding: 20px;
+}
+.status{
+    text-align: left;
+    padding:20px;
+    font-size:14px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.9);
+}

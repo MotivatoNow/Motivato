@@ -1,0 +1,14 @@
+/*Navbar style*/
+@media(max-width: 991px){
+    .sidebar{
+        background:#fff ;
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-close{
+        position: absolute;
+        left:15px;
+    }
+
+
+}

@@ -1,0 +1,34 @@
+
+/*Register page*/
+
+.header_register{
+    font-size:3em;
+    text-align: center;
+    font-weight: 300;
+    color:#133A43;
+}
+
+.form__register-container{
+    width:auto;
+    min-height: 100vh;
+    padding:45px;
+
+
+}
+
+.form__register-container form{
+    padding:50px;
+    background: #fff;
+    min-height:70vh;
+    box-shadow: 0 0 2.2em 0.06em rgba(0, 0, 0, 0.2);
+    border-radius:0.6em
+}
+.grid_right-side_form select{
+    width:150px;
+}
+
+.grid_right-side_form button {
+    margin-top: 1em;
+    width: 15vw;
+    background: linear-gradient(180deg, rgba(40, 144, 166, 1) 0%, rgb(38, 130, 151) 66%);
+}

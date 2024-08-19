@@ -1,0 +1,65 @@
+@import '../../assets/styles/AppColors.css';
+@import '../../assets/styles/App.css';
+/*Hero Header */
+.header_Hero{
+    padding:0 3%;
+    background-color:var(--primary-color);
+    width:100%;
+    min-height:100vh;
+}
+
+/*Section about us*/
+.col{
+    margin-top:1.5em;
+}
+.aboutus_section .motivato_title{
+    color:var(--blue-color);
+    font-weight: bold;
+    margin-top:1.5em;
+}
+.aboutus_section .aboutus_text{
+    font-size: var(--paragraph-fontsize);
+    font-weight: var(--paragraph-fontweight);
+    line-height: 1.5em;
+    margin-top:3em;
+    letter-spacing:0.050em;
+}
+.aboutus_section .aboutus_btn{
+    padding:var(--button-padding);
+    border-radius: var(--borderadius-button);
+    width:100%;
+    color:var(--paragraph-fontsize);
+    background:var(--button-background-color);
+    border: none;
+    font-width: var(--button-textweight);
+    font-size: var(--paragraph-fontsize);
+}
+.picture_container{
+    position: relative;
+    height:50%;
+}
+
+.picture_container img{
+    position: absolute;
+    top:0;
+    box-shadow: var(--box-shadow);
+}
+.aboutus_section .aboutus_picture{
+    width:100%;
+    object-fit: contain;
+}
+
+
+@media screen and (max-width: 769px) {
+
+    .aboutus_section .row{
+        display:flex;
+        flex-direction: column;
+    }
+    .picture_container{
+        order:-1;
+        width:100%;
+        margin-bottom:250px;
+    }
+}
+

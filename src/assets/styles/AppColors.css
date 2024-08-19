@@ -1,0 +1,16 @@
+:root{
+    --primary-color: #3E54D3;
+    --secondary-color: #4F80E2;
+    --blue-color:#15CDCA;
+    --button-background-color:#4FE0B6;
+    --para-color: #292B48;
+    --heading-color: #484950;
+    --paragraph-fontsize: 1.2em;
+    --paragraph-fontweight: 300;
+    --section-padding: 0 3%;
+    --borderadius-button: 10px;
+    --button-padding: 0.5em 2em;
+    --button-textweight:400;
+    --box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+}

@@ -1,0 +1,68 @@
+
+/*login*/
+.login-page,.signup-page{
+    margin:0;
+    box-sizing: border-box;
+    letter-spacing: 0.06em;
+}
+.login-page a,.signup-page a{
+    text-decoration: none;
+    color: black;
+}
+.login-page h1,.signup-page h1{
+    color: black;
+    font-size: 2.5em;
+}
+.login-page .container,.signup-page .container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.login-container,.signup-container{
+    position: relative;
+    width:22.2rem;
+}
+.form-container{
+    border:0.06em solid hsla(0, 0%, 65%,0.158);
+    box-shadow: 0 0 2.2em 0.06em rgba(0, 0, 0, 0.2);
+    border-radius: 0.6em;
+    padding: 2rem;
+}
+.login-container input,.signup-container input{
+    display: block;
+    padding:0.91em ;
+    width: 100%;
+    margin: 2rem 0;
+    outline: none;
+    border: none;
+    border-radius: 0.31em ;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    font-size: 0.9em;
+}
+.login-container button,.signup-container button{
+    display: block;
+    padding: 0.8em;
+    border-radius:0.31em ;
+    outline: none;
+    font-size: 1.1em;
+    letter-spacing: 0.09em;
+    font-weight: bold;
+    width: 100%;
+    margin-bottom: 2rem;
+    border:none;
+}
+.login-container button:hover,.signup-container button:hover{
+    box-shadow: 0 0 0.63em 0.06em rgba(0, 0, 0, 0.15);
+}
+.register-forget, .login-forget{
+    margin: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+.opacity{
+    opacity: 0.6;
+}
+
+/*end of login*/
