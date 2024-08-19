@@ -1,16 +1,17 @@
 import React,{useState,useMemo} from "react";
 import MyPost from "../../components/MyPost/MyPost";
 import "./Feed.css"
-import { getStatus } from "../../context/Firestore";
+import { getPosts } from "../../context/Firestore";
 import PostCard from "../../components/PostCard/PostCard";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 
 
+
 const Feed = () => {
   
-  const [allStatus, setAllStatus]=useState([])
+  const [allPosts, setAllPosts]=useState([])
   useMemo(()=>{
-    getStatus(setAllStatus)
+    getPosts(setAllPosts)
   },[])
   return (
     <div className="feed-page">
@@ -18,7 +19,7 @@ const Feed = () => {
         <MyPost/>
       </div>
       <div className="feed-post">
-      {allStatus.map((post)=>{
+      {allPosts.map((post)=>{
         return(<PostCard posts={post}/>)
       })}
       </div>

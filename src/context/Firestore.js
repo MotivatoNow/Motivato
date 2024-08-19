@@ -11,9 +11,9 @@ export const postStatus=(object)=>{
         console.log(err)
     })
 }
-export const getStatus=(setAllStatus)=>{
+export const getPosts=(setAllPosts)=>{
     onSnapshot(dbRef,(response)=>{
-        setAllStatus(response.docs.map((docs)=>{
+        setAllPosts(response.docs.map((docs)=>{
             return {...docs.data(),id:docs.id}
         }))
     })

@@ -1,21 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import "./Profile.css";
+import { useAuth } from "../../context/AuthContext";
+import ModalEditProfileComponent from "../../components/Modal/ModalEditProfile/ModalEditProfile";
 
 const Profile = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userNotFound, setUserNotFound] = useState(false); // State to track if user is not found
+  const { currentUser } = useAuth();
+  const handleNavigation = (path) => {
+    navigate (path);
+  };
+  const [modalOpen,setModalOpen]=useState(false)
 
   const loadData = async () => {
     try {
       const userDoc = await getDoc(doc(db, "Users", id));
       if (userDoc.exists()) {
         setUser({ id: userDoc.id, ...userDoc.data() });
+        setUserNotFound(false); // Reset the state if user is found
       } else {
-        console.log("No such user!");
+        setUserNotFound(true); // Set the state if user is not found
       }
     } catch (error) {
       console.error("Error getting user: ", error);
@@ -24,125 +34,96 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    loadData();
-  }, [id]);
+    // If the user navigates to "/profile" without an ID, redirect to their own profile
+    if (!id && currentUser) {
+      navigate(`/profile/${currentUser.uid}`);
+      return;
+    }
+
+    // Load user data if the id parameter exists
+    if (id) {
+      loadData();
+    }
+  }, [id, currentUser, navigate]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <div>Loading...</div>;
   }
 
-  if (!user) {
-    return (
-      <div className="loading-indicator">
-        <div className="spinner"></div>
-      </div>
-    );
+  // Display "User Not Found" if the user doesn't exist in the database
+  if (userNotFound) {
+    return <div className="not-found">User Not Found</div>;
   }
 
+  const save=()=>{
+    /*...*/
+  }
   return (
-    <>
-      {/* <div className="gradient-custom-2" style={{ backgroundColor: "#9de2ff" }}>
-      <div
-        className="rounded-top text-white d-flex flex-row"
-        style={{ backgroundColor: "#000", height: "200px" }}
-      >{/*background*/}
-      {/*
-        <div
-          className="ms-4 mt-5 d-flex flex-column"
-          style={{ width: "150px" }}
-        >
-          <img src={user.profilePicture} alt="Profile" />
-          <button>Edit profile</button>
-        </div>
-        <div className="ms-3" style={{ marginTop: "130px" }}>
-          <h3>
-            {user.firstName} {user.lastName}
-          </h3>
-          <h4>מיקום</h4>
-        </div>
-      </div>
-      <div className="mb-5">
-        <p className="lead fw-normal mb-1">אודות</p>
-        <div className="p-4">
-          {user.bio === "" && <p>עדיין לא מילאת אודות</p>}
-        </div>
-      </div>
-      <div className="mb-5">
-        <p className="lead fw-normal mb-1">Education</p>
-        <div>
-          {user.studentEducation}
-          <p>College:{user.studentCollege}</p>
-        </div>
-      </div>
-    </div>*/}
       <div className="container">
-        <div className="profile-header">
-          <div className="profile-img">
-            <img src={user.profilePicture} alt="Profile" />
-          </div>
-          <div className="profile-nav-info">
-            <h3 className="user-name">
-              {user.firstName} {user.lastName}
-            </h3>
-            <h4>מיקום</h4>
-          </div>
-        </div>
-        <div className="profile-option">{/*notification*/}</div>
-        <div className="main-bd">
-          <div className="right-side">
-            <div class="profile-side">
-              <p class="user-education">
-                {user.studentEducation},{" "}
-                {user.studentCollege}
-              </p>
-              <p class="user-mail">
-                <i class="fa fa-envelope"></i> {user.email}
-              </p>
-              <div class="user-bio">
-                <h3>אודות</h3>
-                <p class="bio">{user.bio}</p>
-              </div>
-              <div class="profile-btn">
-                <button class="chatbtn" id="chatBtn">
-                  <i class="fa fa-comment"></i> הודעה
+        {user && (
+            <>
+              <div className="profile-header">
+                <div className="profile-img">
+                  <img src={user.profilePicture} alt="Profile"/>
+                </div>
+                <div className="profile-nav-info">
+                  <h3 className="user-name">
+                    {user.firstName} {user.lastName}
+                  </h3>
+                  <h4>Location</h4>
+                </div>
+                <button className="open-edit-modal" onClick={() => setModalOpen (true)}>
+                  {" "}
+                  הגדרות
                 </button>
-                <button class="createbtn" id="Create-post">
-                  <i class="fa fa-plus"></i> פוסט חדש
-                </button>
+                <ModalEditProfileComponent
+                    modalOpen={modalOpen}
+                    setModalOpen={setModalOpen}
+                    setUser={setUser}
+                    user={currentUser}
+                    save={save}
+                />
               </div>
-            </div>
-          </div>
-          <div className="left-side">
-            <div className="nav">
-              <ul>
-                <li className="user-post active">פוסטים</li>
-                <li className="user-review">ביקורות</li>
-                <li className="user-setting">הגדרות</li>
-              </ul>
-            </div>
-            <div className="profile-body">
-              <div className="profile-post tab">
-                {/*collection post
-                            אם אין פוסטים:
-                             "אין פוסטים"
-                        */}
-              </div>
-              <div className="profile-reviews tab">
-                {/*collection reviews */}
-              </div>
-              <div className="profile-settings tab">
-                <div className="account-setting">
-                  <h1>הגדרות</h1>
-                  <button>להעדכן בפרופיל</button>
-                  <button> למחוק הפרופיל</button>
-                  <button></button>
+              <div className="profile-option">{/* notification */}</div>
+              <div className="main-bd">
+                <div className="right-side">
+                  <div className="profile-side">
+                    <p className="user-education">
+                      {user.studentEducation}, {user.studentCollege}
+                    </p>
+                    <p className="user-mail">
+                      <i className="fa fa-envelope"></i> {user.email}
+                    </p>
+                    <div className="user-bio">
+                      <h3>About</h3>
+                      <p className="bio">{user.bio}</p>
+                    </div>
+                    <div className="profile-btn">
+                      <button className="chatbtn" id="chatBtn">
+                        <i className="fa fa-comment"></i> Message
+                      </button>
+                      <button className="createbtn" id="Create-post">
+                        <i className="fa fa-plus"></i> New Post
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="profile-body">
+                  <div className="profile-post tab">
+                    {/* Collection of posts
+                      If no posts are found, display: "No posts yet" */}
+                  </div>
+                  <div className="profile-reviews tab">
+                    {/* Collection of reviews */}
+                  </div>
+                  <div className="profile-settings tab">
+
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </>
+        )}
       </div>
-    </>
   );
 };
 

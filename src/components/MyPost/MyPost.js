@@ -1,22 +1,61 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import "./MyPost.css";
+import { useParams } from "react-router-dom";
 import { postStatus } from "../../context/Firestore";
-import ModalComponent from "../Modal/Modal";
+import ModalComponent from "../Modal/ModalPost/Modal";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
+import {doc, getDoc} from "firebase/firestore";
+import {db} from "../../config/firebase";
 
 const MyPost = () => {
-
+  /*const {id} = useParams();
+  const [user,setUser] = useState(null);
+  const [loading,setLoading] = useState(true);
+*/
   const [modalOpen, setModalOpen] = useState(false);
-  const [status, setStatus] = useState("");
+  const [post, setPost] = useState("");
 
-  const sendStatus = async () => {
+
+ /* const loadData = async () => {
+    try {
+      const userDoc = await getDoc(doc(db, "Users", id));
+      if (userDoc.exists()) {
+        setUser({ id: userDoc.id, ...userDoc.data() });
+      } else {
+        console.log("No such user!");
+      }
+    } catch (error) {
+      console.error("Error getting user: ", error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [id]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!user) {
+    return (
+        <div className="loading-indicator">
+          <div className="spinner"></div>
+        </div>
+    );
+  }
+*/
+
+  const sendPost = async () => {
     let object={
-      status:status,
+      user:"test",
+      post:post,
       timeStamp:getCurrentTimeStamp("LLL")
     }
     await postStatus(object);
     await setModalOpen(false);
-    await setStatus("");
+    await setPost("");
   };
 
   return (
@@ -30,9 +69,9 @@ const MyPost = () => {
       <ModalComponent
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
-        setStatus={setStatus}
-        status={status}
-        sendStatus={sendStatus}
+        setPost={setPost}
+        post={post}
+        sendPost={sendPost}
       />
     </div>
   );

@@ -4,7 +4,7 @@ import {onAuthStateChanged, signOut} from 'firebase/auth';
 import {auth, db} from '../config/firebase';
 import {doc, getDoc} from 'firebase/firestore';
 
-const AuthContext = createContext ();
+const AuthContext = React.createContext ();
 
 export const useAuth = () => useContext (AuthContext);
 

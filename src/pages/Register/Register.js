@@ -20,6 +20,7 @@ const Register = () => {
     const [studentEducation, setStudentEducation] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
     const [studentCard, setStudentCard] = useState(null);
+    const [location, setLocation] = useState(null);
     const [error, setError] = useState('');
     const [isVerify,setIsVerify] = useState(false)
 
@@ -68,6 +69,7 @@ const Register = () => {
                 userData.studentCollege = studentCollege;
                 userData.studentEducation = studentEducation;
                 userData.isVerify = isVerify;
+                userData.location = location;
             }
 
             await setDoc(doc(db, "Users", user.uid), userData);
@@ -200,13 +202,27 @@ const Register = () => {
                         </div>
                         {userType === 'Student' && (
                             <>
+                                <div className="row">
+                                    <div className="form-group col-md-4">
+                                        <label htmlFor="inputLocation">מדינה/מיקום</label>
+                                        <input
+                                            type="text"
+                                            id="inputLocation"
+                                            value={location}
+                                            onChange={(e) => setLocation (e.target.value)}
+                                            placeholder="מדינה"
+                                            required
+                                            className="form-control"
+                                        />
+                                    </div>
+                                </div>
                                 <div className="form-row">
                                     <div className="form-group col-md-2">
                                         <label htmlFor="inputUserType">מין</label>
                                         <select className="custom-select form-control"
                                                 value={userGender}
                                                 id="typeUserGender"
-                                                onChange={(e) => setUserGender(e.target.value)}>
+                                                onChange={(e) => setUserGender (e.target.value)}>
                                             <option selected value="">נא לבחור מין</option>
                                             <option value="Male">זכר</option>
                                             <option value="Female">נקבה</option>
@@ -221,7 +237,7 @@ const Register = () => {
                                             type="date"
                                             value={dateOfBirth}
                                             id="inputUserDate"
-                                            onChange={(e) => setDateOfBirth(e.target.value)}
+                                            onChange={(e) => setDateOfBirth (e.target.value)}
                                             placeholder="Date of Birth"
                                             required
                                             className="form-control"
@@ -239,7 +255,7 @@ const Register = () => {
                                             className="form-control"
                                             type="text"
                                             value={studentCollege}
-                                            onChange={(e) => setStudentCollege(e.target.value)}
+                                            onChange={(e) => setStudentCollege (e.target.value)}
                                             placeholder="מכללה/אונברסיטה"
                                             required
                                         />
@@ -251,7 +267,7 @@ const Register = () => {
                                             id='inputEducation'
                                             type="text"
                                             value={studentEducation}
-                                            onChange={(e) => setStudentEducation(e.target.value)}
+                                            onChange={(e) => setStudentEducation (e.target.value)}
                                             placeholder="תחום לימודי"
                                             required
                                         />
@@ -262,7 +278,7 @@ const Register = () => {
                                             type="file"
                                             id='inputStudentCard'
                                             className="form-control"
-                                            onChange={(e) => setStudentCard(e.target.files[0])}
+                                            onChange={(e) => setStudentCard (e.target.files[0])}
                                             required
                                         />
                                     </div>
@@ -270,7 +286,7 @@ const Register = () => {
                             </>
                         )}
                         <button className="btn btn-primary mb-2" type="submit">הרשמה</button>
-                        {error && <p style={{ color: 'red' }}>{error}</p>}
+                        {error && <p style={{color: 'red'}}>{error}</p>}
                     </form>
                 </div>
             </div>

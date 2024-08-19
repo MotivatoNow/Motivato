@@ -71,26 +71,40 @@ const NavBar = () => {
                         </div>
                         {/*SideBar Body*/}
                         <div className="offcanvas-body">
-                            <ul className="navbar-nav justify-content-start flex-grow-1 pe-3">
-                                <li className="nav-item">
-                                    <a className="nav-link active" aria-current="page" href="#"
-                                       onClick={() => handleNavigation ('/')}>דף הבית</a>
-                                </li>
-                                <li className="nav-item mx-2">
-                                    <a className="nav-link" href="#">אודותינו</a>
-                                </li>
-                                <li className="nav-item mx-2">
-                                    <a className="nav-link" href="#">דף נוסף</a>
-                                </li>
-                                <li className="nav-item mx-2">
-                                    <a className="nav-link" href="#">דף נוסף</a>
-                                </li>
-                                <li className="nav-item mx-2">
-                                    <a className="nav-link" href="#">דף נוסף</a>
-                                </li>
+                            {
+                                currentUser && isVerified ?
+                                    (
+                                        <ul className="navbar-nav justify-content-start flex-grow-1 pe-3">
+                                            <li className="nav-item">
+                                                <a className="nav-link active" aria-current="page" href=""
+                                                   onClick={() => handleNavigation ('/feed')}>דף הבית</a>
+                                            </li>
+                                        </ul>
+
+                                    ): (
+                                        <ul className="navbar-nav justify-content-start flex-grow-1 pe-3">
+                                            <li className="nav-item">
+                                                <a className="nav-link active" aria-current="page" href=""
+                                                   onClick={() => handleNavigation ('/')}>דף הבית</a>
+                                            </li>
+                                            <li className="nav-item mx-2">
+                                                <a className="nav-link" href="#">אודותינו</a>
+                                            </li>
+                                            <li className="nav-item mx-2">
+                                                <a className="nav-link" href="#">דף נוסף</a>
+                                            </li>
+                                            <li className="nav-item mx-2">
+                                                <a className="nav-link" href="#">דף נוסף</a>
+                                            </li>
+                                            <li className="nav-item mx-2">
+                                                <a className="nav-link" href="#">דף נוסף</a>
+                                            </li>
 
 
-                            </ul>
+                                        </ul>
+                                    )
+                            }
+
                             {/* <form className="d-flex mt-3" role="search">
                               <input className="form-control me-2" type="search" placeholder="Search"
                                      aria-label="Search"/>
@@ -109,8 +123,8 @@ const NavBar = () => {
 
 
                                         <div className="d-flex justify-content-center align-items-center gap-3">
-                                            <button type="button" className="btn navbar__signin-button"
-                                                    onClick={() => handleNavigation ('/Login')}>להתחבר
+                                        <button type="button" className="btn navbar__signin-button"
+                                                    onClick={() => handleNavigation ('/login')}>להתחבר
                                             </button>
                                             <button type="button" className="btn navbar__signup-button"
                                                     onClick={() => handleNavigation ('/register')}>אני

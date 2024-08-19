@@ -1,10 +1,14 @@
 import React from 'react'
 import "./PostCard.css"
+import { db } from '../../config/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 const PostCard = ({posts}) => {
+
   return (
     <div className='posts-card'>
-        <p>{posts.userEmail}</p>
-        <p className='status'>{posts.status}</p>
+        <h1>{posts.user}</h1>
+        <p>{posts.timeStamp}</p>
+        <p className='status'>{posts.post}</p>
     </div>
   )
 }
