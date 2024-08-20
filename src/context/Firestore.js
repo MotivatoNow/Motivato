@@ -2,7 +2,7 @@ import {db} from "../firebase"
 import { addDoc,collection, onSnapshot } from "firebase/firestore"
 
 let dbRef=collection(db,"Posts")
-export const postStatus=(object)=>{
+export const postStatus=(db,object)=>{
     addDoc(dbRef,object)
     .then((res)=>{
         console.log("Document has been added succesfully")

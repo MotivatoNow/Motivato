@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { auth, db, storage } from '../../config/firebase';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import './Register.css';
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import profilePic from '../../assets/images/profilepicture.png';
+import './Register.css';
 
 const Register = () => {
+    const [userType, setUserType] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [userType, setUserType] = useState('Student');
     const [userGender, setUserGender] = useState('');
     const [companyName, setCompanyName] = useState('');
     const [companyWebsite, setCompanyWebsite] = useState('');
@@ -20,9 +20,9 @@ const Register = () => {
     const [studentEducation, setStudentEducation] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
     const [studentCard, setStudentCard] = useState(null);
-    const [location, setLocation] = useState(null);
+    const [location, setLocation] = useState('');
     const [error, setError] = useState('');
-    const [isVerify,setIsVerify] = useState(false)
+    //const [isVerify, setIsVerify] = useState(false);
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -68,7 +68,7 @@ const Register = () => {
                 userData.studentCard = cardURL;
                 userData.studentCollege = studentCollege;
                 userData.studentEducation = studentEducation;
-                userData.isVerify = isVerify;
+                // userData.isVerify = isVerify;
                 userData.location = location;
             }
 
@@ -85,210 +85,169 @@ const Register = () => {
         <>
             <h1 className="header_register">תצטרפו ותהיו מהקהילה הגדולה בישראל</h1>
             <div className="form__register-container">
-                <div className="grid_right-side_form">
+                <div className="type-selection">
+                    <button className={`btn ${userType === 'Student' ? 'btn-selected' : ''}`} onClick={() => setUserType('Student')}>סטודנט</button>
+                    <button className={`btn ${userType === 'Company' ? 'btn-selected' : ''}`} onClick={() => setUserType('Company')}>חברה</button>
+                </div>
+
+                {userType && (
                     <form className="register_form" onSubmit={handleRegister}>
-                        <div className="form-row">
-                            <div className="form-group col-md-2">
-                                <label htmlFor="inputUserType">סוג משתמש</label>
-                                <select className="custom-select form-control" required
-                                        value={userType}
-                                        id="inputUserType"
-                                        onChange={(e) => setUserType(e.target.value)}>
-                                    <option selected value="Student">סטודנט(פרילנסר)</option>
-                                    <option value="Company">חברה</option>
-                                </select>
-                            </div>
-                        </div>
-                        <hr/>
-                        {userType === "Student" ? (
-                            <>
-                                <h4>פרטים אישיים</h4>
-                                <hr/>
-                                <div className="row">
-                                    <div className="form-group col-md-4">
-                                        <label htmlFor="inputFirstName">שם פרטי</label>
-                                        <input
-                                            type="text"
-                                            id="inputFirstName"
-                                            value={firstName}
-                                            onChange={(e) => setFirstName(e.target.value)}
-                                            placeholder="שם פרטי"
-                                            required
-                                            className="form-control"
-                                        />
-                                    </div>
-                                    <div className="form-group col-md-4">
-                                        <label htmlFor="inputLastName">שם משפחה</label>
-                                        <input
-                                            id="inputLastName"
-                                            type="text"
-                                            value={lastName}
-                                            onChange={(e) => setLastName(e.target.value)}
-                                            placeholder="שם משפחה"
-                                            required
-                                            className="form-control"
-                                        />
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <div className="row">
-                                    <div className="form-group col-md-3">
-                                        <label htmlFor="inputCompanyName">שם החברה</label>
-                                        <input
-                                            type="text"
-                                            id="inputCompanyName"
-                                            className="form-control"
-                                            value={companyName}
-                                            onChange={(e) => setCompanyName(e.target.value)}
-                                            placeholder="שם חברה"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group col-md-3">
-                                        <label htmlFor="inputWebsiteCompany"></label>
-                                        <input
-                                            type="text"
-                                            id="inputWebsiteCompany"
-                                            className="form-control"
-                                            value={companyWebsite}
-                                            onChange={(e) => setCompanyWebsite(e.target.value)}
-                                            placeholder="אתר החברה"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                        <div className="form-row">
-                            <div className="form-group col-md-3">
-                                <label htmlFor="inputEmail">דואר אלקטרוני</label>
-                                <input
-                                    type="email"
-                                    id="inputEmail"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="דואר אלקטרוני"
-                                    required
-                                    className="form-control"
-                                />
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="form-group col-md-3">
-                                <label htmlFor="password">סיסמא</label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    id="password"
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="סיסמא"
-                                    required
-                                    className="form-control"
-                                />
-                            </div>
-                            <div className="form-group col-md-3">
-                                <label htmlFor="confirmPassword">סיסמא בשנית</label>
-                                <input
-                                    type="password"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    placeholder="סיסמא בשנית"
-                                    className="form-control"
-                                    required
-                                />
-                            </div>
-                        </div>
+
                         {userType === 'Student' && (
                             <>
-                                <div className="row">
-                                    <div className="form-group col-md-4">
-                                        <label htmlFor="inputLocation">מדינה/מיקום</label>
-                                        <input
-                                            type="text"
-                                            id="inputLocation"
-                                            value={location}
-                                            onChange={(e) => setLocation (e.target.value)}
-                                            placeholder="מדינה"
-                                            required
-                                            className="form-control"
-                                        />
-                                    </div>
+                                <div className="form-group">
+                                    <label htmlFor="inputFirstName">שם פרטי</label>
+                                    <input
+                                        type="text"
+                                        id="inputFirstName"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName (e.target.value)}
+                                        placeholder="שם פרטי"
+                                        required
+                                        className="form-control"
+                                    />
                                 </div>
-                                <div className="form-row">
-                                    <div className="form-group col-md-2">
-                                        <label htmlFor="inputUserType">מין</label>
-                                        <select className="custom-select form-control"
-                                                value={userGender}
-                                                id="typeUserGender"
-                                                onChange={(e) => setUserGender (e.target.value)}>
-                                            <option selected value="">נא לבחור מין</option>
-                                            <option value="Male">זכר</option>
-                                            <option value="Female">נקבה</option>
-                                            <option value="Other">אחר</option>
-                                        </select>
-                                    </div>
+                                <div className="form-group">
+                                    <label htmlFor="inputLastName">שם משפחה</label>
+                                    <input
+                                        id="inputLastName"
+                                        type="text"
+                                        value={lastName}
+                                        onChange={(e) => setLastName (e.target.value)}
+                                        placeholder="שם משפחה"
+                                        required
+                                        className="form-control"
+                                    />
                                 </div>
-                                <div className="row">
-                                    <div className="form-group col-md-3">
-                                        <label htmlFor="inputUserDate">תאריך לידה</label>
-                                        <input
-                                            type="date"
-                                            value={dateOfBirth}
-                                            id="inputUserDate"
-                                            onChange={(e) => setDateOfBirth (e.target.value)}
-                                            placeholder="Date of Birth"
-                                            required
-                                            className="form-control"
-                                        />
-                                    </div>
+                                <div className="form-group">
+                                    <label htmlFor="inputLocation">מדינה/מיקום</label>
+                                    <input
+                                        type="text"
+                                        id="inputLocation"
+                                        value={location}
+                                        onChange={(e) => setLocation (e.target.value)}
+                                        placeholder="מדינה"
+                                        required
+                                        className="form-control"
+                                    />
                                 </div>
-                                <hr/>
-                                <h4>פרטים לימודיים</h4>
-                                <hr/>
-                                <div className="row">
-                                    <div className="form-group col-md-3">
-                                        <label htmlFor="inputCollege">מכללה/אוניברסיטה</label>
-                                        <input
-                                            id="inputCollege"
-                                            className="form-control"
-                                            type="text"
-                                            value={studentCollege}
-                                            onChange={(e) => setStudentCollege (e.target.value)}
-                                            placeholder="מכללה/אונברסיטה"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group col-md-3">
-                                        <label htmlFor="unputEducation">תחום לימודי</label>
-                                        <input
-                                            className="form-control"
-                                            id='inputEducation'
-                                            type="text"
-                                            value={studentEducation}
-                                            onChange={(e) => setStudentEducation (e.target.value)}
-                                            placeholder="תחום לימודי"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group col-md-3">
-                                        <label htmlFor="inputStudentCard">העלו כרטיס סטודנט</label>
-                                        <input
-                                            type="file"
-                                            id='inputStudentCard'
-                                            className="form-control"
-                                            onChange={(e) => setStudentCard (e.target.files[0])}
-                                            required
-                                        />
-                                    </div>
+                                <div className="form-group">
+                                    <label htmlFor="inputUserDate">תאריך לידה</label>
+                                    <input
+                                        type="date"
+                                        value={dateOfBirth}
+                                        id="inputUserDate"
+                                        onChange={(e) => setDateOfBirth (e.target.value)}
+                                        required
+                                        className="form-control"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="inputCollege">מכללה/אוניברסיטה</label>
+                                    <input
+                                        id="inputCollege"
+                                        className="form-control"
+                                        type="text"
+                                        value={studentCollege}
+                                        onChange={(e) => setStudentCollege (e.target.value)}
+                                        placeholder="מכללה/אוניברסיטה"
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="inputEducation">תחום לימודי</label>
+                                    <input
+                                        className="form-control"
+                                        id='inputEducation'
+                                        type="text"
+                                        value={studentEducation}
+                                        onChange={(e) => setStudentEducation (e.target.value)}
+                                        placeholder="תחום לימודי"
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="inputStudentCard">העלו כרטיס סטודנט</label>
+                                    <input
+                                        type="file"
+                                        id='inputStudentCard'
+                                        className="form-control"
+                                        onChange={(e) => setStudentCard (e.target.files[0])}
+                                        required
+                                    />
                                 </div>
                             </>
                         )}
-                        <button className="btn btn-primary mb-2" type="submit">הרשמה</button>
+                        <div className="form-group">
+                            <label htmlFor="inputEmail">דואר אלקטרוני</label>
+                            <input
+                                type="email"
+                                id="inputEmail"
+                                value={email}
+                                onChange={(e) => setEmail (e.target.value)}
+                                placeholder="דואר אלקטרוני"
+                                required
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="password">סיסמא</label>
+                            <input
+                                type="password"
+                                value={password}
+                                id="password"
+                                onChange={(e) => setPassword (e.target.value)}
+                                placeholder="סיסמא"
+                                required
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="confirmPassword">סיסמא בשנית</label>
+                            <input
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword (e.target.value)}
+                                placeholder="סיסמא בשנית"
+                                required
+                                className="form-control"
+                            />
+                        </div>
+
+                        {userType === 'Company' && (
+                            <>
+                                <div className="form-group">
+                                    <label htmlFor="inputCompanyName">שם החברה</label>
+                                    <input
+                                        type="text"
+                                        id="inputCompanyName"
+                                        className="form-control"
+                                        value={companyName}
+                                        onChange={(e) => setCompanyName (e.target.value)}
+                                        placeholder="שם חברה"
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="inputWebsiteCompany">אתר החברה</label>
+                                    <input
+                                        type="text"
+                                        id="inputWebsiteCompany"
+                                        className="form-control"
+                                        value={companyWebsite}
+                                        onChange={(e) => setCompanyWebsite (e.target.value)}
+                                        placeholder="אתר החברה"
+                                        required
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        <button className="btn btn-primary mb-2" type="submit" >הרשמה</button>
                         {error && <p style={{color: 'red'}}>{error}</p>}
+                        {}
                     </form>
-                </div>
+                )}
             </div>
         </>
     );

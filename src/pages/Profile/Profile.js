@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import "./Profile.css";
 import { useAuth } from "../../context/AuthContext";
 import ModalEditProfileComponent from "../../components/Modal/ModalEditProfile/ModalEditProfile";
+import {getPosts} from "../../context/Firestore";
 
 const Profile = () => {
   const { id } = useParams();
@@ -17,7 +18,8 @@ const Profile = () => {
     navigate (path);
   };
   const [modalOpen,setModalOpen]=useState(false)
-
+  const [allPosts, setAllPosts]=useState([])
+  //user
   const loadData = async () => {
     try {
       const userDoc = await getDoc(doc(db, "Users", id));
@@ -43,8 +45,22 @@ const Profile = () => {
     // Load user data if the id parameter exists
     if (id) {
       loadData();
+      loadUserPosts();
     }
   }, [id, currentUser, navigate]);
+
+  //post user
+  const loadUserPosts = async () => {
+    try {
+      const allPosts = await getPosts(setAllPosts);
+      const userPosts = allPosts.filter((post) => post.user.uid === user.uid);
+      console.log(userPosts);
+      setAllPosts(userPosts);
+    } catch (error) {
+      console.error("Error fetching posts: ", error);
+    }
+  };
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -55,9 +71,7 @@ const Profile = () => {
     return <div className="not-found">User Not Found</div>;
   }
 
-  const save=()=>{
-    /*...*/
-  }
+
   return (
       <div className="container">
         {user && (
@@ -81,7 +95,6 @@ const Profile = () => {
                     setModalOpen={setModalOpen}
                     setUser={setUser}
                     user={currentUser}
-                    save={save}
                 />
               </div>
               <div className="profile-option">{/* notification */}</div>
@@ -109,16 +122,12 @@ const Profile = () => {
                   </div>
                 </div>
                 <div className="profile-body">
-                  <div className="profile-post tab">
-                    {/* Collection of posts
-                      If no posts are found, display: "No posts yet" */}
-                  </div>
-                  <div className="profile-reviews tab">
-                    {/* Collection of reviews */}
-                  </div>
-                  <div className="profile-settings tab">
-
-                  </div>
+                  {allPosts.map ((post) => (
+                      <div key={post.id} className="post">
+                        <h4>{post.post}</h4>
+                        <p>{post.content}</p>
+                      </div>
+                  ))}
                 </div>
               </div>
             </>
