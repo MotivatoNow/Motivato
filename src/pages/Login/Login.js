@@ -45,28 +45,28 @@ const Login = () => {
         <section className="container">
           <div className="login-container">
             <div className="form-container">
-              <h1 className="opacity">LOGIN</h1>
+              <h1 className="opacity">ברוכים השבים :)</h1>
               <form onSubmit={handleLogin}>
                 <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
+                    placeholder="דואר אלקטרוני"
                     required
                 />
                 <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
+                    placeholder="סיסמא"
                     required
                 />
-                <button className="opacity" type="submit">SUBMIT</button>
+                <button className="opacity" type="submit">התחבר</button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
               </form>
               <div className="register-forget opacity">
-                <a href="/register">REGISTER</a>
-                <a href="/reset">FORGOT PASSWORD</a>
+                <a href="/register">לא נרשמת עדיין? מהר להירשם פה!</a>
+                <a href="/reset">ממבחן למבחן קורה ששוכחים סיסמא</a>
               </div>
             </div>
           </div>
