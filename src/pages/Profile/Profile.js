@@ -73,66 +73,92 @@ const Profile = () => {
 
 
   return (
-      <div className="container">
+      <div className="profile_container">
         {user && (
             <>
-              <div className="profile-header">
-                <div className="profile-img">
-                  <img src={user.profilePicture} alt="Profile"/>
-                </div>
-                <div className="profile-nav-info">
-                  <h3 className="user-name">
-                    {user.firstName} {user.lastName}
-                  </h3>
-                  <h4>Location</h4>
-                </div>
-                <button className="open-edit-modal" onClick={() => setModalOpen (true)}>
-                  {" "}
-                  הגדרות
-                </button>
-                <ModalEditProfileComponent
-                    modalOpen={modalOpen}
-                    setModalOpen={setModalOpen}
-                    setUser={setUser}
-                    user={currentUser}
-                />
-              </div>
-              <div className="profile-option">{/* notification */}</div>
-              <div className="main-bd">
-                <div className="right-side">
-                  <div className="profile-side">
-                    <p className="user-education">
-                      {user.studentEducation}, {user.studentCollege}
-                    </p>
-                    <p className="user-mail">
-                      <i className="fa fa-envelope"></i> {user.email}
-                    </p>
-                    <div className="user-bio">
-                      <h3>About</h3>
-                      <p className="bio">{user.bio}</p>
-                    </div>
-                    <div className="profile-btn">
-                      <button className="chatbtn" id="chatBtn">
-                        <i className="fa fa-comment"></i> Message
-                      </button>
-                      <button className="createbtn" id="Create-post">
-                        <i className="fa fa-plus"></i> New Post
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="profile-body">
-                  {allPosts.map ((post) => (
-                      <div key={post.id} className="post">
-                        <h4>{post.post}</h4>
-                        <p>{post.content}</p>
+              <div className="profile-page">
+                <div className="profile-layout">
+                  {/* Sidebar */}
+                  <aside className="profile-sidebar">
+                    <div className="sidebar-content">
+                        <div className="profile-picture">
+                          <img src={user.profilePicture} alt="Profile"/>
+                        </div>
                       </div>
-                  ))}
+                      <div className="profile-info">
+                        <h2 className="profile-name">
+                          {user.firstName} {user.lastName}
+                        </h2>
+                        <p className="profile-location">
+                          <i className="fa fa-map-marker-alt"></i> {user.location || "Location"}
+                        </p>
+                      </div>
+                      <div className="profile-details">
+                        <div className="profile-section education-section">
+                          <h4>Education</h4>
+                          <p>{user.studentEducation || "No information"}, {user.studentCollege || "No college/university"}</p>
+                        </div>
+                        <div className="profile-section contact-section">
+                          <h4>Contact</h4>
+                          <p>
+                            <i className="fa fa-envelope"></i> {user.email}
+                          </p>
+                        </div>
+                        <button className="settings-btn" onClick={() => setModalOpen (true)}>
+                          Settings
+                        </button>
+                    </div>
+                  </aside>
+
+                  {/* Main Profile Section */}
+                  <main className="profile-main">
+                    <header className="profile-header">
+                      <div className="header-title">
+                        <h2>Welcome, {user.firstName}</h2>
+                      </div>
+                      <nav className="profile-nav">
+                        <ul>
+                          <li className="active">Posts</li>
+                          <li>About</li>
+                          <li>Friends</li>
+                          <li>Photos</li>
+                        </ul>
+                      </nav>
+                    </header>
+
+                    <section className="profile-content">
+                      <div className="create-post">
+                        <textarea placeholder="What's on your mind?"/>
+                        <button className="post-btn">Post</button>
+                      </div>
+                      <section className="profile-posts">
+                        <h3>Recent Posts</h3>
+                        <div className="posts-grid">
+                          {allPosts.map ((post) => (
+                              <div key={post.id} className="post-card">
+                                <h4>{post.post}</h4>
+                                <p>{post.content}</p>
+                              </div>
+                          ))}
+                        </div>
+                      </section>
+                    </section>
+                  </main>
+
+                  {/* Modal Component */}
+                  <ModalEditProfileComponent
+                      modalOpen={modalOpen}
+                      setModalOpen={setModalOpen}
+                      setUser={setUser}
+                      user={currentUser}
+                  />
                 </div>
               </div>
             </>
         )}
       </div>
+
+
   );
 };
 
