@@ -1,54 +1,54 @@
-import React, { useState } from 'react';
-import { auth, db, storage } from '../../config/firebase';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import React, {useState} from 'react';
+import {auth, db, storage} from '../../config/firebase';
+import {createUserWithEmailAndPassword} from "firebase/auth";
+import {doc, setDoc} from "firebase/firestore";
+import {getDownloadURL, ref, uploadBytes} from "firebase/storage";
 import profilePic from '../../assets/images/profilepicture.png';
 import './Register.css';
 
 const Register = () => {
-    const [userType, setUserType] = useState('Student');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [userGender, setUserGender] = useState('');
-    const [companyName, setCompanyName] = useState('');
-    const [companyWebsite, setCompanyWebsite] = useState('');
-    const [studentCollege, setStudentCollege] = useState('');
-    const [studentEducation, setStudentEducation] = useState('');
-    const [dateOfBirth, setDateOfBirth] = useState('');
-    const [studentCard, setStudentCard] = useState(null);
-    const [location, setLocation] = useState('');
-    const [error, setError] = useState('');
+    const [userType, setUserType] = useState ('Student');
+    const [firstName, setFirstName] = useState ('');
+    const [lastName, setLastName] = useState ('');
+    const [email, setEmail] = useState ('');
+    const [password, setPassword] = useState ('');
+    const [confirmPassword, setConfirmPassword] = useState ('');
+    const [userGender, setUserGender] = useState ('');
+    const [companyName, setCompanyName] = useState ('');
+    const [companyWebsite, setCompanyWebsite] = useState ('');
+    const [studentCollege, setStudentCollege] = useState ('');
+    const [studentEducation, setStudentEducation] = useState ('');
+    const [dateOfBirth, setDateOfBirth] = useState ('');
+    const [studentCard, setStudentCard] = useState (null);
+    const [location, setLocation] = useState ('');
+    const [error, setError] = useState ('');
 
     //const [isVerify, setIsVerify] = useState(false);
 
     const handleRegister = async (e) => {
-        e.preventDefault();
+        e.preventDefault ();
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            setError ('Passwords do not match');
             return;
         }
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword (auth, email, password);
             const user = userCredential.user;
 
             // העלאת תמונת כרטיס סטודנט
             let cardURL = '';
             if (studentCard) {
-                const storageCard = ref(storage, `StudentsImages/${user.uid}/studentCard/${studentCard.name}`);
-                await uploadBytes(storageCard, studentCard);
-                cardURL = await getDownloadURL(storageCard);
+                const storageCard = ref (storage, `StudentsImages/${user.uid}/studentCard/${studentCard.name}`);
+                await uploadBytes (storageCard, studentCard);
+                cardURL = await getDownloadURL (storageCard);
             }
 
             // העלאת תמונת פרופיל ברירת מחדל
-            const response = await fetch(profilePic);
-            const profileBlob = await response.blob();
-            const storageProfile = ref(storage, `StudentsImages/${user.uid}/studentProfile/defaultProfilePicture.png`);
-            await uploadBytes(storageProfile, profileBlob);
-            const profileURL = await getDownloadURL(storageProfile);
+            const response = await fetch (profilePic);
+            const profileBlob = await response.blob ();
+            const storageProfile = ref (storage, `StudentsImages/${user.uid}/studentProfile/defaultProfilePicture.png`);
+            await uploadBytes (storageProfile, profileBlob);
+            const profileURL = await getDownloadURL (storageProfile);
 
             const userData = {
                 uid: user.uid,
@@ -73,12 +73,12 @@ const Register = () => {
                 userData.location = location;
             }
 
-            await setDoc(doc(db, "Users", user.uid), userData);
+            await setDoc (doc (db, "Users", user.uid), userData);
 
-            console.log("User registered with ID: ", user.uid);
+            console.log ("User registered with ID: ", user.uid);
         } catch (error) {
-            console.error("Error registering user: ", error);
-            setError(error.message);
+            console.error ("Error registering user: ", error);
+            setError (error.message);
         }
     };
 

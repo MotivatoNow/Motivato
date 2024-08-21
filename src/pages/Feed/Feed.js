@@ -22,7 +22,7 @@ const Feed = () => {
       {allPosts.map((post)=>{
         return(
             <div key={post.id}>
-                <PostCard posts={post}/>
+                <PostCard posts={post} />
             </div>
         )
       })}

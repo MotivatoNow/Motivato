@@ -17,4 +17,17 @@ export const getPosts=(setAllPosts)=>{
             return {...docs.data(),id:docs.id}
         }))
     })
+
+}
+export const getPostsByID=(userUid,setAllPosts)=>{
+        onSnapshot(dbRef, (response) => {
+            const userPosts = response.docs
+                .map((doc) => ({
+                    ...doc.data(),
+                    id: doc.id,
+                }))
+                .filter((post) => post.user?.uid === userUid); // סינון הפוסטים לפי ה-uid של המשתמש
+
+            setAllPosts(userPosts); // עדכון הסטייט עם הפוסטים של המשתמש
+        });
 }
