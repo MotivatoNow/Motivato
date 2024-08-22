@@ -5,24 +5,36 @@ import {db} from "../../config/firebase";
 
 const PostCard = ({posts}) => {
     const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            const userDoc = await getDoc(doc(db, "Users", posts.userUid)); // שואב את המידע של המשתמש לפי ה- uid
-            if (userDoc.exists()) {
-                setUserData(userDoc.data());
-            } else {
-                console.log("No such user!");
-            }
-        };
-
-        fetchUserData();
+        if (posts && posts.userUid) {
+            const fetchUserData = async () => {
+                try {
+                    const userDoc = await getDoc(doc(db, "Users", posts.userUid));
+                    if (userDoc.exists()) {
+                        setUserData(userDoc.data());
+                    } else {
+                        console.log("No such user!");
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchUserData();
+        }
     }, [posts.userUid]);
 
-    if (!userData) {
-        return <div>Loading...</div>; // הצגת מצב טעינה
+
+    if (loading) {
+        return <div>Loading...</div>;
     }
 
+    if (!userData) {
+        return <div>User data not found</div>;
+    }
 
     return (
         <div className="post-card">

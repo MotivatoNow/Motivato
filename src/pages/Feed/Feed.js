@@ -1,4 +1,4 @@
-import React,{useState,useMemo} from "react";
+import React, {useState, useMemo, useEffect} from "react";
 import MyPost from "../../components/MyPost/MyPost";
 import "./Feed.css"
 import { getPosts } from "../../context/Firestore";
@@ -8,11 +8,11 @@ import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 
 
 const Feed = () => {
-  
+
   const [allPosts, setAllPosts]=useState([])
-  useMemo(()=>{
-    getPosts(setAllPosts)
-  },[])
+    useMemo(()=>{
+        getPosts(setAllPosts)
+    },[])
   return (
     <div className="feed-page">
       <div className="my-post">

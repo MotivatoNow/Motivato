@@ -51,14 +51,19 @@ const MyPost = () => {
 
     const sendPost = async () => {
         let object = {
-            userUid: currentUser?.currentUser?.uid || "No UID", // שמירת ה- uid בלבד
+            user: {
+                uid: currentUser?.currentUser?.uid || "No UID",
+                firstName: currentUser?.currentUser?.firstName || "Anonymous",
+                lastName: currentUser?.currentUser?.lastName || "Anonymous",
+            },
             post: post,
-            timeStamp: getCurrentTimeStamp("LLL"),
+            timeStamp: getCurrentTimeStamp ("LLL"),
         };
 
-        await postStatus(collection(db, "Posts"), object);
-        await setModalOpen(false);
-        await setPost("");
+        console.log (object.user);
+        await postStatus (collection (db, "Posts"), object);
+        await setModalOpen (false);
+        await setPost ("");
     };
     return (
         <div className="post-status-main">
