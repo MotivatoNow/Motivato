@@ -6,12 +6,12 @@ import {db} from "../../config/firebase";
 const PostCard = ({posts}) => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    
     useEffect(() => {
-        if (posts && posts.userUid) {
+        if (posts && posts.user.uid) {
             const fetchUserData = async () => {
                 try {
-                    const userDoc = await getDoc(doc(db, "Users", posts.userUid));
+                    const userDoc = await getDoc(doc(db, "Users", posts.user.uid));
                     if (userDoc.exists()) {
                         setUserData(userDoc.data());
                     } else {
@@ -25,8 +25,7 @@ const PostCard = ({posts}) => {
             };
             fetchUserData();
         }
-    }, [posts.userUid]);
-
+    }, [posts.user.uid]);
 
     if (loading) {
         return <div>Loading...</div>;
