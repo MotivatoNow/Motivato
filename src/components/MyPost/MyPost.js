@@ -58,14 +58,6 @@ const MyPost = () => {
             },
             post: post,
             timeStamp: getCurrentTimeStamp ("LLL"),
-            likes:{
-                numberLikes:0,
-                userLiked:{
-                    uid: currentUser?.currentUser?.uid || "No UID",
-                    firstName: currentUser?.currentUser?.firstName || "Anonymous",
-                    lastName: currentUser?.currentUser?.lastName || "Anonymous",
-                }
-            }
         };
 
         console.log (object.user);
