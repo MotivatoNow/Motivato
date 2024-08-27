@@ -5,6 +5,7 @@ import {doc, setDoc} from "firebase/firestore";
 import {getDownloadURL, ref, uploadBytes} from "firebase/storage";
 import profilePic from '../../assets/images/profilepicture.png';
 import './Register.css';
+import {useNavigate} from "react-router-dom";
 
 const Register = () => {
     const [userType, setUserType] = useState ('Student');
@@ -22,6 +23,7 @@ const Register = () => {
     const [studentCard, setStudentCard] = useState (null);
     const [location, setLocation] = useState ('');
     const [error, setError] = useState ('');
+    const navigate = useNavigate();
 
     //const [isVerify, setIsVerify] = useState(false);
 
@@ -56,6 +58,7 @@ const Register = () => {
                 userType: userType,
                 profilePicture: profileURL,
                 bio: '',
+
             };
 
             if (userType === 'Company') {
@@ -76,6 +79,8 @@ const Register = () => {
             await setDoc (doc (db, "Users", user.uid), userData);
 
             console.log ("User registered with ID: ", user.uid);
+            navigate('/login');
+
         } catch (error) {
             console.error ("Error registering user: ", error);
             setError (error.message);
@@ -199,8 +204,44 @@ const Register = () => {
                                             required
                                         />
                                     </div>
+                                    <h2>איש קשר</h2>
+                                    <div className="form-group">
+                                        <label htmlFor="inputFirstName">שם פרטי</label>
+                                        <input
+                                            type="text"
+                                            id="inputFirstName"
+                                            value={firstName}
+                                            onChange={(e) => setFirstName (e.target.value)}
+                                            placeholder="שם פרטי"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="inputLastName">שם משפחה</label>
+                                        <input
+                                            id="inputLastName"
+                                            type="text"
+                                            value={lastName}
+                                            onChange={(e) => setLastName (e.target.value)}
+                                            placeholder="שם משפחה"
+                                            required
+                                        />
+                                    </div>
+
                                 </>
                             )}
+
+                            <div className="form-group">
+                                <label htmlFor="inputGender">מין</label>
+
+                                <select name="gender" id="inputGender"
+                                        onChange={(e) => setUserGender (e.target.value)}>
+                                    <option value=""></option>
+                                    <option value="זכר">זכר</option>
+                                    <option value="נקבה">נקבה</option>
+                                    <option value="אחר">אחר</option>
+                                </select>
+                            </div>
                             <div className="form-group">
                                 <label htmlFor="inputEmail">דואר אלקטרוני</label>
                                 <input
@@ -230,7 +271,7 @@ const Register = () => {
                                     id="confirmPassword"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword (e.target.value)}
-                                    placeholder="סיסמא בסנית"
+                                    placeholder="סיסמא בשנית"
                                     required
                                 />
                             </div>

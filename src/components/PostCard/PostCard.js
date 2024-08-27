@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import "./PostCard.css";
-import {doc, getDoc} from "firebase/firestore";
+import {doc, getDoc, updateDoc} from "firebase/firestore";
 import {db} from "../../config/firebase";
 
 const PostCard = ({posts}) => {
@@ -35,6 +35,8 @@ const PostCard = ({posts}) => {
         return <div>User data not found</div>;
     }
 
+
+
     return (
         <div className="post-card">
             <div className="post-header">
@@ -56,8 +58,11 @@ const PostCard = ({posts}) => {
             <div className="post-content">
                 <p className="status">{posts.post}</p>
             </div>
+            <div className="like-content">
+                <p> </p>
+            </div>
             <div className="post-actions">
-                <button className="action-btn">Like</button>
+                <button className="action-btn" >Like</button>
                 <button className="action-btn">Comment</button>
                 <button className="action-btn">Share</button>
             </div>

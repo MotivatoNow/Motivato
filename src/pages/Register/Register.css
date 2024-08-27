@@ -176,3 +176,7 @@ body {
         grid-template-columns: 1fr;
     }
 }
+.title{
+    align-items: center;
+    justify-content: center;
+}

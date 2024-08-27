@@ -6,6 +6,8 @@ import {useAuth} from "../../context/AuthContext";
 import {Link} from 'react-router-dom';
 import { db } from '../../config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import {auth} from "../../config/firebase"
+import {signOut} from "firebase/auth";
 
 
 const NavBar = () => {
@@ -19,12 +21,13 @@ const NavBar = () => {
 
 
     const handleLogout = async () => {
-        try {
-            await logout ();
-            navigate (`/`);
-        } catch (error) {
-            console.error ('Failed to logout', error);
-        }
+        signOut(auth).then(() => {
+            navigate("/login");
+            console.log("Signed out successfully")
+        }).catch((error) => {
+            console.log("Error Sign Out")
+        });
+
     };
 
     useEffect(() => {

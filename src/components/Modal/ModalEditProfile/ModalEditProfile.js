@@ -11,6 +11,9 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
     const [location, setLocation] = useState(user.location);
     const [profilePicture, setProfilePicture] = useState(user.profilePicture);
     const [uploading, setUploading] = useState(false);
+    const [relationship, setRelationship] = useState (user.relationship);
+    const [userGitHub, setUserGitHub] = useState(user.userGitHub);
+    const [userWebsite, setUserWebsite] = useState(user.UserWebsite)
 
     const handleSave = async () => {
         try {
@@ -20,6 +23,9 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
                 bio: bio,
                 firstName: firstName,
                 lastName: lastName,
+                relationship: relationship,
+                userGitHub: userGitHub,
+                userWebsite: userWebsite,
             });
 
             // עדכון ה-state המקומי
@@ -29,7 +35,10 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
                 firstName: firstName,
                 lastName: lastName,
                 location: location,
-                profilePicture: profilePicture, // The updated profile picture URL
+                profilePicture: profilePicture,
+                userGitHub: userGitHub,
+                userWebsite: userWebsite,
+                relationship: relationship,// The updated profile picture URL
             }));
 
             setModalOpen(false); // סגירת המודל אחרי שמירה
@@ -88,7 +97,6 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
                 ]}
             >
                 <label>עריכת תמונת פרופיל</label>
-                <label>עריכת תמונת פרופיל</label>
                 <input
                     type="file"
                     accept="image/*"
@@ -114,6 +122,29 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
                     value={bio}
                     className="bioText"
                     onChange={(e) => setBio (e.target.value)}
+                />
+
+                <label htmlFor="inputRelation">מין</label>
+
+                <select name="relation" id="inputRelation"
+                        onChange={(e) => setRelationship (e.target.value)}>
+                    <option value=""></option>
+                    <option value="רווק/ה">רווק/ה</option>
+                    <option value="נשוי/אר">נשוי/אר</option>
+                    <option value="גרוש/ה">גרוש/ה</option>
+                </select>
+
+                <label>גיטהאב</label>
+                <Input
+                    type="text"
+                    value={userGitHub}
+                    onChange={(e) => setUserGitHub (e.target.value)}
+                />
+                <label>כתובת אתר אינטרנט אישי</label>
+                <Input
+                    type="text"
+                    value={userWebsite}
+                    onChange={(e) => setUserWebsite (e.target.value)}
                 />
 
             </Modal>

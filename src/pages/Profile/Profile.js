@@ -121,6 +121,22 @@ const Profile = () => {
                       <i className="fa fa-map-marker-alt"></i>{" "}
                       {user.location || "Location"}
                     </p>
+                    <p className="profile-gander">
+                      <i className="fa fa-solid fa-male"></i>{" "}
+                      {user.userGender || ""}
+                    </p>
+                    <p className="profile-relationship">
+                      <i className="fa fa-solid fa-heart"></i>{" "}
+                      {user.relationship || ""}
+                    </p>
+                    <p className="profile-github">
+                      <i className=""></i>{" "}
+                      {user.userGitHub || ""}
+                    </p>
+                    <p className="profile-website">
+                      <i className=""></i>{" "}
+                      {user.userWebsite || ""}
+                    </p>
                   </div>
                   <div className="profile-details">
                     <div className="profile-section education-section">

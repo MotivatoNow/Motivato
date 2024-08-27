@@ -1,5 +1,5 @@
 import './assets/styles/App.css';
-import {BrowserRouter as Router, Route, Routes, Redirect, useNavigate} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import NavBar from './components/NavBar/NavBar';
 
 import HomePage from './pages/Home/Home';
@@ -17,6 +17,7 @@ import ProtectedRoute from "./features/ProtectedRoute/ProtectedRoute";
 
 
 function App() {
+
     return (
     <>
         <AuthProvider>
