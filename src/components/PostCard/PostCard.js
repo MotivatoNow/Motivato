@@ -2,8 +2,9 @@ import React, {useEffect, useState} from 'react';
 import "./PostCard.css";
 import {doc, getDoc, updateDoc} from "firebase/firestore";
 import {db} from "../../config/firebase";
-
-const PostCard = ({posts}) => {
+import {useAuth} from "../../context/AuthContext"
+import LikeButton from '../../features/LikeButton/LikeButton';
+const PostCard = ({posts,user}) => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     
@@ -27,6 +28,7 @@ const PostCard = ({posts}) => {
         }
     }, [posts.user.uid]);
 
+    
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -59,10 +61,11 @@ const PostCard = ({posts}) => {
                 <p className="status">{posts.post}</p>
             </div>
             <div className="like-content">
-                <p> </p>
+                <p></p>
             </div>
             <div className="post-actions">
-                <button className="action-btn" >Like</button>
+                
+                <LikeButton postsId={posts.id} user={user}/>
                 <button className="action-btn">Comment</button>
                 <button className="action-btn">Share</button>
             </div>
