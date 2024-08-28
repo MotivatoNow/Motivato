@@ -1,7 +1,8 @@
+@import "../../assets/styles/AppColors.css";
 /* Post Card */
 .post-card {
     width: 100%;
-    max-width: 600px;
+    min-width: 600px;
     background-color: #ffffff;
     margin: 20px auto;
     padding: 15px;
@@ -64,9 +65,10 @@
 /* Post Actions */
 .post-actions {
     display: flex;
-    justify-content: space-around;
-    border-top: 1px solid #eee;
+    justify-content: space-evenly;
+
     padding-top: 10px;
+    align-items: center;
 }
 
 .action-btn {
@@ -83,6 +85,33 @@
     color: #0056b3;
 }
 
+/*Comment input*/
+.comment-input{
+    width:100%;
+    padding:0.5em;
+    border-radius: 5px;
+    border:1px solid #efefef;
+}
+
+/*Add comment-btn*/
+.add-comment-btn{
+    padding:0.5em 1em;
+    background: var(--secondary-color);
+    color:#fff;
+    border:none;
+    border-radius: 5px;
+    margin: 0.5em auto;
+    transition:  0.3s ease;
+    cursor: pointer;
+    outline:none;
+}
+
+.add-comment-btn:hover{
+    background: var(--primary-color);
+}
+.comment-input:focus{
+    outline:1px solid #cecece;
+}
 /* Responsive Design */
 @media (max-width: 768px) {
     .post-card {

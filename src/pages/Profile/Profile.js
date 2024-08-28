@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../config/firebase";
 import { collection, doc, getDoc } from "firebase/firestore";
@@ -8,6 +8,7 @@ import ModalEditProfileComponent from "../../components/Modal/ModalEditProfile/M
 import { getPosts, getPostsByID, postStatus } from "../../context/Firestore";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import PostCard from "../../components/PostCard/PostCard";
+import MyPost from "../../components/MyPost/MyPost";
 
 const Profile = () => {
   const { id } = useParams();
@@ -20,6 +21,10 @@ const Profile = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
   const [activeTab, setActiveTab] = useState("posts");
+  //Posts
+  useMemo(()=>{
+    getPosts(setAllPosts)
+  },[])
 
   //user
   const loadData = async () => {
@@ -98,6 +103,8 @@ const Profile = () => {
     await postStatus(collection(db, "Posts"), object);
     await setPost("");
   };
+
+
 
   return (
     <>
@@ -208,68 +215,30 @@ const Profile = () => {
                   {activeTab === "posts" && (
                     <section className="profile-content">
                       {currentUser.uid === user.uid && (
-                        <div className="create-post">
-                          <textarea
-                            placeholder="What's on your mind?"
-                            value={post}
-                            onChange={(e) => setPost(e.target.value)}
-                          />
-                          <button className="post-btn" onClick={sendPost}>
-                            Post
-                          </button>
-                        </div>
+                          <div className="my-post">
+                            <MyPost/>
+                          </div>
                       )}
 
                       <section className="profile-posts">
                         <h3>Recent Posts</h3>
-                        <div className="posts-grid">
-                          {allPosts.map((post) => (
-                            <div key={post.id} className="post-card">
-                                
-                             <div className="post-header">
-                                <div className="user-info">
-                                  <img
-                                    src={
-                                      user.profilePicture ||
-                                      "defaultProfilePictureURL"
-                                    } // תמונת פרופיל
-                                    alt="Profile"
-                                    className="user-profile-image"
-                                  />
-                                  <div className="user-details">
-                                    <h3 className="user-name">
-                                      {user.firstName
-                                        ? user.firstName
-                                        : "Unknown User"}{" "}
-                                      {user.lastName
-                                        ? user.lastName
-                                        : "Unknown User"}
-                                    </h3>
-                                    <p className="post-timestamp">
-                                      {post.timeStamp}
-                                    </p>
-                                  </div>
+                        <div className="feed-post">
+                          {allPosts.map ((post) => {
+                            return (
+                                <div key={post.id}>
+                                  <PostCard posts={post} user={currentUser}/>
                                 </div>
-                              </div>
-                              <div className="post-content">
-                                <p className="status">{post.post}</p>
-                              </div>
-                              <div className="post-actions">
-                                <button className="action-btn">Like</button>
-                                <button className="action-btn">Comment</button>
-                                <button className="action-btn">Share</button>
-                              </div>
-                            </div>
-                          ))}
+                            )
+                          })}
                         </div>
                       </section>
                     </section>
                   )}
 
                   {activeTab === "about" && (
-                    <section className="profile-content">
-                      <h3>About Me</h3>
-                      <p>{user.bio}</p>
+                      <section className="profile-content">
+                        <h3>About Me</h3>
+                        <p>{user.bio}</p>
                     </section>
                   )}
 

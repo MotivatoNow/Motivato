@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
 import Feed from './pages/Feed/Feed';
 import ProtectedRoute from "./features/ProtectedRoute/ProtectedRoute";
+import Home from "./pages/Home/Home";
 
 
 
@@ -25,7 +26,7 @@ function App() {
             <NavBar/>
 
             <Routes>
-                <Route path="/" element={<HomePage />} />
+                <Route path="/" element={<HomePage />}/>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/addcategory" element={<AddCategory />}/>
@@ -33,7 +34,7 @@ function App() {
                 <Route path="/profile/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
                 <Route path="/admin-dashboard" element={<Dashboard />} />
                 <Route path="/reset" element={<ForgetPassword/>}/>
-                <Route path="/feed" element={<Feed/>}/>
+                <Route path="/feed" element={<ProtectedRoute><Feed /></ProtectedRoute>}/>
             </Routes>
         </Router>
             </AuthProvider>

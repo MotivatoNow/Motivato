@@ -9,45 +9,11 @@ import {collection, doc, getDoc} from "firebase/firestore";
 import {db} from "../../config/firebase";
 
 const MyPost = () => {
-    /*const {id} = useParams();
-    const [user,setUser] = useState(null);
-    const [loading,setLoading] = useState(true);
-  */
+
     const currentUser = useAuth ();
     const [modalOpen, setModalOpen] = useState (false);
     const [post, setPost] = useState ("");
 
-
-    /* const loadData = async () => {
-       try {
-         const userDoc = await getDoc(doc(db, "Users", id));
-         if (userDoc.exists()) {
-           setUser({ id: userDoc.id, ...userDoc.data() });
-         } else {
-           console.log("No such user!");
-         }
-       } catch (error) {
-         console.error("Error getting user: ", error);
-       }
-       setLoading(false);
-     };
-
-     useEffect(() => {
-       loadData();
-     }, [id]);
-
-     if (loading) {
-       return <p>Loading...</p>;
-     }
-
-     if (!user) {
-       return (
-           <div className="loading-indicator">
-             <div className="spinner"></div>
-           </div>
-       );
-     }
-   */
 
     const sendPost = async () => {
         let object = {

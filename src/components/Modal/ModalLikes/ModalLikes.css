@@ -1,0 +1,9 @@
+.open_post-likes{
+    cursor: pointer;
+}
+
+.likeduser_picture{
+    width:30px;
+    height:30px;
+    margin-left:1em;
+}
