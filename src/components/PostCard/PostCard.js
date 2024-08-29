@@ -10,31 +10,36 @@ const PostCard = ({posts, user}) => {
     const {currentUser} = useAuth();
     const [userData, setUserData] = useState (null);
     const [loading, setLoading] = useState (true);
-    const [commentUser,setCommentUser]=useState([])
+    
     // toggle the add comment.
     const [showCommentBox, setShowCommentBox] = useState(false);
     // comments
     const [comment,setComment] = useState ('')
     const [comments, setComments] = useState([]);
+    
     let commentsRef = collection(db, 'Comments');
     // here we add to setcomments.
     const getComment = (event) =>{
         setComment(event.target.value);
     }
 
-    const getComments = (postId, setComments) => {
+    const getComments = (postId) => {
         try{
-            let singlePostQuery = query(commentsRef, where("postId", "==", postId))
-
-            onSnapshot(singlePostQuery,(response) => {
-                const comments = response.docs.map((doc)=> {
-                    return {
+            const singlePostQuery = query(commentsRef, where("postId", "==", postId));
+            onSnapshot(singlePostQuery, async (response) => {
+                const commentsData = [];
+                for (const docC of response.docs) {
+                    const commentData = docC.data();
+                    const userDoc = await getDoc(doc(db, "Users", commentData.userId));
+                    const userName = userDoc.exists() ? `${userDoc.data().firstName} ${userDoc.data().lastName}` : "Unknown User";
+                    commentsData.push({
                         id: doc.id,
-                        ...doc.data(),
-                    }
-                })
-                setComments(comments);
-            })
+                        ...commentData,
+                        userName,
+                    });
+                }
+                setComments(commentsData);
+            });
         }catch (error){
             console.error(error);
         }
@@ -42,6 +47,7 @@ const PostCard = ({posts, user}) => {
     // Adding to firebase.
     const postComment = (postId, comment,timeStamp, userId) =>{
         try{
+            
             addDoc(commentsRef, {
                 postId,
                 comment,
@@ -61,12 +67,8 @@ const PostCard = ({posts, user}) => {
 
 
     useMemo (() => {
-        getComments(posts.id, setComments);
+        getComments(posts.id);
     }, [posts.id]);
-
-
-
-
 
     useEffect (() => {
         if (posts && posts.user.uid) {
@@ -159,7 +161,7 @@ const PostCard = ({posts, user}) => {
                            <div>
                                <p>{comment.comment}</p>
                                <p>{comment.timeStamp}</p>
-
+                                <p>{comment.userName}</p>
                            </div>
                        )
                    }):<></>}
