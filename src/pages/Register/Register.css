@@ -1,55 +1,93 @@
-/* Register.css */
+/* Importing Color Palette */
 @import '../../assets/styles/AppColors.css';
 
-/* Overall Page Styling */
-body {
-    background-color: #f4f7f6;
+/* =============================
+   General Page Styling
+   ============================= */
+.container-register_page {
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    min-height: 10vh;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, rgb(21, 205, 202, 0.2) 0%, rgb(62, 84, 211, 0.2) 100%);
+    background-attachment: fixed;
+    background-size: cover;
+    position: relative;
 }
 
-/* Main Container */
-.form__register-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+/* Adding noise texture to the background */
+.container-register_page:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    margin: 0 auto;
+    height: 100%;
+    background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+    opacity: 0.1; /* Adjust the opacity to make the texture subtle */
+    pointer-events: none;
 }
 
-/* Left Side (Form) */
-.form__register-left {
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-
-
-.type-selection {
-    display: flex;
-    justify-content: center;
+/* =============================
+   Header Styling
+   ============================= */
+.register-header {
+    text-align: center;
     margin-bottom: 20px;
 }
 
+.register-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--para-color);
+    margin-bottom: 10px;
+}
+
+.register-subtitle {
+    font-size: 1.2rem;
+    color: var(--para-color);
+}
+
+/* =============================
+   Option Section Styling
+   ============================= */
+.option_header {
+    text-align: center;
+    margin-top:2em;
+}
+
+.option_title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--para-color);
+    margin-bottom: 10px;
+}
+
+.option_subtitle {
+    font-size: 1.2rem;
+    color: #777;
+}
+
+/* =============================
+   Type Selection Buttons
+   ============================= */
+.type-selection {
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+}
+
 .type-selection .btn_register {
-    padding: 2em 4em;
+    padding: 1em 3em;
     margin: 0 8px;
     border: none;
-    border-radius: 1em;
+    border-radius: 0.45em;
     cursor: pointer;
     font-size: 1rem;
-    color:#fff;
+    color: #fff;
     font-weight: 500;
     transition: background 0.3s, color 0.3s;
 }
-
-
 
 .type-selection .btn__student {
     background: var(--primary-color);
@@ -66,17 +104,43 @@ body {
 
 .type-selection .btn-selected {
     background: var(--blue-color);
-    color:var(--para-color);
+    color: var(--para-color);
 }
 
+/* =============================
+   Form Container
+   ============================= */
+.register_form-container {
+    min-height: 100vh;
+    padding:0 6em 0 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+/* =============================
+   Form Styling
+   ============================= */
 .register_form {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
+    width: 100%;
+    z-index: 9999;
 }
 
-.register_form .form-group {
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group {
     margin-bottom: 15px;
+}
+
+.register_form .form_group {
+    margin: 15px;
 }
 
 .register_form label {
@@ -87,9 +151,18 @@ body {
     display: block;
 }
 
+/* Add a red asterisk (*) after labels of required fields */
+.register_form label:after {
+    content: '*';
+    color: red;
+    margin-left: 4px;
+    font-weight: bold;
+}
+
+/* Styling inputs and selects */
 .register_form input,
 .register_form select {
-    width: 100%;
+    width: 70%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -99,15 +172,35 @@ body {
     background-color: #f9f9f9;
 }
 
+/* Highlight inputs and selects on focus */
 .register_form input:focus,
 .register_form select:focus {
     outline: none;
     border-color: #007bff;
-    background-color: #e9f1fb;
 }
 
+/* =============================
+   Contact Person Section
+   ============================= */
+.contact-person-section {
+    width: 100%;
+    display: block; /* Ensures the heading takes up the full width */
+    margin-bottom: 10px; /* Adds some space below the heading */
+}
+
+.contact-person-title {
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: 600;
+    text-align: right; /* Aligns the title to the right */
+    margin-bottom: 10px;
+}
+
+/* =============================
+   Button Styling
+   ============================= */
 .register_form .btn {
-    grid-column: 1 / span 2;
+    width: 60%;
     padding: 12px;
     color: #fff;
     font-size: 1.1rem;
@@ -123,6 +216,9 @@ body {
     background: #0056b3;
 }
 
+/* =============================
+   Error Message Styling
+   ============================= */
 .error {
     grid-column: 1 / span 2;
     color: #d9534f;
@@ -130,53 +226,60 @@ body {
     font-weight: 600;
     margin-top: 10px;
 }
-.btn_submit{
+
+.btn_submit {
     background: var(--primary-color);
 }
-/* Right Side (Image or Background) */
-.form__register-right {
-    background: var(--blue-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
-.form__register-right img {
-    max-width: 100%;
-    height: auto;
-}
+/* =============================
+   Responsive Styling
+   ============================= */
 
-.header_register {
-    font-size: 4em;
-    color: #333;
-    margin-bottom: 20px;
-    font-weight: 700;
-    text-align: center;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .form__register-container {
-        grid-template-columns: 1fr;
-    }
-
-    .form__register-left {
-        padding: 20px;
-    }
-
-    .form__register-right {
-        display: none;
-    }
-
-    .header_register {
-        font-size: 1.8rem;
+/* Tablets and Small Screens */
+@media (max-width: 1024px) {
+    .register_form-container {
+        padding: 5em;
     }
 
     .register_form {
         grid-template-columns: 1fr;
     }
+
+    .register_form input,
+    .register_form select {
+        width: 100%;
+    }
+
+    .register_form .btn {
+        width: 80%;
+    }
 }
-.title{
-    align-items: center;
-    justify-content: center;
+
+/* Phones and Very Small Screens */
+@media (max-width: 768px) {
+    .register_form-container {
+        padding: 2em;
+    }
+
+    .register-title {
+        font-size: 2rem;
+    }
+
+    .register-subtitle {
+        font-size: 1rem;
+    }
+
+    .register_form {
+        grid-template-columns: 1fr;
+    }
+
+    .register_form input,
+    .register_form select {
+        width: 100%;
+    }
+
+    .register_form .btn {
+        width: 100%;
+        padding: 10px;
+    }
 }

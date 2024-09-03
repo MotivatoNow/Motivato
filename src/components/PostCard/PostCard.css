@@ -112,6 +112,130 @@
 .comment-input:focus{
     outline:1px solid #cecece;
 }
+
+
+/* =============================
+   Individual Comment Styling
+   ============================= */
+.comment {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: background-color 0.3s, box-shadow 0.3s ease;
+}
+
+
+/* Header: User info and timestamp */
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+
+/* User info: Profile picture and name */
+.comment-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-color);
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.comment-user-image {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    transition: border-color 0.3s ease;
+}
+
+
+.comment-user-name {
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Timestamp: Date and time of the comment */
+.comment-timestamp {
+    font-size: 0.75rem;
+    color: #aaa;
+}
+
+/* Body: The actual comment text */
+.comment-body {
+    margin-top: 10px;
+}
+
+.comment-text {
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.4;
+}
+
+/* Divider: Line between comments */
+.comment-divider {
+    margin-top: 15px;
+    border: none;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* =============================
+   Additional Enhancements
+   ============================= */
+
+/* Adding animations for better UX */
+.comment-user-image {
+    transition: transform 0.2s ease, border-color 0.3s ease;
+}
+
+
+.comment:hover .comment-text {
+    color: #333;
+}
+
+.comment:hover .comment-timestamp {
+    color: #888;
+}
+
+/* Adding subtle shadows to user profile picture */
+.comment-user-image {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .comment-user-image {
+        width: 30px;
+        height: 30px;
+    }
+
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .comment-timestamp {
+        margin-top: 5px;
+    }
+
+    .comment-body {
+        margin-top: 8px;
+    }
+
+    .comment-divider {
+        margin-top: 12px;
+    }
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .post-card {
