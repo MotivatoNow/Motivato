@@ -25,6 +25,8 @@ const Register = () => {
     const [error, setError] = useState ('');
     const navigate = useNavigate ();
 
+
+
     //const [isVerify, setIsVerify] = useState(false);
 
     const handleRegister = async (e) => {
@@ -119,6 +121,7 @@ const Register = () => {
                     <form className="register_form" onSubmit={handleRegister}>
                         {userType === 'Student' && (
                             <>
+
                                 <div className="form-group">
                                     <label htmlFor="inputFirstName">שם פרטי</label>
                                     <input
@@ -223,7 +226,7 @@ const Register = () => {
                                 {/* Contact Person Section */}
                                 <div className="form-group full-width">
                                     <h2 className="contact-person-title">איש קשר</h2>
-                                    <hr />
+                                    <hr/>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="inputFirstName">שם פרטי</label>
@@ -293,6 +296,7 @@ const Register = () => {
                                 required
                             />
                         </div>
+
                         <button className="btn btn_submit" type="submit">הרשמה</button>
                         {error && <p className="error">{error}</p>}
                     </form>

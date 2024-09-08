@@ -8,6 +8,7 @@ import { db } from '../../config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import {auth} from "../../config/firebase"
 import {signOut} from "firebase/auth";
+import logo from '../../assets/images/Icon.png'
 
 
 const NavBar = () => {
@@ -53,9 +54,9 @@ const NavBar = () => {
     return (
 
         <>
-            <nav className="navbar d-flex justify-content-evenly align-items-center navbar-expand-lg bg-body-tertiary">
+            <nav className="navbar navbar-fixed-top d-flex justify-content-evenly align-items-center navbar-expand-lg  ">
                 <div className="container-fluid">
-                    <a className="navbar-brand fs-4" href="#">Offcanvas navbar</a>
+                    <img className="navbar_logo" src={logo}/>
                     {/*Toggler*/}
                     <button className="navbar-toggler shadow-none border-0;" type="button" data-bs-toggle="offcanvas"
                             data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar"

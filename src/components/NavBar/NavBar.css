@@ -1,4 +1,14 @@
 /*Navbar style*/
+.navbar {
+    background:#fdfdfd;
+
+
+}
+
+.navbar_logo{
+    width:8vw;
+    height:2vw;
+}
 @media(max-width: 991px){
     .sidebar{
         background:#fff ;
