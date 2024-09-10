@@ -2,20 +2,13 @@ import React from "react";
 import './Home.css'
 import '../../assets/styles/App.css'
 import whoareuspicture from "../../assets/images/whoareuspicture.jpg"
-import CarouselCards from "../../components/CarouselCards/CarouselCards";
-import NavBar from "../../components/NavBar/NavBar";
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
-import LoginPage from "../Login/Login";
-
-import RegisterPage from "../Register/Register";
-import AddCategory from "../../features/AddCategory/AddCategory";
 
 
 const Home = () => {
   return (
     <>
       <header className="header_Hero">
-
+W
       </header>
 
         <section className="sections aboutus_section">

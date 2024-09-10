@@ -3,6 +3,7 @@ import React, {createContext, useContext, useEffect, useState} from 'react';
 import {onAuthStateChanged, signOut} from 'firebase/auth';
 import {auth, db} from '../config/firebase';
 import {doc, getDoc} from 'firebase/firestore';
+import {Loading} from "../components/Loading/Loading";
 
 const AuthContext = React.createContext ();
 
@@ -34,10 +35,10 @@ export const AuthProvider = ({children}) => {
         currentUser,
         logout,
     };
-
+   if(loading)return <Loading />
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            { children}
         </AuthContext.Provider>
     );
 };

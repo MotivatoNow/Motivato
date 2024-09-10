@@ -5,7 +5,7 @@ import { getPosts } from "../../context/Firestore";
 import PostCard from "../../components/PostCard/PostCard";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { useAuth } from "../../context/AuthContext";
-
+import {usePosts} from "../../hooks/usePosts";
 
 
 const Feed = () => {
@@ -16,6 +16,7 @@ const Feed = () => {
         getPosts(setAllPosts)
     },[])
   return (
+
     <div className="feed-page">
       <div className="my-post">
         <MyPost/>

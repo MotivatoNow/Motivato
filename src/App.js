@@ -16,31 +16,30 @@ import ProtectedRoute from "./features/ProtectedRoute/ProtectedRoute";
 import Home from "./pages/Home/Home";
 
 
-
 function App() {
 
     return (
-    <>
-        <AuthProvider>
-        <Router>
-            <NavBar/>
+        <>
+            <AuthProvider>
+                <Router>
+                    <NavBar/>
 
-            <Routes>
-                <Route path="/" element={<HomePage />}/>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/addcategory" element={<AddCategory />}/>
-                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
-                <Route path="/profile/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
-                <Route path="/admin-dashboard" element={<Dashboard />} />
-                <Route path="/reset" element={<ForgetPassword/>}/>
-                <Route path="/feed" element={<ProtectedRoute><Feed /></ProtectedRoute>}/>
-            </Routes>
-        </Router>
+                    <Routes>
+                        <Route path="/" element={<HomePage/>}/>
+                        <Route path="/login" element={<LoginPage/>}/>
+                        <Route path="/register" element={<RegisterPage/>}/>
+                        <Route path="/addcategory" element={<AddCategory/>}/>
+                        <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
+                        <Route path="/profile/:id" element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
+                        <Route path="/admin-dashboard" element={<Dashboard/>}/>
+                        <Route path="/reset" element={<ForgetPassword/>}/>
+                        <Route path="/feed" element={<ProtectedRoute><Feed/></ProtectedRoute>}/>
+                    </Routes>
+                </Router>
             </AuthProvider>
-    
-    </>
-  );
+
+        </>
+    );
 }
 
 export default App;
