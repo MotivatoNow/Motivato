@@ -160,16 +160,16 @@ const Profile = () => {
                                             </p>
                                         </div>
                                         {" "}
-                                        {currentUser.uid === user.uid && (
+                                        {currentUser.uid === user.uid ? (
                                             <button
                                                 className="settings-btn"
                                                 onClick={() => setModalOpen (true)}
                                             >
                                                 Settings
                                             </button>
-                                        )
+                                        ):(<FriendButton user={user} />)
                                         }
-                                        <FriendButton user={user} />
+                                        
                                     </div>
                                 </aside>
 
