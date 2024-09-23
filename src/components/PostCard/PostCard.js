@@ -2,6 +2,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import "./PostCard.css";
 import {
     addDoc,
+    arrayUnion,
     collection,
     doc,
     getDoc,
@@ -76,15 +77,34 @@ const PostCard = ({posts, user}) => {
         }
     };
     //function to add comments.
-    const addComment = () => {
+    const addComment = async() => {
         postComment (
             posts.id,
             comment,
             getCurrentTimeStamp ("LLL"),
             currentUser?.uid
         );
+        if(posts.user.uid!==currentUser.uid){
+            console.log(currentUser)
+            console.log(posts.user.uid)
+            const commentName=`${currentUser.firstName} ${currentUser.lastName}`
+            await addCommentNotification(posts.id,currentUser.uid,commentName,posts.user.uid)
+        }
         setComment ("");
     };
+
+    const addCommentNotification=async(postId,commentId, commentName,postOwnerId)=>{
+        const notification={
+            postId:postId,
+            commentId:commentId,
+            type:"comment",
+            commentName:commentName
+        }
+        const userRef=doc(db,"Users",postOwnerId)
+        await updateDoc(userRef,{
+            notifications:arrayUnion(notification)
+        })
+    }
 
     useMemo (() => {
         getComments (posts.id);

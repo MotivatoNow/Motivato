@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { db, auth } from '../../config/firebase';
 import { doc, getDoc, query, collection, where, onSnapshot, updateDoc, arrayUnion } from 'firebase/firestore';
 import { signOut } from "firebase/auth";
-import { FaBell,FaRegBell   } from 'react-icons/fa';  // importing bell icon from react-icons
+import { FaBell, FaRegBell } from "react-icons/fa";
 import './NavBar.css';
 import {notification} from "antd";  // Import custom css
 
@@ -155,7 +155,7 @@ const NavBar = () => {
 
     const handleNotificationClick = () => {
         toggleDropdown2(); // פותח/סוגר את ה-dropdown
-        if (notfications.length > 0) {
+        if (notfications.length > 0 ) {
             clearNotifications(); // מנקה את ההתראות אם יש התראות לא נקראות
         }
     };
@@ -219,13 +219,15 @@ const NavBar = () => {
                                                 {notfications.length > 0 ? (
                                                     notfications.map((notification, index) => (
                                                         <div key={index} className="dropdown-item">
-                                                            <p>{notification.message}</p>
-                                                            <span>{new Date(notification.timestamp).toLocaleString()}</span> {/* הצגת זמן ההתראה */}
+                                                            {notification.type==="comment"&&(<>
+                                                                <p>{`${notification.commentName} add comment in your post`}</p></>
+                                                            )}
                                                         </div>
                                                     ))
                                                 ) : (
                                                     <div className="dropdown-item">אין התראות חדשות</div>
                                                 )}
+                                                
                                             </div>
                                         )}
                                     </div>
