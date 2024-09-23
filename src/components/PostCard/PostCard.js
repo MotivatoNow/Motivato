@@ -44,10 +44,15 @@ const PostCard = ({posts, user}) => {
                     const userName = userDoc.exists ()
                         ? `${userDoc.data ().firstName} ${userDoc.data ().lastName}`
                         : "Unknown User";
+                    const userProfilePicture = userDoc.exists ()
+                        ? userDoc.data ().profilePicture
+                        : "defaultProfilePictureURL"; // תמונה ברירת מחדל אם אין תמונה
+
                     commentsData.push ({
-                        id: doc.id,
+                        id: docC.id,
                         ...commentData,
                         userName,
+                        userProfilePicture, // שמירת תמונת הפרופיל לתגובה
                     });
                 }
                 setComments (commentsData);
@@ -56,6 +61,7 @@ const PostCard = ({posts, user}) => {
             console.error (error);
         }
     };
+
     // Adding to firebase.
     const postComment = (postId, comment, timeStamp, userId) => {
         try {
@@ -162,30 +168,31 @@ const PostCard = ({posts, user}) => {
                     {comments.length > 0 ? (
                         comments.map ((comment, i) => {
                             return (
-                                <div className="comment" key={comment.userId}>
-                                  <div className="comment-header">
-                                    <Link to={`/profile/${comment.userId}`} className="comment-user">
-                                      <img
-                                          className="comment-user-image"
-                                          src={user.profilePicture}
-                                          alt={`${user.firstName} ${user.lastName}`}
-                                      />
-                                      <span className="comment-user-name">
-                            {user.firstName} {user.lastName}
+                                <div className="comment" key={comment.id}>
+                                    <div className="comment-header">
+                                        <Link to={`/profile/${comment.userId}`} className="comment-user">
+                                            <img
+                                                className="comment-user-image"
+                                                src={comment.userProfilePicture || "defaultProfilePictureURL"} // הצגת תמונת המשתמש הנכונה מהתגובה
+                                                alt={`${comment.userName}`}
+                                            />
+                                            <span className="comment-user-name">
+                            {comment.userName} {/* הצגת שם המשתמש מהתגובה */}
                         </span>
-                                    </Link>
-                                    <p className="comment-timestamp">{comment.timeStamp}</p>
-                                  </div>
-                                  <div className="comment-body">
-                                    <p className="comment-text">{comment.comment}</p>
-                                  </div>
-                                  <hr className="comment-divider"/>
+                                        </Link>
+                                        <p className="comment-timestamp">{comment.timeStamp}</p>
+                                    </div>
+                                    <div className="comment-body">
+                                        <p className="comment-text">{comment.comment}</p>
+                                    </div>
+                                    <hr className="comment-divider"/>
                                 </div>
                             );
                         })
                     ) : (
                         <></>
                     )}
+
                 </>
             ) : (
                 <></>

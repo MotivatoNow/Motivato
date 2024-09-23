@@ -1,84 +1,84 @@
-import React, {useState, useEffect, useMemo} from "react";
-import {useNavigate, useParams} from "react-router-dom";
-import {db} from "../../config/firebase";
-import {collection, doc, getDoc} from "firebase/firestore";
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { doc, getDoc, collection } from "firebase/firestore"; // הוספת getDocs לשליפת מידע מרובה
 import "./Profile.css";
-import {useAuth} from "../../context/AuthContext";
+import {db} from "../../config/firebase"
+import { useAuth } from "../../context/AuthContext";
 import ModalEditProfileComponent from "../../components/Modal/ModalEditProfile/ModalEditProfile";
-import {getPosts, getPostsByID, postStatus} from "../../context/Firestore";
-import {getCurrentTimeStamp} from "../../features/useMoment/useMoment";
+import { getPosts, getPostsByID, postStatus } from "../../context/Firestore";
+import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import PostCard from "../../components/PostCard/PostCard";
 import MyPost from "../../components/MyPost/MyPost";
 import FriendButton from "../../components/FriendButton/FriendButton";
 
 const Profile = () => {
-    const {id} = useParams ();
-    const navigate = useNavigate ();
-    const [user, setUser] = useState (null);
-    const [loading, setLoading] = useState (true);
-    const [userNotFound, setUserNotFound] = useState (false); // State to track if user is not found
-    const {currentUser} = useAuth ();
-    const [post, setPost] = useState ("");
-    const [modalOpen, setModalOpen] = useState (false);
-    const [allPosts, setAllPosts] = useState ([]);
-    const [activeTab, setActiveTab] = useState ("posts");
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [userNotFound, setUserNotFound] = useState(false); // סטטוס של משתמש שלא נמצא
+    const { currentUser } = useAuth();
+    const [post, setPost] = useState("");
+    const [modalOpen, setModalOpen] = useState(false);
+    const [allPosts, setAllPosts] = useState([]);
+    const [activeTab, setActiveTab] = useState("posts");
+    const [friends, setFriends] = useState([]); // סטייט לחברים
+
     //Posts
-    useMemo (() => {
-        getPosts (setAllPosts)
-    }, [])
+    useMemo(() => {
+        getPosts(setAllPosts);
+    }, []);
 
     //user
     const loadData = async () => {
         try {
-            const userDoc = await getDoc (doc (db, "Users", id));
-            if (userDoc.exists ()) {
-                setUser ({id: userDoc.id, ...userDoc.data ()});
-                setUserNotFound (false); // Reset the state if user is found
+            const userDoc = await getDoc(doc(db, "Users", id));
+            if (userDoc.exists()) {
+                setUser({ id: userDoc.id, ...userDoc.data() });
+                setUserNotFound(false);
+                if (userDoc.data().friends) {
+                    loadFriends(userDoc.data().friends); // טעינת החברים
+                }
             } else {
-                setUserNotFound (true); // Set the state if user is not found
+                setUserNotFound(true);
             }
         } catch (error) {
-            console.error ("Error getting user: ", error);
+            console.error("Error getting user: ", error);
         }
-        setLoading (false);
+        setLoading(false);
     };
 
-    useEffect (() => {
-        // If the user navigates to "/profile" without an ID, redirect to their own profile
+    // פונקציה לטעינת החברים של המשתמש
+    const loadFriends = async (friendIds) => {
+        try {
+            const friendPromises = friendIds.map((friendId) => getDoc(doc(db, "Users", friendId)));
+            const friendDocs = await Promise.all(friendPromises);
+
+            const loadedFriends = friendDocs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setFriends(loadedFriends); // שמירת החברים בסטייט
+        } catch (error) {
+            console.error("Error loading friends:", error);
+        }
+    };
+
+    useEffect(() => {
         if (!id && currentUser) {
-            navigate (`/profile/${currentUser.uid}`);
+            navigate(`/profile/${currentUser.uid}`);
             return;
         }
 
-        // Load user data if the id parameter exists
         if (id) {
-            loadData ();
+            loadData();
         }
     }, [id, currentUser, navigate]);
-
-    // פונקציה לטעינת הפוסטים של המשתמש
-    const loadUserPosts = () => {
-        if (user && user.uid) {
-            try {
-                getPostsByID (user.uid, setAllPosts); // העברת ה-uid של המשתמש לפונקציה
-            } catch (error) {
-                console.error ("Error fetching posts: ", error);
-            }
-        }
-    };
-
-    // הפעלת הפונקציה בכל פעם שה-uid משתנה
-    useEffect (() => {
-        if (user && user.uid) {
-            loadUserPosts (); // טעינת הפוסטים ברגע שהפרופיל נטען
-        }
-    }, [user]); // שים לב שהפונקציה תלויה ב-user, לא רק ב-user.uid
 
     if (loading) {
         return <div>Loading...</div>;
     }
 
-    // Display "User Not Found" if the user doesn't exist in the database
     if (userNotFound) {
         return (
             <div className="not-found-container">
@@ -89,22 +89,6 @@ const Profile = () => {
             </div>
         );
     }
-    const sendPost = async () => {
-        let object = {
-            user: {
-                uid: user.uid || "No UID",
-                firstName: user.firstName || "Anonymous",
-                lastName: user.lastName || "Anonymous",
-            },
-            post: post,
-            timeStamp: getCurrentTimeStamp ("LLL"),
-        };
-
-        console.log (object.user);
-        await postStatus (collection (db, "Posts"), object);
-        await setPost ("");
-    };
-
 
     return (
         <>
@@ -117,7 +101,7 @@ const Profile = () => {
                                 <aside className="profile-sidebar">
                                     <div className="sidebar-content">
                                         <div className="profile-picture">
-                                            <img src={user.profilePicture} alt="Profile"/>
+                                            <img src={user.profilePicture} alt="Profile" />
                                         </div>
                                     </div>
                                     <div className="profile-info">
@@ -125,24 +109,19 @@ const Profile = () => {
                                             {user.firstName} {user.lastName}
                                         </h2>
                                         <p className="profile-location">
-                                            <i className="fa fa-map-marker-alt"></i>{" "}
-                                            {user.location || "Location"}
+                                            <i className="fa fa-map-marker-alt"></i> {user.location || "Location"}
                                         </p>
                                         <p className="profile-gander">
-                                            <i className="fa fa-solid fa-male"></i>{" "}
-                                            {user.userGender || ""}
+                                            <i className="fa fa-solid fa-male"></i> {user.userGender || ""}
                                         </p>
                                         <p className="profile-relationship">
-                                            <i className="fa fa-solid fa-heart"></i>{" "}
-                                            {user.relationship || ""}
+                                            <i className="fa fa-solid fa-heart"></i> {user.relationship || ""}
                                         </p>
                                         <p className="profile-github">
-                                            <i className=""></i>{" "}
-                                            {user.userGitHub || ""}
+                                            <i className=""></i> {user.userGitHub || ""}
                                         </p>
                                         <p className="profile-website">
-                                            <i className=""></i>{" "}
-                                            {user.userWebsite || ""}
+                                            <i className=""></i> {user.userWebsite || ""}
                                         </p>
                                     </div>
                                     <div className="profile-details">
@@ -159,17 +138,13 @@ const Profile = () => {
                                                 <i className="fa fa-envelope"></i> {user.email}
                                             </p>
                                         </div>
-                                        {" "}
                                         {currentUser.uid === user.uid ? (
-                                            <button
-                                                className="settings-btn"
-                                                onClick={() => setModalOpen (true)}
-                                            >
+                                            <button className="settings-btn" onClick={() => setModalOpen(true)}>
                                                 Settings
                                             </button>
-                                        ):(<FriendButton user={user} />)
-                                        }
-                                        
+                                        ) : (
+                                            <FriendButton user={user} />
+                                        )}
                                     </div>
                                 </aside>
 
@@ -189,25 +164,25 @@ const Profile = () => {
                                             <ul>
                                                 <li
                                                     className={activeTab === "posts" ? "active" : ""}
-                                                    onClick={() => setActiveTab ("posts")}
+                                                    onClick={() => setActiveTab("posts")}
                                                 >
                                                     Posts
                                                 </li>
                                                 <li
                                                     className={activeTab === "about" ? "active" : ""}
-                                                    onClick={() => setActiveTab ("about")}
+                                                    onClick={() => setActiveTab("about")}
                                                 >
                                                     About
                                                 </li>
                                                 <li
                                                     className={activeTab === "friends" ? "active" : ""}
-                                                    onClick={() => setActiveTab ("friends")}
+                                                    onClick={() => setActiveTab("friends")}
                                                 >
                                                     Friends
                                                 </li>
                                                 <li
                                                     className={activeTab === "photos" ? "active" : ""}
-                                                    onClick={() => setActiveTab ("photos")}
+                                                    onClick={() => setActiveTab("photos")}
                                                 >
                                                     Photos
                                                 </li>
@@ -219,20 +194,18 @@ const Profile = () => {
                                         <section className="profile-content">
                                             {currentUser.uid === user.uid && (
                                                 <div className="my-post">
-                                                    <MyPost/>
+                                                    <MyPost />
                                                 </div>
                                             )}
 
                                             <section className="profile-posts">
                                                 <h3>Recent Posts</h3>
                                                 <div className="feed-post">
-                                                    {allPosts.map ((post) => {
-                                                        return (
-                                                            <div key={post.id}>
-                                                                <PostCard posts={post} user={currentUser}/>
-                                                            </div>
-                                                        )
-                                                    })}
+                                                    {allPosts.map((post) => (
+                                                        <div key={post.id}>
+                                                            <PostCard posts={post} user={currentUser} />
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </section>
                                         </section>
@@ -248,7 +221,22 @@ const Profile = () => {
                                     {activeTab === "friends" && (
                                         <section className="profile-content">
                                             <h3>Friends</h3>
-                                            <p>This section will list the user's friends.</p>
+                                            {friends.length > 0 ? (
+                                                <div className="friend-list">
+                                                    {friends.map((friend) => (
+                                                        <div key={friend.id} className="friend-item">
+                                                            <img
+                                                                src={friend.profilePicture || "/default-profile.png"}
+                                                                alt={friend.firstName}
+                                                                className="friend-avatar"
+                                                            />
+                                                            <span>{friend.firstName} {friend.lastName}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p>No friends found.</p>
+                                            )}
                                         </section>
                                     )}
 
