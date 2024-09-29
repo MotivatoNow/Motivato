@@ -68,18 +68,13 @@ const NavBar = () => {
 
     useEffect(() => {
         if (currentUser) {
-            const userDocRef = doc(db, "Users", currentUser.uid);
+            const q=query(collection(db,"Notifications"), where("postUser","==",currentUser.uid))
 
-            const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
-                if (docSnapshot.exists()) {
-                    const userData = docSnapshot.data();
-                    if (userData.notifications) {
-                        setNotifcations(userData.notifications); // עדכון ההתראות ב-state
-                    } else {
-                        setNotifcations([]); // אם אין התראות, ננקה את ה-state
-                    }
-                }
-            });
+            const unsubscribe = onSnapshot(q, (docSnapshot) => {
+                const notification=docSnapshot.docs.map(doc=>({id:doc.id,...doc.data()}))
+                setNotifcations(notification)
+                console.log(notfications)
+                });
 
             return () => unsubscribe(); // מסירים את ה-listener כשנסגרת הקומפוננטה
         }
@@ -140,7 +135,7 @@ const NavBar = () => {
     }
 
 
-    const clearNotifications = async () => {
+    /*const clearNotifications = async () => {
         try {
             const userDocRef = doc(db, 'Users', currentUser.uid);
             await updateDoc(userDocRef, {
@@ -151,13 +146,13 @@ const NavBar = () => {
         } catch (error) {
             console.error("Error clearing notifications:", error);
         }
-    };
+    };*/
 
     const handleNotificationClick = () => {
         toggleDropdown2(); // פותח/סוגר את ה-dropdown
-        if (notfications.length > 0 ) {
+        /*if (notfications.length > 0 ) {
             clearNotifications(); // מנקה את ההתראות אם יש התראות לא נקראות
-        }
+        }*/
     };
 
 
