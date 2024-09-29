@@ -217,6 +217,9 @@ const NavBar = () => {
                                                             {notification.type==="comment"&&(<>
                                                                 <p>{`${notification.commentName} add comment in your post`}</p></>
                                                             )}
+                                                            {notification.type==="like"&&(<>
+                                                            <p>{`${notification.likeName} liked your post`}</p>
+                                                            </>)}
                                                         </div>
                                                     ))
                                                 ) : (

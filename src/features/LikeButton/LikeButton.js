@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { db } from '../../config/firebase'
-import { doc, getDoc,setDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, getDoc,setDoc } from 'firebase/firestore'
 import ModalLikes from "../../components/Modal/ModalLikes/ModalLikes";
 import ModalComponent from "../../components/Modal/ModalPost/Modal";
 
 
 
-const LikeButton = ({postsId}) => {
+const LikeButton = ({posts}) => {
     const [liked,setLiked]=useState(false)
     const [likedCount,setLikedCount]=useState(0)
     const [modalOpen, setModalOpen] = useState(false);
@@ -17,7 +17,7 @@ const LikeButton = ({postsId}) => {
 
         const fetchLikes=async()=>{
             try{
-                const docRef=doc(db,"Likes",postsId);
+                const docRef=doc(db,"Likes",posts.id);
                 const docS=await getDoc(docRef);
 
                 if (docS.exists()) {
@@ -32,7 +32,7 @@ const LikeButton = ({postsId}) => {
         }
         fetchLikes()
 
-    },[postsId,currentUser])
+    },[posts.id,currentUser])
 
 
     const handleLike = async () => {
@@ -41,7 +41,7 @@ const LikeButton = ({postsId}) => {
             return;
         }
 
-        const docRef = doc(db, 'Likes', postsId);
+        const docRef = doc(db, 'Likes', posts.id);
 
         try {
             const docSnap = await getDoc(docRef);
@@ -65,13 +65,33 @@ const LikeButton = ({postsId}) => {
             }
 
             await setDoc(docRef, { likeCount: newLikedCount, likedUsers }, { merge: true });
-
+            if(liked&&posts.user.uid!==currentUser.uid) {
+                const likeName=`${currentUser.firstName} ${currentUser.lastName}`
+                likeNotifications(posts.id,currentUser.uid,likeName,posts.user.uid)}
+                
             setLiked(!liked);
             setLikedCount(newLikedCount);
         } catch (error) {
-            console.error('Erreur lors de la mise à jour des likes:', error);
+            console.error(error);
         }
     };
+    const likeNotifications=async(postId,likeId,likeName,postOwnerId)=>{
+        const notification={
+            postId:postId,
+            likeId:likeId,
+            type:"like",
+            postUser:postOwnerId,
+            likeName:likeName
+        }
+        const notificationsRef=addDoc(collection(db,"Notifications"),notification)
+        .then((res) => {
+            console.log("Document has been added succesfully");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
+    }
   return (
     <>
     <div>
@@ -85,7 +105,7 @@ const LikeButton = ({postsId}) => {
         <ModalLikes
             modalOpen={modalOpen}
             setModalOpen={setModalOpen}
-            postsId={postsId}
+            postsId={posts.id}
 
         />
     </div>

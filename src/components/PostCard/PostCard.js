@@ -119,11 +119,7 @@ const PostCard = ({ posts, user }) => {
       .catch((err) => {
         console.log(err);
       });
-    /*
-        const userRef=doc(db,"Users",postOwnerId)
-        await updateDoc(userRef,{
-            notifications:arrayUnion(notification)
-        })*/
+    
   };
 
   useMemo(() => {
@@ -183,7 +179,7 @@ const PostCard = ({ posts, user }) => {
       <hr />
 
       <div className="post-actions">
-        <LikeButton postsId={posts.id} />
+        <LikeButton posts={posts} />
         <button
           className="action-btn"
           onClick={() => setShowCommentBox(!showCommentBox)}
