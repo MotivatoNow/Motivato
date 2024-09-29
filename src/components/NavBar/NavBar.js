@@ -1,82 +1,87 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { db, auth } from '../../config/firebase';
-import { doc, getDoc, query, collection, where, onSnapshot, updateDoc, arrayUnion } from 'firebase/firestore';
-import { signOut } from "firebase/auth";
-import { FaBell, FaRegBell } from "react-icons/fa";
+import React, {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../context/AuthContext";
+import {db, auth} from '../../config/firebase';
+import {doc, getDoc, query, collection, where, onSnapshot, updateDoc, arrayUnion} from 'firebase/firestore';
+import {signOut} from "firebase/auth";
+import {FaBell, FaRegBell,FaBars,FaTimes} from "react-icons/fa";
+import logo from '../../assets/images/Icon.png'
 import './NavBar.css';
 import {notification} from "antd";  // Import custom css
 
 const NavBar = () => {
-    const navigate = useNavigate();
-    const [isVerified, setIsVerified] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [friendRequests, setFriendRequests] = useState([]);
-    const [notfications, setNotifcations] = useState([]);
-    const { currentUser } = useAuth();
-    const [dropdownOpen, setDropdownOpen] = useState(false);  // Managing the dropdown state
-    const [dropdownOpen2, setDropdownOpen2] = useState(false);  // Managing the dropdown state
+    const navigate = useNavigate ();
+    const [isVerified, setIsVerified] = useState (false);
+    const [loading, setLoading] = useState (true);
+    const [friendRequests, setFriendRequests] = useState ([]);
+    const [notfications, setNotifcations] = useState ([]);
+    const {currentUser} = useAuth ();
+    const [dropdownOpen, setDropdownOpen] = useState (false);  // Managing the dropdown state
+    const [dropdownOpen2, setDropdownOpen2] = useState (false);  // Managing the dropdown state
+    const [menuOpen, setMenuOpen] = useState (false);
 
+    const onToggleMenu = () => {
+        setMenuOpen (!menuOpen);
+    };
 
     const handleNavigation = (path) => {
-        navigate(path);
+        navigate (path);
     };
 
     const handleLogout = async () => {
-        signOut(auth).then(() => {
-            navigate("/login");
-            console.log("Signed out successfully");
-        }).catch((error) => {
-            console.log("Error Sign Out");
+        signOut (auth).then (() => {
+            navigate ("/login");
+            console.log ("Signed out successfully");
+        }).catch ((error) => {
+            console.log ("Error Sign Out");
         });
     };
 
-    useEffect(() => {
+    useEffect (() => {
         const checkVerification = async () => {
             if (currentUser) {
-                const userDoc = await getDoc(doc(db, 'Users', currentUser.uid));
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    setIsVerified(userData.isVerified);
+                const userDoc = await getDoc (doc (db, 'Users', currentUser.uid));
+                if (userDoc.exists ()) {
+                    const userData = userDoc.data ();
+                    setIsVerified (userData.isVerified);
                 }
             }
-            setLoading(false);
+            setLoading (false);
         };
 
-        checkVerification();
+        checkVerification ();
     }, [currentUser]);
 
     // Listening for friend requests
-    useEffect(() => {
+    useEffect (() => {
         if (currentUser) {
-            const q = query(
-                collection(db, 'friendRequests'),
-                where('receiverId', '==', currentUser.uid),
-                where('status', '==', 'pending')
+            const q = query (
+                collection (db, 'friendRequests'),
+                where ('receiverId', '==', currentUser.uid),
+                where ('status', '==', 'pending')
             );
 
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                const requests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setFriendRequests(requests);
+            const unsubscribe = onSnapshot (q, (snapshot) => {
+                const requests = snapshot.docs.map (doc => ({id: doc.id, ...doc.data ()}));
+                setFriendRequests (requests);
             });
 
-            return () => unsubscribe();
+            return () => unsubscribe ();
         }
     }, [currentUser]);
 
-    useEffect(() => {
+    useEffect (() => {
         if (currentUser) {
-            const q=query(collection(db,"Notifications"), where("postUser","==",currentUser.uid))
+            const q = query (collection (db, "Notifications"), where ("postUser", "==", currentUser.uid))
 
-            const unsubscribe = onSnapshot(q, (docSnapshot) => {
-                const notification=docSnapshot.docs.map(doc=>({id:doc.id,...doc.data()}))
-                setNotifcations(notification)
-                console.log(notfications)
-                });
+            const unsubscribe = onSnapshot (q, (docSnapshot) => {
+                const notification = docSnapshot.docs.map (doc => ({id: doc.id, ...doc.data ()}))
+                setNotifcations (notification)
+                console.log (notfications)
+            });
 
-            return () => unsubscribe(); // מסירים את ה-listener כשנסגרת הקומפוננטה
+            return () => unsubscribe (); // מסירים את ה-listener כשנסגרת הקומפוננטה
         }
     }, [currentUser]);
 
@@ -84,50 +89,50 @@ const NavBar = () => {
     // Accept friend request
     const handleAccept = async (request) => {
         try {
-            const requestDocRef = doc(db, 'friendRequests', request.id);
+            const requestDocRef = doc (db, 'friendRequests', request.id);
 
             // Update the status in Firebase to "accepted"
-            await updateDoc(requestDocRef, { status: 'accepted' });
+            await updateDoc (requestDocRef, {status: 'accepted'});
 
             // Update the friends list for both users
-            await updateDoc(doc(db, 'Users', currentUser.uid), {
-                friends: arrayUnion(request.senderId)
+            await updateDoc (doc (db, 'Users', currentUser.uid), {
+                friends: arrayUnion (request.senderId)
             });
-            await updateDoc(doc(db, 'Users', request.senderId), {
-                friends: arrayUnion(currentUser.uid)
+            await updateDoc (doc (db, 'Users', request.senderId), {
+                friends: arrayUnion (currentUser.uid)
             });
 
             // Send a notification to the user who sent the friend request
-            const senderUserDocRef = doc(db, 'Users', request.senderId);
-            await updateDoc(senderUserDocRef, {
-                notifications: arrayUnion({
+            const senderUserDocRef = doc (db, 'Users', request.senderId);
+            await updateDoc (senderUserDocRef, {
+                notifications: arrayUnion ({
                     message: `${currentUser.firstName} אישר את בקשת החברות שלך.`,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date ().toISOString ()
                 })
             });
 
         } catch (error) {
-            console.error("Error accepting friend request:", error);
+            console.error ("Error accepting friend request:", error);
         }
     };
 
     // Reject friend request
     const handleReject = async (request) => {
         try {
-            const requestDocRef = doc(db, 'friendRequests', request.id);
-            await updateDoc(requestDocRef, { status: 'rejected' });
+            const requestDocRef = doc (db, 'friendRequests', request.id);
+            await updateDoc (requestDocRef, {status: 'rejected'});
         } catch (error) {
-            console.error("Error rejecting friend request:", error);
+            console.error ("Error rejecting friend request:", error);
         }
     };
 
     // Toggle dropdown
     const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen);
+        setDropdownOpen (!dropdownOpen);
     };
     // Toggle dropdown
     const toggleDropdown2 = () => {
-        setDropdownOpen2(!dropdownOpen2);
+        setDropdownOpen2 (!dropdownOpen2);
     };
 
     if (loading) {
@@ -149,7 +154,7 @@ const NavBar = () => {
     };*/
 
     const handleNotificationClick = () => {
-        toggleDropdown2(); // פותח/סוגר את ה-dropdown
+        toggleDropdown2 (); // פותח/סוגר את ה-dropdown
         /*if (notfications.length > 0 ) {
             clearNotifications(); // מנקה את ההתראות אם יש התראות לא נקראות
         }*/
@@ -158,127 +163,195 @@ const NavBar = () => {
 
     return (
         <>
-            <nav className="navbar navbar-fixed-top d-flex justify-content-evenly align-items-center navbar-expand-lg">
-                <div className="container-fluid">
-                    <img className="navbar_logo" src="/path/to/logo.png" alt="Logo" />
-                    <button className="navbar-toggler shadow-none border-0;" type="button" data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar"
-                            aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
 
 
+            <header className="bg-white  w-[100%] z-50">
+                <nav className=" flex mx-auto justify-between items-center w-[92%] py-3 ">
+                    <div className="flex items-center gap-3">
+                        <img
+                            className="w-32 cursor-pointer"
+                            src={logo}
+                            alt="LOGO ICON"
+                        />
+                        {/* תפריט הניווט */}
+                        <div
+                            className={`nav-links duration-500 md:static absolute bg-white md:min-h-fit ${currentUser && isVerified ? 'min-h-[20vh]' : 'min-h-[90vh]'} md:w-auto left-0 ${
+                                menuOpen ? 'top-14' : 'top-[-150%]'
+                            } w-[40%] flex flex-col gap-3 items-center px-5`}
+                        >
+                            <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8">
 
-                    {/* Sidebar and logout */}
-                    <div className="sidebar offcanvas offcanvas-start" tabIndex="-1" id="offcanvasNavbar"
-                         aria-labelledby="offcanvasNavbarLabel">
-                        {/* Sidebar header */}
-                        <div className="offcanvas-header border-bottom">
-                            <h5 className="offcanvas-title" id="offcanvasNavbarLabel">Motivato</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="offcanvas"
-                                    aria-label="Close"></button>
+                                {currentUser && isVerified ? (<>
+                                        <a className="nav-link active" aria-current="page" href=""
+                                           onClick={() => handleNavigation ('/feed')}>דף הבית</a></>
+                                ) : (<>
+                                    <li><a className="hover:text-gray-500 cursor-pointer text-[#292B48]" href="#">דף
+                                        הבית</a></li>
+                                    <li><a className="hover:text-gray-500 cursor-pointer text-[#292B48]"
+                                           href="#">אודות</a>
+                                    </li>
+                                    <li><a className="hover:text-gray-500 cursor-pointer text-[#292B48]"
+                                           href="#">שירותים</a></li>
+                                    <li><a className="hover:text-gray-500 cursor-pointer text-[#292B48]" href="#">צור
+                                        קשר</a></li>
+
+                                </>)}
+                            </ul>
+                            {!currentUser && !isVerified &&
+                                (
+                                    <>
+                                        <div className='gap-3 flex md:hidden'>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleNavigation ('/register')}
+                                                className="bg-[#4FE0B6] text-[#292B48] p-2 rounded-lg hover:bg-[#15CDCA] duration-500">
+                                                הרשמה
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleNavigation ('/login')}
+                                                className='bg-[#4F80E2] text-white p-2 rounded-lg hover:bg-[#3E54D3] duration-500'>התחברות
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                         </div>
 
+                    </div>
 
 
-
-
-
-
-
-                        {/* Sidebar body */}
-                        <div className="offcanvas-body">
-                            {currentUser && isVerified ? (
-                                <>
-
-                                    <ul className="navbar-nav justify-content-start flex-grow-1 pe-3">
-                                        <li className="nav-item">
-                                            <a className="nav-link active" aria-current="page" href=""
-                                               onClick={() => handleNavigation ('/feed')}>דף הבית</a>
-                                        </li>
-                                    </ul>
-                                    <div>
-                                        <span>שלום {`${currentUser.firstName}`}</span>
-                                        <button onClick={handleLogout}>התנתקות</button>
-                                        <Link to={`/profile/${currentUser.uid}`}>לפרופיל</Link>
-                                    </div>
-
-
-                                    <div className="nav-item dropdown">
-                                        <FaRegBell  className="friend-requests-icon" onClick={handleNotificationClick}/>
+                    {currentUser && isVerified ? (
+                        <>
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="flex gap-8 ">
+                                    {/* כפתור התראות */}
+                                    <div className="relative flex flex-col items-center">
+                                        <FaRegBell
+                                            className="text-xl cursor-pointer hover:text-gray-600"
+                                            onClick={handleNotificationClick}
+                                        />
                                         {notfications.length > 0 && (
-                                            <span className="notification-count">{notfications.length}</span>
+                                            <span
+                                                className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-1.5">
+                                                     {notfications.length}
+                                            </span>
                                         )}
                                         {dropdownOpen2 && (
-                                            <div className="dropdown-menu show">
+                                            <div
+                                                className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-10">
                                                 {notfications.length > 0 ? (
-                                                    notfications.map((notification, index) => (
-                                                        <div key={index} className="dropdown-item">
-                                                            {notification.type==="comment"&&(<>
-                                                                <p>{`${notification.commentName} add comment in your post`}</p></>
+                                                    notfications.map ((notification, index) => (
+                                                        <div key={index}
+                                                             className="px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                            {notification.type === "comment" && (
+                                                                <p>{`${notification.commentName} הוסיף תגובה לפוסט שלך`}</p>
                                                             )}
-                                                            {notification.type==="like"&&(<>
-                                                            <p>{`${notification.likeName} liked your post`}</p>
-                                                            </>)}
+                                                            {notification.type === "like" && (
+                                                                <p>{`${notification.likeName} אהב את הפוסט שלך`}</p>
+                                                            )}
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className="dropdown-item">אין התראות חדשות</div>
+                                                    <div className="px-4 py-2 text-gray-700">אין התראות חדשות</div>
                                                 )}
-                                                
                                             </div>
                                         )}
+                                        <span className="text-sm text-gray-600 mt-1">התראות</span>
                                     </div>
 
-
-                                    <div className="nav-item dropdown">
-                                        <FaBell className="friend-requests-icon" onClick={toggleDropdown}/>
+                                    {/* כפתור בקשות חברות */}
+                                    <div className="relative flex flex-col items-center">
+                                        <FaBell
+                                            className="text-xl cursor-pointer hover:text-gray-600"
+                                            onClick={toggleDropdown}
+                                        />
                                         {friendRequests.length > 0 && (
-                                            <span className="notification-count">{friendRequests.length}</span>
+                                            <span
+                                                className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-1.5">
+          {friendRequests.length}
+        </span>
                                         )}
                                         {dropdownOpen && (
                                             <div
-                                                className="dropdown-menu show"> {/* Using "show" to make sure dropdown is visible */}
+                                                className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-10">
                                                 {friendRequests.length > 0 ? (
-                                                    friendRequests.map (request => (
-                                                        <div key={request.id} className="dropdown-item">
-                                                            <p>
-                                                                <span><img className="notiimage"
-                                                                           src={request.senderPicture}/></span>
+                                                    friendRequests.map ((request) => (
+                                                        <div key={request.id}
+                                                             className="px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                            <p className="flex items-center gap-2">
+                                                                <img
+                                                                    className="w-8 h-8 rounded-full"
+                                                                    src={request.senderPicture}
+                                                                    alt={request.senderFirstName}
+                                                                />
                                                                 {request.senderFirstName} {request.senderLastName} שלח
-                                                                לך
-                                                                בקשת חברות</p>
-                                                            <button className="btn btn-success me-2"
-                                                                    onClick={() => handleAccept (request)}>אישור
-                                                            </button>
-                                                            <button className="btn btn-danger"
-                                                                    onClick={() => handleReject (request)}>דחייה
-                                                            </button>
-                                                            .split('T')[0]
+                                                                לך בקשת חברות
+                                                            </p>
+                                                            <div className="flex justify-end gap-2 mt-2">
+                                                                <button
+                                                                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                                                                    onClick={() => handleAccept (request)}
+                                                                >
+                                                                    אישור
+                                                                </button>
+                                                                <button
+                                                                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                                                    onClick={() => handleReject (request)}
+                                                                >
+                                                                    דחייה
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className="dropdown-item">אין בקשות חדשות</div>
+                                                    <div className="px-4 py-2 text-gray-700">אין בקשות חדשות</div>
                                                 )}
                                             </div>
                                         )}
+                                        <span className="text-sm text-gray-600 mt-1">בקשות חברות</span>
                                     </div>
-                                </>
-                            ) : (
-                                <div className="d-flex justify-content-center align-items-center gap-3">
-                                    <button type="button" className="btn navbar__signin-button"
-                                            onClick={() => handleNavigation ('/login')}>להתחבר
-                                    </button>
-                                    <button type="button" className="btn navbar__signup-button"
-                                            onClick={() => handleNavigation ('/register')}>אני
-                                        רוצה להירשם
-                                    </button>
                                 </div>
-                            )}
+                            </div>
+
+
+                            <div className="flex gap-3 items-center">
+                                <span>שלום {`${currentUser.firstName}`}</span>
+                                <span
+                                    className="bg-[#4FE0B6] text-[#292B48] p-3 rounded-lg hover:bg-[#15CDCA] duration-500">
+                                     <Link to={`/profile/${currentUser.uid}`}>לפרופיל</Link>
+                                </span>
+
+                                <button
+                                    className="bg-[#4F80E2] text-white p-3 rounded-lg hover:bg-[#3E54D3] duration-500"
+                                    onClick={handleLogout}>התנתקות
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex items-center gap-6 ">
+                            <div className='hidden gap-6 md:flex'>
+                                <button
+                                    type="button"
+                                    onClick={() => handleNavigation ('/register')}
+                                    className="bg-[#4FE0B6] text-[#292B48] p-3 rounded-lg hover:bg-[#15CDCA] duration-500">
+                                    הרשמה
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleNavigation ('/login')}
+                                    className='bg-[#4F80E2] text-white p-3 rounded-lg hover:bg-[#3E54D3] duration-500'>התחברות
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </nav>
+
+
+                    )}
+                    {/* אייקון התפריט */}
+                    <span className="text-3xl cursor-pointer md:hidden z-50" onClick={onToggleMenu}>
+              {menuOpen ? <FaTimes/> : <FaBars/>}
+            </span>
+                </nav>
+            </header>
         </>
     );
 };
