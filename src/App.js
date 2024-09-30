@@ -14,6 +14,7 @@ import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
 import Feed from './pages/Feed/Feed';
 import ProtectedRoute from "./features/ProtectedRoute/ProtectedRoute";
 import Home from "./pages/Home/Home";
+import Post from "./pages/Post/Post";
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
                         <Route path="/admin-dashboard" element={<Dashboard/>}/>
                         <Route path="/reset" element={<ForgetPassword/>}/>
                         <Route path="/feed" element={<ProtectedRoute><Feed/></ProtectedRoute>}/>
+                        <Route path="/post/:id" element={<Post/>}/>
                     </Routes>
                 </Router>
             </AuthProvider>

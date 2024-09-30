@@ -3,23 +3,33 @@ import {Link} from "react-router-dom";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../context/AuthContext";
 import {db, auth} from '../../config/firebase';
-import {doc, getDoc, query, collection, where, onSnapshot, updateDoc, arrayUnion} from 'firebase/firestore';
+import {
+    doc,
+    getDoc,
+    query,
+    collection,
+    where,
+    onSnapshot,
+    updateDoc,
+    arrayUnion,
+    deleteDoc,
+    addDoc
+} from 'firebase/firestore';
 import {signOut} from "firebase/auth";
-import {FaBell, FaRegBell,FaBars,FaTimes} from "react-icons/fa";
+import {FaBell, FaUserFriends , FaBars, FaTimes} from "react-icons/fa";
 import logo from '../../assets/images/Icon.png'
-import './NavBar.css';
-import {notification} from "antd";  // Import custom css
 
 const NavBar = () => {
     const navigate = useNavigate ();
     const [isVerified, setIsVerified] = useState (false);
-    const [loading, setLoading] = useState (true);
     const [friendRequests, setFriendRequests] = useState ([]);
     const [notfications, setNotifcations] = useState ([]);
     const {currentUser} = useAuth ();
     const [dropdownOpen, setDropdownOpen] = useState (false);  // Managing the dropdown state
     const [dropdownOpen2, setDropdownOpen2] = useState (false);  // Managing the dropdown state
     const [menuOpen, setMenuOpen] = useState (false);
+    const [unreadCount, setUnreadCount] = useState (0);
+    const [users,setUsers]=useState([])
 
     const onToggleMenu = () => {
         setMenuOpen (!menuOpen);
@@ -47,11 +57,11 @@ const NavBar = () => {
                     setIsVerified (userData.isVerified);
                 }
             }
-            setLoading (false);
         };
 
         checkVerification ();
     }, [currentUser]);
+
 
     // Listening for friend requests
     useEffect (() => {
@@ -71,17 +81,21 @@ const NavBar = () => {
         }
     }, [currentUser]);
 
+
     useEffect (() => {
         if (currentUser) {
-            const q = query (collection (db, "Notifications"), where ("postUser", "==", currentUser.uid))
+            const q = query (collection (db, "Notifications"), where ("postUser", "==", currentUser.uid));
 
             const unsubscribe = onSnapshot (q, (docSnapshot) => {
-                const notification = docSnapshot.docs.map (doc => ({id: doc.id, ...doc.data ()}))
-                setNotifcations (notification)
-                console.log (notfications)
+                const allNotifications = docSnapshot.docs.map (doc => ({id: doc.id, ...doc.data ()}));
+                setNotifcations (allNotifications);
+
+                // עדכון מספר ההתראות שלא נקראו (לדוגמה: אם כל התראות חדשות)
+                const unread = allNotifications.filter (notification => !notification.read).length;
+                setUnreadCount (unread);
             });
 
-            return () => unsubscribe (); // מסירים את ה-listener כשנסגרת הקומפוננטה
+            return () => unsubscribe ();
         }
     }, [currentUser]);
 
@@ -103,18 +117,37 @@ const NavBar = () => {
             });
 
             // Send a notification to the user who sent the friend request
-            const senderUserDocRef = doc (db, 'Users', request.senderId);
-            await updateDoc (senderUserDocRef, {
-                notifications: arrayUnion ({
-                    message: `${currentUser.firstName} אישר את בקשת החברות שלך.`,
-                    timestamp: new Date ().toISOString ()
-                })
-            });
+            const receiverUserDocRef = doc (db, 'Users', request.senderId);
+            try{
+                const docSnap=await getDoc(receiverUserDocRef);
+                if(docSnap.exists()){
+                    const data=docSnap.data ();
+                    const receiverName = `${data.firstName} ${data.lastName}`
+                    console.log(data)//natan    currentUser=elianor
+                    await newFriendNotification (data.uid,currentUser  )
+                }
+            }
+            catch (e){console.log(e)}
 
         } catch (error) {
             console.error ("Error accepting friend request:", error);
         }
     };
+    const newFriendNotification = async (newFriendId,acceptedUser) => {
+        const notification = {
+            postUser:newFriendId,//natan
+            newFriendId: acceptedUser.uid,//elianor.id
+            newFriendName: `${acceptedUser.firstName} ${acceptedUser.lastName}`,//elianor.fullName
+            type: "new friend"
+        }
+        const notificationsRef = addDoc(collection(db,"Notifications"),notification)
+            .then ((res) => {
+                console.log ("Document has been added succesfully")
+            })
+            .catch ((error) => {
+                console.log (error)
+            })
+    }
 
     // Reject friend request
     const handleReject = async (request) => {
@@ -129,36 +162,80 @@ const NavBar = () => {
     // Toggle dropdown
     const toggleDropdown = () => {
         setDropdownOpen (!dropdownOpen);
+        if(dropdownOpen2) setDropdownOpen2(!dropdownOpen2);
     };
     // Toggle dropdown
     const toggleDropdown2 = () => {
         setDropdownOpen2 (!dropdownOpen2);
+        if(dropdownOpen) setDropdownOpen (!dropdownOpen);
     };
-
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
-
-    /*const clearNotifications = async () => {
+    const clearNotifications = async () => {
         try {
-            const userDocRef = doc(db, 'Users', currentUser.uid);
-            await updateDoc(userDocRef, {
-                notifications: [] // ריקון ההתראות במסד הנתונים
-            });
-            setNotifcations([]); // ריקון ההתראות ב-state המקומי
-            console.log("Notifications cleared!");
+            const q = query (collection (db, "Notifications"), where ("postUser", "==", currentUser.uid))
+
+            setNotifcations ([]); // ריקון ההתראות ב-state המקומי
+            console.log ("Notifications cleared!");
         } catch (error) {
-            console.error("Error clearing notifications:", error);
+            console.error ("Error clearing notifications:", error);
         }
-    };*/
+    };
 
     const handleNotificationClick = () => {
         toggleDropdown2 (); // פותח/סוגר את ה-dropdown
-        /*if (notfications.length > 0 ) {
-            clearNotifications(); // מנקה את ההתראות אם יש התראות לא נקראות
-        }*/
+
+        if (unreadCount > 0) {
+
+            // עדכון של כל ההתראות שלא נקראו לסטטוס של 'נקרא'
+            notfications.forEach (async (notification) => {
+                if (!notification.read) {
+                    const notificationRef = doc (db, 'Notifications', notification.id);
+                    await updateDoc (notificationRef, {read: true});
+                }
+            });
+
+            // איפוס ה-count המקומי
+            setUnreadCount (0);
+        }
     };
+    useEffect(() => {
+        if (currentUser) {
+            const singleQuery = query(collection(db, "Notifications"), where("postUser", "==", currentUser.uid));
+
+            const unsubscribe = onSnapshot(singleQuery, async (response) => {
+                const notificationsData = [];
+                for (const docN of response.docs) {
+                    const notificationData = docN.data();
+                    let userDoc;
+
+                    if (notificationData.type === "comment") {
+                        userDoc = await getDoc(doc(db, "Users", notificationData.commentId));
+                    } else if (notificationData.type === "like") {
+                        userDoc = await getDoc(doc(db, "Users", notificationData.likeId));
+                    } else {
+                        userDoc = await getDoc(doc(db, "Users", notificationData.newFriendId));
+                    }
+
+                    const userName = userDoc.exists()
+                        ? `${userDoc.data().firstName} ${userDoc.data().lastName}`
+                        : "Unknown User";
+                    const userProfilePicture = userDoc.exists()
+                        ? userDoc.data().profilePicture
+                        : "defaultProfilePictureURL"; // Default picture if not available
+
+                    notificationsData.push({
+                        id: docN.id,
+                        ...notificationData,
+                        userName,
+                        userProfilePicture
+                    });
+                }
+                setNotifcations(notificationsData); // Set notifications with user info
+            });
+
+            return () => unsubscribe(); // Clean up listener
+        }
+    }, [currentUser]);
+
 
 
     return (
@@ -226,28 +303,73 @@ const NavBar = () => {
                                 <div className="flex gap-8 ">
                                     {/* כפתור התראות */}
                                     <div className="relative flex flex-col items-center">
-                                        <FaRegBell
+                                        <FaBell
                                             className="text-xl cursor-pointer hover:text-gray-600"
                                             onClick={handleNotificationClick}
                                         />
-                                        {notfications.length > 0 && (
+                                        {/* הצגת מספר ההתראות שלא נקראו */}
+                                        {unreadCount > 0 && (
                                             <span
                                                 className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-1.5">
-                                                     {notfications.length}
-                                            </span>
+            {unreadCount}
+        </span>
                                         )}
                                         {dropdownOpen2 && (
                                             <div
-                                                className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-10">
+                                                className="absolute left-[50%] mt-2 top-[40%] w-80 bg-white border rounded-lg shadow-lg z-10">
                                                 {notfications.length > 0 ? (
                                                     notfications.map ((notification, index) => (
                                                         <div key={index}
                                                              className="px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                                            {notification.type === "comment" && (
-                                                                <p>{`${notification.commentName} הוסיף תגובה לפוסט שלך`}</p>
+                                                            {/* סוג ההתראה */}
+                                                            {notification.type === "comment" && (<>
+                                                                <Link className="flex mb-2 items-center gap-2" to={`/post/${notification.postId}`}>
+                                                                    <img
+                                                                        className="comment-user-image"
+                                                                        src={
+                                                                            notification.userProfilePicture ||
+                                                                            "defaultProfilePictureURL"
+                                                                        } // הצגת תמונת המשתמש הנכונה מהתגובה
+                                                                        alt={`${users.userName}`}
+                                                                    />
+                                                                    {`${notification.commentName} הוסיף תגובה לפוסט שלך`}
+                                                                </Link>
+                                                                    <hr/>
+                                                                </>
                                                             )}
                                                             {notification.type === "like" && (
-                                                                <p>{`${notification.likeName} אהב את הפוסט שלך`}</p>
+                                                                <>
+                                                                    <Link className="flex mb-2 items-center gap-2" to={`/post/${notification.postId}`}>
+                                                                        <img
+                                                                            className="comment-user-image"
+                                                                            src={
+                                                                                notification.userProfilePicture ||
+                                                                                "defaultProfilePictureURL"
+                                                                            } // הצגת תמונת המשתמש הנכונה מהתגובה
+                                                                            alt={`${users.userName}`}
+                                                                        />
+                                                                        {`${notification.likeName} אהב את הפוסט שלך`}
+                                                                    </Link>
+                                                                    <hr/>
+                                                                </>
+                                                            )}
+                                                            {notification.type === "new friend" && (
+                                                                  <>
+                                                                      <Link className="flex mb-2 items-center gap-2" to={`/profile/${notification.newFriendId}`}>
+                                                                          <img
+                                                                              className="comment-user-image"
+                                                                              src={
+                                                                                  notification.userProfilePicture ||
+                                                                                  "defaultProfilePictureURL"
+                                                                              } // הצגת תמונת המשתמש הנכונה מהתגובה
+                                                                              alt={`${users.userName}`}
+                                                                          />
+                                                                          {notification.newFriendName} אישר/ה את בקשת החברות
+                                                                          שלך
+                                                                      </Link>
+                                                                      <hr/>
+                                                                  </>
+
                                                             )}
                                                         </div>
                                                     ))
@@ -261,8 +383,8 @@ const NavBar = () => {
 
                                     {/* כפתור בקשות חברות */}
                                     <div className="relative flex flex-col items-center">
-                                        <FaBell
-                                            className="text-xl cursor-pointer hover:text-gray-600"
+                                        <FaUserFriends
+                                            className="text-xl text-[#4F80E2] cursor-pointer hover:text-gray-600"
                                             onClick={toggleDropdown}
                                         />
                                         {friendRequests.length > 0 && (
@@ -273,7 +395,7 @@ const NavBar = () => {
                                         )}
                                         {dropdownOpen && (
                                             <div
-                                                className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-10">
+                                                className="absolute right-2 top-[40%] mt-2 w-80 bg-white border rounded-lg shadow-lg z-10">
                                                 {friendRequests.length > 0 ? (
                                                     friendRequests.map ((request) => (
                                                         <div key={request.id}

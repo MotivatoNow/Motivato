@@ -17,7 +17,7 @@ import LikeButton from "../../features/LikeButton/LikeButton";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { Link } from "react-router-dom";
 
-const PostCard = ({ posts, user }) => {
+const PostCard = ({posts}) => {
   const { currentUser } = useAuth();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -125,7 +125,6 @@ const PostCard = ({ posts, user }) => {
   useMemo(() => {
     getComments(posts.id);
   }, [posts.id]);
-
   useEffect(() => {
     if (posts && posts.user.uid) {
       const fetchUserData = async () => {

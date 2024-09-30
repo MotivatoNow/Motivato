@@ -26,7 +26,7 @@ const Profile = () => {
 
     //Posts
     useMemo(() => {
-        getPosts(setAllPosts);
+        getPostsByID(id,setAllPosts);
     }, []);
 
     //user
@@ -178,7 +178,7 @@ const Profile = () => {
                                                     className={activeTab === "friends" ? "active" : ""}
                                                     onClick={() => setActiveTab("friends")}
                                                 >
-                                                    Friends
+                                                    Friends({friends.length})
                                                 </li>
                                                 <li
                                                     className={activeTab === "photos" ? "active" : ""}
@@ -220,7 +220,7 @@ const Profile = () => {
 
                                     {activeTab === "friends" && (
                                         <section className="profile-content">
-                                            <h3>Friends</h3>
+                                            <h3>Friends {friends.length}</h3>
                                             {friends.length > 0 ? (
                                                 <div className="friend-list">
                                                     {friends.map((friend) => (
