@@ -17,7 +17,7 @@ import LikeButton from "../../features/LikeButton/LikeButton";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { Link } from "react-router-dom";
 
-const PostCard = ({posts}) => {
+const PostCard = ({ posts }) => {
   const { currentUser } = useAuth();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -107,7 +107,7 @@ const PostCard = ({posts}) => {
       commentId: commentId,
       type: "comment",
       postUser: postOwnerId,
-      commentName:commentName
+      commentName: commentName,
     };
     const notificationRef = addDoc(
       collection(db, "Notifications"),
@@ -119,9 +119,7 @@ const PostCard = ({posts}) => {
       .catch((err) => {
         console.log(err);
       });
-    
   };
-
   useMemo(() => {
     getComments(posts.id);
   }, [posts.id]);
@@ -159,7 +157,7 @@ const PostCard = ({posts}) => {
       <div className="post-header">
         <div className="user-info">
           <img
-            src={userData.profilePicture || "defaultProfilePictureURL"} // תמונת פרופיל
+            src={userData.profilePicture || "defaultProfilePictureURL"} // Image de profil
             alt="Profile"
             className="user-profile-image"
           />
@@ -172,9 +170,18 @@ const PostCard = ({posts}) => {
           </div>
         </div>
       </div>
+
       <div className="post-content">
-        <p className="status">{posts.post}</p>
+        <p className="status">{posts.post}</p> {/* Texte de la publication */}
+        {posts.postImage && ( // Utilise postImage pour l'affichage de l'image
+          <img
+            src={posts.postImage} // URL de l'image
+            alt="Post content"
+            className="post-image" // Assure-toi de créer une classe CSS pour le style
+          />
+        )}
       </div>
+
       <hr />
 
       <div className="post-actions">
@@ -187,55 +194,47 @@ const PostCard = ({posts}) => {
         </button>
         <button className="action-btn">Share</button>
       </div>
-      {showCommentBox ? (
+
+      {showCommentBox && (
         <>
-          {" "}
           <input
-            placeholder="הוספת תגובה"
+            placeholder="Ajouter un commentaire"
             className="comment-input"
             onChange={getComment}
             name={comment}
             value={comment}
           />
           <button className="add-comment-btn" onClick={addComment}>
-            הוסף תגובה
+            Ajouter un commentaire
           </button>
-          {comments.length > 0 ? (
-            comments.map((comment, i) => {
-              return (
-                <div className="comment" key={comment.id}>
-                  <div className="comment-header">
-                    <Link
-                      to={`/profile/${comment.userId}`}
-                      className="comment-user"
-                    >
-                      <img
-                        className="comment-user-image"
-                        src={
-                          comment.userProfilePicture ||
-                          "defaultProfilePictureURL"
-                        } // הצגת תמונת המשתמש הנכונה מהתגובה
-                        alt={`${comment.userName}`}
-                      />
-                      <span className="comment-user-name">
-                        {comment.userName} {/* הצגת שם המשתמש מהתגובה */}
-                      </span>
-                    </Link>
-                    <p className="comment-timestamp">{comment.timeStamp}</p>
-                  </div>
-                  <div className="comment-body">
-                    <p className="comment-text">{comment.comment}</p>
-                  </div>
-                  <hr className="comment-divider" />
+          {comments.length > 0 &&
+            comments.map((comment) => (
+              <div className="comment" key={comment.id}>
+                <div className="comment-header">
+                  <Link
+                    to={`/profile/${comment.userId}`}
+                    className="comment-user"
+                  >
+                    <img
+                      className="comment-user-image"
+                      src={
+                        comment.userProfilePicture || "defaultProfilePictureURL"
+                      }
+                      alt={`${comment.userName}`}
+                    />
+                    <span className="comment-user-name">
+                      {comment.userName}
+                    </span>
+                  </Link>
+                  <p className="comment-timestamp">{comment.timeStamp}</p>
                 </div>
-              );
-            })
-          ) : (
-            <></>
-          )}
+                <div className="comment-body">
+                  <p className="comment-text">{comment.comment}</p>
+                </div>
+                <hr className="comment-divider" />
+              </div>
+            ))}
         </>
-      ) : (
-        <></>
       )}
     </div>
   );

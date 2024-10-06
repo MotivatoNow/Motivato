@@ -26,9 +26,6 @@ const Register = () => {
     const navigate = useNavigate ();
 
 
-
-    //const [isVerify, setIsVerify] = useState(false);
-
     const handleRegister = async (e) => {
         e.preventDefault ();
         if (password !== confirmPassword) {
