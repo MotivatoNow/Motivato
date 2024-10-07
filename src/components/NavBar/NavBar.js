@@ -242,7 +242,7 @@ const NavBar = () => {
         <>
 
 
-            <header className="bg-white  w-[100%] z-50">
+            <header className="bg-white w-[100%] z-50">
                 <nav className=" flex mx-auto justify-between items-center w-[92%] py-3 ">
                     <div className="flex items-center gap-3">
                         <img
