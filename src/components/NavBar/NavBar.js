@@ -16,7 +16,7 @@ import {
     addDoc
 } from 'firebase/firestore';
 import {signOut} from "firebase/auth";
-import {FaBell, FaUserFriends , FaBars, FaTimes} from "react-icons/fa";
+import {FaBell, FaUserFriends, FaBars, FaTimes, FaRocketchat} from "react-icons/fa";
 import logo from '../../assets/images/Icon.png'
 
 const NavBar = () => {
@@ -29,7 +29,7 @@ const NavBar = () => {
     const [dropdownOpen2, setDropdownOpen2] = useState (false);  // Managing the dropdown state
     const [menuOpen, setMenuOpen] = useState (false);
     const [unreadCount, setUnreadCount] = useState (0);
-    const [users,setUsers]=useState([])
+    const [users, setUsers] = useState ([])
 
     const onToggleMenu = () => {
         setMenuOpen (!menuOpen);
@@ -118,29 +118,30 @@ const NavBar = () => {
 
             // Send a notification to the user who sent the friend request
             const receiverUserDocRef = doc (db, 'Users', request.senderId);
-            try{
-                const docSnap=await getDoc(receiverUserDocRef);
-                if(docSnap.exists()){
-                    const data=docSnap.data ();
+            try {
+                const docSnap = await getDoc (receiverUserDocRef);
+                if (docSnap.exists ()) {
+                    const data = docSnap.data ();
                     const receiverName = `${data.firstName} ${data.lastName}`
-                    console.log(data)//natan    currentUser=elianor
-                    await newFriendNotification (data.uid,currentUser  )
+                    console.log (data)//natan    currentUser=elianor
+                    await newFriendNotification (data.uid, currentUser)
                 }
+            } catch (e) {
+                console.log (e)
             }
-            catch (e){console.log(e)}
 
         } catch (error) {
             console.error ("Error accepting friend request:", error);
         }
     };
-    const newFriendNotification = async (newFriendId,acceptedUser) => {
+    const newFriendNotification = async (newFriendId, acceptedUser) => {
         const notification = {
-            postUser:newFriendId,//natan
+            postUser: newFriendId,//natan
             newFriendId: acceptedUser.uid,//elianor.id
             newFriendName: `${acceptedUser.firstName} ${acceptedUser.lastName}`,//elianor.fullName
             type: "new friend"
         }
-        const notificationsRef = addDoc(collection(db,"Notifications"),notification)
+        const notificationsRef = addDoc (collection (db, "Notifications"), notification)
             .then ((res) => {
                 console.log ("Document has been added succesfully")
             })
@@ -162,12 +163,12 @@ const NavBar = () => {
     // Toggle dropdown
     const toggleDropdown = () => {
         setDropdownOpen (!dropdownOpen);
-        if(dropdownOpen2) setDropdownOpen2(!dropdownOpen2);
+        if (dropdownOpen2) setDropdownOpen2 (!dropdownOpen2);
     };
     // Toggle dropdown
     const toggleDropdown2 = () => {
         setDropdownOpen2 (!dropdownOpen2);
-        if(dropdownOpen) setDropdownOpen (!dropdownOpen);
+        if (dropdownOpen) setDropdownOpen (!dropdownOpen);
     };
     const clearNotifications = async () => {
         try {
@@ -197,45 +198,44 @@ const NavBar = () => {
             setUnreadCount (0);
         }
     };
-    useEffect(() => {
+    useEffect (() => {
         if (currentUser) {
-            const singleQuery = query(collection(db, "Notifications"), where("postUser", "==", currentUser.uid));
+            const singleQuery = query (collection (db, "Notifications"), where ("postUser", "==", currentUser.uid));
 
-            const unsubscribe = onSnapshot(singleQuery, async (response) => {
+            const unsubscribe = onSnapshot (singleQuery, async (response) => {
                 const notificationsData = [];
                 for (const docN of response.docs) {
-                    const notificationData = docN.data();
+                    const notificationData = docN.data ();
                     let userDoc;
 
                     if (notificationData.type === "comment") {
-                        userDoc = await getDoc(doc(db, "Users", notificationData.commentId));
+                        userDoc = await getDoc (doc (db, "Users", notificationData.commentId));
                     } else if (notificationData.type === "like") {
-                        userDoc = await getDoc(doc(db, "Users", notificationData.likeId));
+                        userDoc = await getDoc (doc (db, "Users", notificationData.likeId));
                     } else {
-                        userDoc = await getDoc(doc(db, "Users", notificationData.newFriendId));
+                        userDoc = await getDoc (doc (db, "Users", notificationData.newFriendId));
                     }
 
-                    const userName = userDoc.exists()
-                        ? `${userDoc.data().firstName} ${userDoc.data().lastName}`
+                    const userName = userDoc.exists ()
+                        ? `${userDoc.data ().firstName} ${userDoc.data ().lastName}`
                         : "Unknown User";
-                    const userProfilePicture = userDoc.exists()
-                        ? userDoc.data().profilePicture
+                    const userProfilePicture = userDoc.exists ()
+                        ? userDoc.data ().profilePicture
                         : "defaultProfilePictureURL"; // Default picture if not available
 
-                    notificationsData.push({
+                    notificationsData.push ({
                         id: docN.id,
                         ...notificationData,
                         userName,
                         userProfilePicture
                     });
                 }
-                setNotifcations(notificationsData); // Set notifications with user info
+                setNotifcations (notificationsData); // Set notifications with user info
             });
 
-            return () => unsubscribe(); // Clean up listener
+            return () => unsubscribe (); // Clean up listener
         }
     }, [currentUser]);
-
 
 
     return (
@@ -301,12 +301,14 @@ const NavBar = () => {
                         <>
                             <div className="flex flex-col items-center gap-4">
                                 <div className="flex gap-8 ">
+                                    <FaRocketchat className="text-xl cursor-pointer" onClick={() => navigate ('/chats')}/>
                                     {/* כפתור התראות */}
                                     <div className="relative flex flex-col items-center">
                                         <FaBell
                                             className="text-xl cursor-pointer hover:text-gray-600"
                                             onClick={handleNotificationClick}
                                         />
+
                                         {/* הצגת מספר ההתראות שלא נקראו */}
                                         {unreadCount > 0 && (
                                             <span
@@ -323,23 +325,25 @@ const NavBar = () => {
                                                              className="px-4 py-2 text-gray-700 hover:bg-gray-100">
                                                             {/* סוג ההתראה */}
                                                             {notification.type === "comment" && (<>
-                                                                <Link className="flex mb-2 items-center gap-2" to={`/post/${notification.postId}`}>
-                                                                    <img
-                                                                        className="comment-user-image"
-                                                                        src={
-                                                                            notification.userProfilePicture ||
-                                                                            "defaultProfilePictureURL"
-                                                                        } // הצגת תמונת המשתמש הנכונה מהתגובה
-                                                                        alt={`${users.userName}`}
-                                                                    />
-                                                                    {`${notification.commentName} הוסיף תגובה לפוסט שלך`}
-                                                                </Link>
+                                                                    <Link className="flex mb-2 items-center gap-2"
+                                                                          to={`/post/${notification.postId}`}>
+                                                                        <img
+                                                                            className="comment-user-image"
+                                                                            src={
+                                                                                notification.userProfilePicture ||
+                                                                                "defaultProfilePictureURL"
+                                                                            } // הצגת תמונת המשתמש הנכונה מהתגובה
+                                                                            alt={`${users.userName}`}
+                                                                        />
+                                                                        {`${notification.commentName} הוסיף תגובה לפוסט שלך`}
+                                                                    </Link>
                                                                     <hr/>
                                                                 </>
                                                             )}
                                                             {notification.type === "like" && (
                                                                 <>
-                                                                    <Link className="flex mb-2 items-center gap-2" to={`/post/${notification.postId}`}>
+                                                                    <Link className="flex mb-2 items-center gap-2"
+                                                                          to={`/post/${notification.postId}`}>
                                                                         <img
                                                                             className="comment-user-image"
                                                                             src={
@@ -354,21 +358,23 @@ const NavBar = () => {
                                                                 </>
                                                             )}
                                                             {notification.type === "new friend" && (
-                                                                  <>
-                                                                      <Link className="flex mb-2 items-center gap-2" to={`/profile/${notification.newFriendId}`}>
-                                                                          <img
-                                                                              className="comment-user-image"
-                                                                              src={
-                                                                                  notification.userProfilePicture ||
-                                                                                  "defaultProfilePictureURL"
-                                                                              } // הצגת תמונת המשתמש הנכונה מהתגובה
-                                                                              alt={`${users.userName}`}
-                                                                          />
-                                                                          {notification.newFriendName} אישר/ה את בקשת החברות
-                                                                          שלך
-                                                                      </Link>
-                                                                      <hr/>
-                                                                  </>
+                                                                <>
+                                                                    <Link className="flex mb-2 items-center gap-2"
+                                                                          to={`/profile/${notification.newFriendId}`}>
+                                                                        <img
+                                                                            className="comment-user-image"
+                                                                            src={
+                                                                                notification.userProfilePicture ||
+                                                                                "defaultProfilePictureURL"
+                                                                            } // הצגת תמונת המשתמש הנכונה מהתגובה
+                                                                            alt={`${users.userName}`}
+                                                                        />
+                                                                        {notification.newFriendName} אישר/ה את בקשת
+                                                                        החברות
+                                                                        שלך
+                                                                    </Link>
+                                                                    <hr/>
+                                                                </>
 
                                                             )}
                                                         </div>

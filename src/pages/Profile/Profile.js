@@ -17,8 +17,10 @@ import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import PostCard from "../../components/PostCard/PostCard";
 import MyPost from "../../components/MyPost/MyPost";
 import FriendButton from "../../components/FriendButton/FriendButton";
+import ChatButton from '../../components/ChatButton/ChatButton'
+import ChatPopup from "../../components/ChatPopup/ChatPopup";
 
-const Profile = () => {
+const Profile = ( ) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -30,6 +32,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
   const [friends, setFriends] = useState([]); // סטייט לחברים
   const [photos, setPhotos] = useState([]);
+  const [activeChatUser, setActiveChatUser] = useState(null);
 
   const fetchUserPosts = async () => {
     const q = query(collection(db, "Posts"), where("user.uid", "==", id));
@@ -39,8 +42,7 @@ const Profile = () => {
       ...doc.data(),
     }));
     setAllPosts(postsData);
-    // Filtrer les posts pour les photos
-    const photos = postsData.filter((post) => post.postImage); // Assurez-vous que le champ est correct
+    const photos = postsData.filter((post) => post.postImage);
     setPhotos(photos);
   };
   //user
@@ -127,6 +129,9 @@ const Profile = () => {
                   <div className="profile-info">
                     <h2 className="profile-name">
                       {user.firstName} {user.lastName}
+                      {currentUser.uid !== user.uid &&(<>
+                        <ChatButton onClick={() => setActiveChatUser(user.uid)} />
+                      </>)}
                     </h2>
                     <p className="profile-location">
                       <i className="fa fa-map-marker-alt"></i>{" "}
@@ -303,6 +308,9 @@ const Profile = () => {
                 />
               </div>
             </div>
+            {activeChatUser && (
+                <ChatPopup userId={activeChatUser} closePopup={() => setActiveChatUser(null)} />
+            )}
           </>
         )}
       </div>
