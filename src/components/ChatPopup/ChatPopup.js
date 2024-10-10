@@ -1,38 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, addDoc, orderBy, updateDoc, doc } from 'firebase/firestore';
-import { db } from '../../config/firebase'; // Firebase config import
+import { db } from '../../config/firebase';
 import { FaTimes } from 'react-icons/fa';
-import { useAuth } from '../../context/AuthContext'; // Authentication context to get current user
+import { useAuth } from '../../context/AuthContext'; 
 
 const ChatPopup = ({ conversationId, closePopup }) => {
-    const [messages, setMessages] = useState([]);  // State to store messages
-    const [newMessage, setNewMessage] = useState('');  // State to handle the input value
-    const { currentUser } = useAuth();  // Get current user from authentication context
+    const [messages, setMessages] = useState([]);  
+    const [newMessage, setNewMessage] = useState('');  
+    const { currentUser } = useAuth(); 
 
-    // Fetch messages in real-time
     useEffect(() => {
-        if (!conversationId) return;  // If no conversationId is passed, do nothing
+        if (!conversationId) return;
 
-        // Reference to the messages subcollection for the current conversation
         const messagesRef = collection(db, `Conversations/${conversationId}/messages`);
-        const q = query(messagesRef, orderBy('timestamp', 'asc')); // Order messages by timestamp
+        const q = query(messagesRef, orderBy('timestamp', 'asc')); 
 
-        // Set up real-time listener using onSnapshot
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const fetchedMessages = snapshot.docs.map(doc => doc.data());
-            setMessages(fetchedMessages); // Update local state with new messages
+            setMessages(fetchedMessages); 
         });
 
-        // Cleanup listener when component unmounts
         return () => unsubscribe();
-    }, [conversationId]);  // This effect runs when conversationId changes
+    }, [conversationId]); 
 
-    // Function to send a new message
     const sendMessage = async () => {
-        if (newMessage.trim() === '') return;  // Don't send empty messages
+        if (newMessage.trim() === '') return; 
 
         try {
-            // Add a new message document to the messages subcollection
+
             const messageRef = collection(db, `Conversations/${conversationId}/messages`);
             await addDoc(messageRef, {
                 author: currentUser.uid,
@@ -41,13 +36,11 @@ const ChatPopup = ({ conversationId, closePopup }) => {
                 type: 'text'
             });
 
-            // Update the conversation with the latest message and timestamp
             await updateDoc(doc(db, "Conversations", conversationId), {
                 lastMessage: newMessage,
                 lastMessageTimestamp: new Date(),
             });
 
-            // Clear the input after sending the message
         } catch (error) {
             console.error("Error sending message: ", error);
         }
@@ -63,7 +56,6 @@ const ChatPopup = ({ conversationId, closePopup }) => {
                 </button>
             </div>
             
-            {/* Display chat messages */}
             <div className="h-60 overflow-y-scroll mb-2">
                 {messages.length > 0 ? (
                     messages.map((msg, index) => (
@@ -81,7 +73,6 @@ const ChatPopup = ({ conversationId, closePopup }) => {
                 )}
             </div>
 
-            {/* Input field and send button */}
             <input
                 type="text"
                 value={newMessage}
