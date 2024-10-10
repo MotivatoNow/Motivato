@@ -175,7 +175,6 @@ const FriendButton = ({user}) => {
                     const querySnapshot = await getDocs (q);
                     if (!querySnapshot.empty) {
                         const request = querySnapshot.docs[0].data ();
-                        console.log (request.status)// עדכון הסטטוס בסטייט
                         setStatus (request.status);
 
                       if (request.receiverId === currentUser.uid) {
@@ -189,7 +188,6 @@ const FriendButton = ({user}) => {
                 }
                 if (!querySnapshot.empty) {
                     const request = querySnapshot.docs[0].data ();
-                    console.log (request.status)// עדכון הסטטוס בסטייט
                     setStatus (request.status);
 
                 } else {

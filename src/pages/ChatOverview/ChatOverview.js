@@ -14,7 +14,7 @@ const ChatOverview = () => {
             if (!currentUser) return;
 
             const q = query(
-                collection(db, 'conversations'),
+                collection(db, 'Conversations'),
                 where('participants', 'array-contains', currentUser.uid) // מחפש שיחות שהמשתמש הנוכחי משתתף בהן
             );
 

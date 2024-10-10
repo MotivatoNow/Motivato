@@ -7,6 +7,7 @@ import {
   query,
   where,
   getDocs,
+  addDoc,
 } from "firebase/firestore"; // הוספת getDocs לשליפת מידע מרובה
 import "./Profile.css";
 import { db } from "../../config/firebase";
@@ -111,6 +112,47 @@ const Profile = ( ) => {
       </div>
     );
   }
+  const createConversation = async (participants) => {
+    const conversationRef = await addDoc(collection(db, "Conversations"), {
+        participants:participants,
+        lastMessage: "",
+        lastMessageTimestamp: new Date(),
+        isGroup: false, // Ou true, selon tes besoins
+    });
+    
+    
+    return conversationRef.id; // Retourne l'ID de la nouvelle conversation
+  };
+  const getExistingConversation = async (participants) => {
+    const q = query(
+        collection(db, "Conversations"),
+        where("participants", "array-contains-any", participants)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+        return querySnapshot.docs[0].id; // Retourne l'ID de la première conversation trouvée
+    }
+
+    return null; // Aucune conversation trouvée
+};
+
+const handleChatButtonClick = async () => {
+  const participants = [currentUser.uid, user.uid];
+  
+  const existingConversationId = await getExistingConversation(participants);
+
+  if (existingConversationId) {
+      // Si une conversation existe déjà, utilise son ID
+      setActiveChatUser(existingConversationId);
+  } else {
+      // Sinon, crée une nouvelle conversation
+      const conversationId = await createConversation(participants);
+      setActiveChatUser(conversationId);
+  }
+};
+
 
   return (
     <>
@@ -130,7 +172,7 @@ const Profile = ( ) => {
                     <h2 className="profile-name">
                       {user.firstName} {user.lastName}
                       {currentUser.uid !== user.uid &&(<>
-                        <ChatButton onClick={() => setActiveChatUser(user.uid)} />
+                        <ChatButton onClick={() => handleChatButtonClick(user.uid)} />
                       </>)}
                     </h2>
                     <p className="profile-location">
@@ -309,7 +351,8 @@ const Profile = ( ) => {
               </div>
             </div>
             {activeChatUser && (
-                <ChatPopup userId={activeChatUser} closePopup={() => setActiveChatUser(null)} />
+              <>{activeChatUser}
+                <ChatPopup conversationId={activeChatUser} closePopup={() => setActiveChatUser(null)} /></>
             )}
           </>
         )}
