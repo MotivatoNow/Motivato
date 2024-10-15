@@ -12,6 +12,7 @@ const ChatPopup = ({ conversationId, closePopup }) => {
     useEffect(() => {
         if (!conversationId) return;
 
+
         const messagesRef = collection(db, `Conversations/${conversationId}/messages`);
         const q = query(messagesRef, orderBy('timestamp', 'asc')); 
 
@@ -21,10 +22,10 @@ const ChatPopup = ({ conversationId, closePopup }) => {
         });
 
         return () => unsubscribe();
-    }, [conversationId]); 
+    }, [conversationId]);
 
     const sendMessage = async () => {
-        if (newMessage.trim() === '') return; 
+        if (newMessage.trim() === '') return;
 
         try {
 

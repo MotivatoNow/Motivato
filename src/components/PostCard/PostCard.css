@@ -2,7 +2,8 @@
 /* Post Card */
 .post-card {
     width: 100%;
-    min-width: 600px;
+    min-width:600px;
+    max-width:600px;
     background-color: #ffffff;
     margin: 20px auto;
     padding: 15px;

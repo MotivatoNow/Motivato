@@ -2,27 +2,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  border:none;
 }
 .post-status {
-  width: 1050px;
+  min-width:600px;
+  max-width: 600px;
   height: 120px;
-  background: white;
+
+  background-color: transparent;
   margin-top: 30px;
-  border: 1px solid #b7b7b7;
-  border-radius: 7px;
   display: flex;
   justify-content: center;
   align-items: center;
+  border:none;
 }
 .open-post-modal {
   width: 80%;
   height: 50px;
   text-align: right;
   color: #212121;
-  background-color: whitesmoke;
   outline: none;
-  border: 1px solid;
-  border-radius: 30px;
+  border-radius: 5px;
   cursor: pointer;
   padding: 15px;
   font-weight: 600;

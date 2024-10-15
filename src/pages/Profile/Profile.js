@@ -126,7 +126,7 @@ const Profile = ( ) => {
   const getExistingConversation = async (participants) => {
     const q = query(
         collection(db, "Conversations"),
-        where("participants", "array-contains-any", participants)
+        where("participants", "array-contains", participants)
     );
     
     const querySnapshot = await getDocs(q);
@@ -140,7 +140,7 @@ const Profile = ( ) => {
 
 const handleChatButtonClick = async () => {
   const participants = [currentUser.uid, user.uid];
-  
+
   const existingConversationId = await getExistingConversation(participants);
 
   if (existingConversationId) {
@@ -351,7 +351,7 @@ const handleChatButtonClick = async () => {
               </div>
             </div>
             {activeChatUser && (
-              <>{activeChatUser}
+              <>
                 <ChatPopup conversationId={activeChatUser} closePopup={() => setActiveChatUser(null)} /></>
             )}
           </>
