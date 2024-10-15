@@ -13,39 +13,26 @@ import "./Profile.css";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
 import ModalEditProfileComponent from "../../components/Modal/ModalEditProfile/ModalEditProfile";
-import { getPosts, getPostsByID, postStatus } from "../../context/Firestore";
-import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import PostCard from "../../components/PostCard/PostCard";
 import MyPost from "../../components/MyPost/MyPost";
 import FriendButton from "../../components/FriendButton/FriendButton";
-import ChatButton from '../../components/ChatButton/ChatButton'
+import ChatButton from "../../components/ChatButton/ChatButton";
 import ChatPopup from "../../components/ChatPopup/ChatPopup";
 
-const Profile = ( ) => {
+const Profile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userNotFound, setUserNotFound] = useState(false); // סטטוס של משתמש שלא נמצא
+  const [userNotFound, setUserNotFound] = useState(false);
   const { currentUser } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
   const [activeTab, setActiveTab] = useState("posts");
-  const [friends, setFriends] = useState([]); // סטייט לחברים
+  const [friends, setFriends] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [activeChatUser, setActiveChatUser] = useState(null);
 
-  const fetchUserPosts = async () => {
-    const q = query(collection(db, "Posts"), where("user.uid", "==", id));
-    const querySnapshot = await getDocs(q);
-    const postsData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setAllPosts(postsData);
-    const photos = postsData.filter((post) => post.postImage);
-    setPhotos(photos);
-  };
   //user
   const loadData = async () => {
     try {
@@ -65,7 +52,24 @@ const Profile = ( ) => {
     setLoading(false);
   };
 
-  // פונקציה לטעינת החברים של המשתמש
+  //Post
+  const fetchUserPosts = async () => {
+    const q = query(collection(db, "Posts"), where("user.uid", "==", id));
+    const querySnapshot = await getDocs(q);
+    const postsData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setAllPosts(postsData);
+    const photos = postsData.filter((post) => post.postImage);
+    setPhotos(photos);
+  };
+
+  useMemo(() => {
+    fetchUserPosts();
+  }, [id]);
+
+  // Friends
   const loadFriends = async (friendIds) => {
     try {
       const friendPromises = friendIds.map((friendId) =>
@@ -83,9 +87,50 @@ const Profile = ( ) => {
     }
   };
 
-  useMemo(() => {
-    fetchUserPosts();
-  }, [id]);
+  //Chat
+  const createConversation = async (participants) => {
+    const conversationRef = await addDoc(collection(db, "Conversations"), {
+      participants: participants,
+      lastMessage: "",
+      lastMessageTimestamp: new Date(),
+      isGroup: false,
+    });
+
+    return conversationRef.id;
+  };
+
+  const getExistingConversation = async (participants) => {
+    let user1=participants[0];
+    
+    if(user1!==currentUser.uid){
+      user1=participants[1] 
+    }
+  const q = query(
+    collection(db, "Conversations"),
+    where("participants", "array-contains", user1)
+  );
+
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot);
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].id;
+    }
+
+    return null;
+  };
+
+  const handleChatButtonClick = async () => {
+    const participants = [currentUser.uid, user.uid];
+    
+    const existingConversationId = await getExistingConversation(participants);
+    
+    if (existingConversationId) {
+      setActiveChatUser(existingConversationId);
+    } else {
+      const conversationId = await createConversation(participants);
+      setActiveChatUser(conversationId);
+    }
+  };
 
   useEffect(() => {
     if (!id && currentUser) {
@@ -112,47 +157,6 @@ const Profile = ( ) => {
       </div>
     );
   }
-  const createConversation = async (participants) => {
-    const conversationRef = await addDoc(collection(db, "Conversations"), {
-        participants:participants,
-        lastMessage: "",
-        lastMessageTimestamp: new Date(),
-        isGroup: false, // Ou true, selon tes besoins
-    });
-    
-    
-    return conversationRef.id; // Retourne l'ID de la nouvelle conversation
-  };
-  const getExistingConversation = async (participants) => {
-    const q = query(
-        collection(db, "Conversations"),
-        where("participants", "array-contains", participants)
-    );
-    
-    const querySnapshot = await getDocs(q);
-    
-    if (!querySnapshot.empty) {
-        return querySnapshot.docs[0].id; // Retourne l'ID de la première conversation trouvée
-    }
-
-    return null; // Aucune conversation trouvée
-};
-
-const handleChatButtonClick = async () => {
-  const participants = [currentUser.uid, user.uid];
-
-  const existingConversationId = await getExistingConversation(participants);
-
-  if (existingConversationId) {
-      // Si une conversation existe déjà, utilise son ID
-      setActiveChatUser(existingConversationId);
-  } else {
-      // Sinon, crée une nouvelle conversation
-      const conversationId = await createConversation(participants);
-      setActiveChatUser(conversationId);
-  }
-};
-
 
   return (
     <>
@@ -171,9 +175,13 @@ const handleChatButtonClick = async () => {
                   <div className="profile-info">
                     <h2 className="profile-name">
                       {user.firstName} {user.lastName}
-                      {currentUser.uid !== user.uid &&(<>
-                        <ChatButton onClick={() => handleChatButtonClick(user.uid)} />
-                      </>)}
+                      {currentUser.uid !== user.uid && (
+                        <>
+                          <ChatButton
+                            onClick={() => handleChatButtonClick(user.uid)}
+                          />
+                        </>
+                      )}
                     </h2>
                     <p className="profile-location">
                       <i className="fa fa-map-marker-alt"></i>{" "}
@@ -324,14 +332,12 @@ const handleChatButtonClick = async () => {
                       <div className="user-photos">
                         {photos.length > 0 ? (
                           photos.map((post) => (
-                            
-                              <img
-                                key={post.id}
-                                src={post.postImage}
-                                alt={`Photo from ${user.firstName}`}
-                                className="user-photo"
-                              />
-                            
+                            <img
+                              key={post.id}
+                              src={post.postImage}
+                              alt={`Photo from ${user.firstName}`}
+                              className="user-photo"
+                            />
                           ))
                         ) : (
                           <p>No photos found.</p>
@@ -351,8 +357,12 @@ const handleChatButtonClick = async () => {
               </div>
             </div>
             {activeChatUser && (
-              <>
-                <ChatPopup conversationId={activeChatUser} closePopup={() => setActiveChatUser(null)} /></>
+              <>{activeChatUser}
+                <ChatPopup
+                  conversationId={activeChatUser}
+                  closePopup={() => setActiveChatUser(null)}
+                />
+              </>
             )}
           </>
         )}
