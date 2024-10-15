@@ -144,6 +144,12 @@ const PostCard = ({ posts }) => {
     getComments(posts.id);
   }, [posts.user.uid]);
 
+
+  const handleShare=()=>{
+    const shareLink=`${window.location.origin}/post/${posts.id}`
+    navigator.clipboard.writeText(shareLink);//copies the URL `shareLink` to the user's clipboard, paste it elsewhere.
+    alert("Link copied")
+  }
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -192,7 +198,7 @@ const PostCard = ({ posts }) => {
         >
           Comment
         </button>
-        <button className="action-btn">Share</button>
+        <button onClick={handleShare}className="action-btn">Share</button>
       </div>
 
       {showCommentBox && (

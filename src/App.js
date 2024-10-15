@@ -7,7 +7,7 @@ import LoginPage from './pages/Login/Login'; // רכיב התחברות
 import RegisterPage from './pages/Register/Register';
 import AddCategory from "./features/AddCategory/AddCategory";
 import Profile from './pages/Profile/Profile';
-import {AuthProvider, useAuth} from './context/AuthContext';
+import {AuthProvider} from './context/AuthContext';
 import React from 'react';
 import Dashboard from "./pages/Dashboard/Dashboard";
 import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
