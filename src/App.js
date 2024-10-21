@@ -38,7 +38,7 @@ function App() {
                         <Route path="/feed" element={<ProtectedRoute><Feed/></ProtectedRoute>}/>
                         <Route path="/post/:id" element={<Post/>}/>
                         <Route path="/chats" element={<ChatOverview />}/>
-                        <Route path="/mission" element={<Mission/>}/>
+                        <Route path="/missions" element={<Mission/>}/>
                     </Routes>
                 </Router>
             </AuthProvider>

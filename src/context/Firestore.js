@@ -31,11 +31,24 @@ export const getPostsByID=(userUid,setAllPosts)=>{
             setAllPosts(userPosts); // עדכון הסטייט עם הפוסטים של המשתמש
         });
 }
-export const getMissions=(setAllMissions)=>{
-    onSnapshot("Missions",(response)=>{
-        setAllMissions(response.docs.map((docs)=>{
-            return {...docs.data(),id:docs.id}
+export const getMissions = (setAllMissions) => {
+    const missionsCollectionRef = collection(db, "Missions");  // Référence à la collection "Missions"
+    
+    onSnapshot(missionsCollectionRef, (snapshot) => {
+      setAllMissions(
+        snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,  // Ajout de l'ID du document à l'objet mission
         }))
+      );
+    });
+  };
+export const missionsStatus=(db,object)=>{
+    addDoc(db,object)
+    .then((res)=>{
+        console.log("Document has been added succesfully")
     })
-
+    .catch((err)=>{
+        console.log(err)
+    })
 }

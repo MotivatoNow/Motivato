@@ -1,35 +1,36 @@
-import React, {useState, useMemo, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import MyMission from "../../components/MyMission/MyMission";
-import { getPosts } from "../../context/Firestore";
+import { getMissions } from "../../context/Firestore";
 import MissionCard from "../../components/MissionCard/MissionCard";
-import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { useAuth } from "../../context/AuthContext";
 
+const Mission = () => {
+  const { currentUser } = useAuth();
+  const [allMissions, setAllMissions] = useState([]);
 
-const Feed = () => {
+  useEffect(() => {
+    getMissions(setAllMissions);
+  }, []);
 
-  const {currentUser}=useAuth()
-  const [allPosts, setAllPosts]=useState([])
-    useMemo(()=>{
-        getPosts(setAllPosts)
-    },[])
   return (
-
     <div className="feed-page">
       <div className="my-post">
-        <MyMission/>
+        <MyMission />
       </div>
       <div className="feed-post">
-      {allPosts.map((post)=>{
-        return(
-            <div key={post.id}>
-                <MissionCard posts={post} user={currentUser}/>
+        {allMissions && allMissions.length > 0 ? (
+          allMissions.map((mission) => (
+            <div key={mission.id}>
+              <MissionCard missions={mission} user={currentUser} />
+              
             </div>
-        )
-      })}
+          ))
+        ) : (
+          <p>Aucune mission disponible pour le moment.</p>
+        )}
       </div>
     </div>
   );
 };
 
-export default Feed;
+export default Mission;
