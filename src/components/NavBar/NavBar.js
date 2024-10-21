@@ -18,6 +18,7 @@ import {
 import {signOut} from "firebase/auth";
 import {FaBell, FaUserFriends, FaBars, FaTimes, FaRocketchat} from "react-icons/fa";
 import logo from '../../assets/images/Icon.png'
+import Search from '../Search/Search'
 
 const NavBar = () => {
     const navigate = useNavigate ();
@@ -440,7 +441,7 @@ const NavBar = () => {
                                     </div>
                                 </div>
                             </div>
-
+                                        <Search />
 
                             <div className="flex gap-3 items-center">
                                 <span>שלום {`${currentUser.firstName}`}</span>

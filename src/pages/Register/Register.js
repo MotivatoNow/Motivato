@@ -73,6 +73,7 @@ const Register = () => {
                 userData.studentEducation = studentEducation;
                 // userData.isVerify = isVerify;
                 userData.location = location;
+                
             }
 
             await setDoc (doc (db, "Users", user.uid), userData);

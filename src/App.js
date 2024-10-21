@@ -15,6 +15,7 @@ import Feed from './pages/Feed/Feed';
 import ProtectedRoute from "./features/ProtectedRoute/ProtectedRoute";
 import ChatOverview  from "./pages/ChatOverview/ChatOverview"
 import Post from "./pages/Post/Post";
+import  Mission from "./pages/Mission/Mission";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
                         <Route path="/feed" element={<ProtectedRoute><Feed/></ProtectedRoute>}/>
                         <Route path="/post/:id" element={<Post/>}/>
                         <Route path="/chats" element={<ChatOverview />}/>
+                        <Route path="/mission" element={<Mission/>}/>
                     </Routes>
                 </Router>
             </AuthProvider>
