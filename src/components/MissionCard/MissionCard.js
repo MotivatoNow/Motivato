@@ -1,18 +1,66 @@
 import React, {useEffect, useState} from "react";
 import {
+    addDoc,
+    collection,
     doc,
     getDoc,
+    getDocs,
+    query,
+    where,
     
 } from "firebase/firestore";
 import {db} from "../../config/firebase";
 import {useAuth} from "../../context/AuthContext";
+import ChatPopup from "../ChatPopup/ChatPopup";
 
 const MissionCard = ({missions,user}) => {
     const {currentUser} = useAuth ();
     const [userData, setUserData] = useState (null);
     const [loading, setLoading] = useState (true);
+    const [activeChatUser, setActiveChatUser] = useState(null);
 
-
+    const createConversation = async (participants) => {
+        const conversationRef = await addDoc(collection(db, "Conversations"), {
+          participants: participants,
+          lastMessage: "",
+          lastMessageTimestamp: new Date(),
+          isGroup: false,
+        });
+    
+        return conversationRef.id;
+      };
+    
+      const getExistingConversation = async (participants) => {
+        let user1=participants[0];
+        
+        if(user1!==currentUser.uid){
+          user1=participants[1] 
+        }
+      const q = query(
+        collection(db, "Conversations"),
+        where("participants", "array-contains", user1)
+      );
+    
+        const querySnapshot = await getDocs(q);
+        console.log(querySnapshot);
+        if (!querySnapshot.empty) {
+          return querySnapshot.docs[0].id;
+        }
+    
+        return null;
+      };
+    const handleChatButtonClick = async () => {
+        const participants = [currentUser.uid, user.uid];
+        
+        const existingConversationId = await getExistingConversation(participants);
+        
+        if (existingConversationId) {
+          setActiveChatUser(existingConversationId);
+        } else {
+          const conversationId = await createConversation(participants);
+          setActiveChatUser(conversationId);
+        }
+      };
     useEffect (() => {
         if (missions && missions.user.uid) {
             const fetchUserData = async () => {
@@ -43,7 +91,7 @@ const MissionCard = ({missions,user}) => {
         return <div>User data not found</div>;
     }
 
-    return (
+    return (<>
         <div className="post-card">
             <div className="post-header">
                 <div className="user-info">
@@ -69,10 +117,21 @@ const MissionCard = ({missions,user}) => {
             </div>
 
             <hr/>
-            <button>Send a message</button>
+            <button onClick={()=>handleChatButtonClick(user.uid)}>Send a message</button>
             <button>Apply</button>
-            
+          
         </div>
+        {activeChatUser && (
+              <>
+                <ChatPopup
+                  conversationId={activeChatUser}
+                  closePopup={() => setActiveChatUser(null)}
+                />
+              </>
+            )}
+          
+        </>
+        
     );
 };
 

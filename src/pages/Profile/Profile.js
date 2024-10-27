@@ -357,7 +357,7 @@ const Profile = () => {
               </div>
             </div>
             {activeChatUser && (
-              <>{activeChatUser}
+              <>
                 <ChatPopup
                   conversationId={activeChatUser}
                   closePopup={() => setActiveChatUser(null)}
