@@ -3,12 +3,12 @@ import {missionsStatus} from "../../context/Firestore";
 import ModalMission from "../Modal/ModalMission/ModalMission";
 import {useAuth} from "../../context/AuthContext";
 import {getCurrentTimeStamp} from "../../features/useMoment/useMoment";
-import {collection, doc, getDoc} from "firebase/firestore";
+import {addDoc, collection, doc, getDoc} from "firebase/firestore";
 import {db} from "../../config/firebase";
 
-const MyPost = () => {
+const MyMission = () => {
 
-    const currentUser = useAuth ();
+    const {currentUser} = useAuth ();
     const [modalOpen, setModalOpen] = useState (false);
     const [post, setPost] = useState ("");
     const [title,setTitle]=useState("");
@@ -16,29 +16,40 @@ const MyPost = () => {
     const [type,setType]=useState("")
 
     const sendMission = async () => {
-    
         let object = {
             user: {
-                uid: currentUser?.currentUser?.uid || "No UID",
-                firstName: currentUser?.currentUser?.firstName || "Anonymous",
-                lastName: currentUser?.currentUser?.lastName || "Anonymous",
+                uid: currentUser?.uid || "No UID",
+                firstName: currentUser?.firstName || "Anonymous",
+                lastName: currentUser?.lastName || "Anonymous",
             },
             post: post,
             timeStamp: getCurrentTimeStamp("LLL"),
-            title:title,
-            place:place,
-            type:type
+            title: title,
+            place: place,
+            type: type,
         };
     
         try {
-            await missionsStatus(collection(db, "Missions"), object);
+            const missionRef= await missionsStatus(collection(db, "Missions"), object);
             setModalOpen(false);
             setPost("");
             setTitle("");
-            setPlace("")
-            setType("")
+            setPlace("");
+            setType("");
+            
+            const notification={
+                type: "new Mission",
+                user:currentUser.uid,
+                missionTitle: title,
+                missionId: missionRef.id,
+                postUser:currentUser.uid                 
+            }
+            
+            const notificationRef=await addDoc(collection(db, "Notifications"), notification)
+            .then((res)=> console.log("added notification"))
+            .catch((err)=>console.log(err))
         } catch (error) {
-            console.error("Error posting status: ", error); 
+            console.error("Error posting mission or creating notification: ", error);
         }
     };
     
@@ -67,4 +78,4 @@ const MyPost = () => {
     );
 };
 
-export default MyPost;
+export default MyMission;

@@ -63,6 +63,7 @@ const Register = () => {
             if (userType === 'Company') {
                 userData.companyName = companyName;
                 userData.companyWebsite = companyWebsite;
+                userData.userName=companyName;
             } else if (userType === 'Student') {
                 userData.firstName = firstName;
                 userData.dateOfBirth = dateOfBirth;
@@ -73,6 +74,7 @@ const Register = () => {
                 userData.studentEducation = studentEducation;
                 // userData.isVerify = isVerify;
                 userData.location = location;
+                userData.userName=firstName+" "+lastName;
                 
             }
 

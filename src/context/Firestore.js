@@ -1,54 +1,50 @@
-import {db} from "../firebase"
-import { addDoc,collection, onSnapshot } from "firebase/firestore"
+import { db } from "../firebase";
+import { addDoc, collection, onSnapshot } from "firebase/firestore";
 
-let dbRef=collection(db,"Posts")
-export const postStatus=(db,object)=>{
-    addDoc(dbRef,object)
-    .then((res)=>{
-        console.log("Document has been added succesfully")
+let dbRef = collection(db, "Posts");
+export const postStatus = (db, object) => {
+  addDoc(dbRef, object)
+    .then((res) => {
+      console.log("Document has been added succesfully");
     })
-    .catch((err)=>{
-        console.log(err)
-    })
-}
-export const getPosts=(setAllPosts)=>{
-    onSnapshot(dbRef,(response)=>{
-        setAllPosts(response.docs.map((docs)=>{
-            return {...docs.data(),id:docs.id}
-        }))
-    })
-
-}
-export const getPostsByID=(userUid,setAllPosts)=>{
-        onSnapshot(dbRef, (response) => {
-            const userPosts = response.docs
-                .map((doc) => ({
-                    ...doc.data(),
-                    id: doc.id,
-                }))
-                .filter((post) => post.user?.uid === userUid); // סינון הפוסטים לפי ה-uid של המשתמש
-
-            setAllPosts(userPosts); // עדכון הסטייט עם הפוסטים של המשתמש
-        });
-}
-export const getMissions = (setAllMissions) => {
-    const missionsCollectionRef = collection(db, "Missions");  // Référence à la collection "Missions"
-    
-    onSnapshot(missionsCollectionRef, (snapshot) => {
-      setAllMissions(
-        snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,  // Ajout de l'ID du document à l'objet mission
-        }))
-      );
+    .catch((err) => {
+      console.log(err);
     });
-  };
-export const missionsStatus=(db,object)=>{
-    addDoc(db,object)
-    .then((res)=>{
-        console.log("Document has been added succesfully")
-    })
-    .catch((err)=>{
-        console.log(err)
-    })
-}
+};
+export const getPosts = (setAllPosts) => {
+  onSnapshot(dbRef, (response) => {
+    setAllPosts(
+      response.docs.map((docs) => {
+        return { ...docs.data(), id: docs.id };
+      })
+    );
+  });
+};
+export const getPostsByID = (userUid, setAllPosts) => {
+  onSnapshot(dbRef, (response) => {
+    const userPosts = response.docs
+      .map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }))
+      .filter((post) => post.user?.uid === userUid); // סינון הפוסטים לפי ה-uid של המשתמש
+
+    setAllPosts(userPosts); // עדכון הסטייט עם הפוסטים של המשתמש
+  });
+};
+export const getMissions = (setAllMissions) => {
+  const missionsCollectionRef = collection(db, "Missions"); 
+
+  onSnapshot(missionsCollectionRef, (snapshot) => {
+    setAllMissions(
+      snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id, 
+      }))
+    );
+  });
+};
+export const missionsStatus = (db, object) => {
+  const docRef = addDoc(db, object);
+  return docRef;
+};

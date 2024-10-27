@@ -1,36 +1,26 @@
-import React, { useState, useEffect } from "react";
-import MyMission from "../../components/MyMission/MyMission";
-import { getMissions } from "../../context/Firestore";
+import React, {useMemo, useState} from "react";
 import MissionCard from "../../components/MissionCard/MissionCard";
-import { useAuth } from "../../context/AuthContext";
+import {useParams} from "react-router-dom";
+import {getMissions} from "../../context/Firestore";
 
-const Mission = () => {
-  const { currentUser } = useAuth();
-  const [allMissions, setAllMissions] = useState([]);
+const Post = () => {
+    const { id } = useParams();
+    const [allMissions, setAllMissions] = useState([])
+    useMemo(() => {
+        getMissions(setAllMissions);
+    }, []);
 
-  useEffect(() => {
-    getMissions(setAllMissions);
-  }, []);
+    const filteredMission = allMissions.find((mission) => mission.id === id);
 
-  return (
-    <div className="feed-page">
-      <div className="my-post">
-        <MyMission />
-      </div>
-      <div className="feed-post">
-        {allMissions && allMissions.length > 0 ? (
-          allMissions.map((mission) => (
-            <div key={mission.id}>
-              <MissionCard missions={mission} user={currentUser} />
-              
-            </div>
-          ))
-        ) : (
-          <p>Aucune mission disponible pour le moment.</p>
-        )}
-      </div>
-    </div>
-  );
+    return (
+        <>
+            {filteredMission ? (
+                <MissionCard missions={filteredMission} />
+            ) : (
+                <p>Mission not found</p>
+            )}
+        </>
+    );
 };
 
-export default Mission;
+export default Post;

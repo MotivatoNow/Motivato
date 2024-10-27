@@ -18,34 +18,35 @@ const MyPost = () => {
     const [postImage, setPostImage] = useState(null)
 
     const sendPost = async () => {
-        let imageURL = ''; // Variable pour stocker l'URL de l'image
+        let imageURL = ''; 
         if (postImage) {
             try {
-                imageURL = await uploadPostImage(postImage); // Téléchargez l'image et obtenez l'URL
+                imageURL = await uploadPostImage(postImage); 
             } catch (error) {
                 console.error("Error uploading image: ", error);
-                return; // Arrêtez l'exécution si une erreur se produit
+                return; 
             }
         }
-    
+    console.log(currentUser.currentUser.userName)
         let object = {
             user: {
                 uid: currentUser?.currentUser?.uid || "No UID",
+                username:currentUser?.currentUser?.userName || "Anonymouns",
                 firstName: currentUser?.currentUser?.firstName || "Anonymous",
                 lastName: currentUser?.currentUser?.lastName || "Anonymous",
             },
             post: post,
             timeStamp: getCurrentTimeStamp("LLL"),
-            postImage: imageURL, // Utilisez l'URL de l'image ici
+            postImage: imageURL,
         };
-    
+
         try {
-            await postStatus(collection(db, "Posts"), object); // Enregistrez l'objet dans Firestore
+            await postStatus(collection(db, "Posts"), object);
             setModalOpen(false);
             setPost("");
             setPostImage(null);
         } catch (error) {
-            console.error("Error posting status: ", error); // Gérer les erreurs lors de l'ajout à Firestore
+            console.error("Error posting status: ", error);
         }
     };
     
