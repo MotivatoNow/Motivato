@@ -1,74 +1,128 @@
 // src/pages/AdminDashboard/AdminDashboard.js
-import React, { useEffect, useState } from 'react';
-import { db } from '../../config/firebase';
-import { collection, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import React, { useEffect, useState } from "react";
+import { db } from "../../config/firebase";
+import {
+  collection,
+  getDocs,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import AddCategory from "../../features/AddCategory/AddCategory";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-    const [students, setStudents] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchStudents = async () => {
-            const querySnapshot = await getDocs(collection(db, 'Users'));
-            const studentsList = querySnapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() }))
-                .filter(user => user.userType === 'Student' && !user.isVerified);
-            setStudents(studentsList);
-            setLoading(false);
-        };
-
-        fetchStudents();
-    }, []);
-
-    const handleApprove = async (id) => {
-        const userDoc = doc(db, 'Users', id);
-        await updateDoc(userDoc, { isVerified: true });
-        setStudents(students.filter(student => student.id !== id));
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const querySnapshot = await getDocs(collection(db, "Users"));
+      const usersList = querySnapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
+        .filter((user) => !user.isVerified);
+      setUsers(usersList);
+      setLoading(false);
     };
 
-    const handleReject = async (id) => {
-        const userDoc = doc(db, 'Users', id);
-        await deleteDoc(userDoc);
-        setStudents(students.filter(student => student.id !== id));
-    };
+    fetchUsers();
+  }, []);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+  const handleApprove = async (id) => {
+    const userDoc = doc(db, "Users", id);
+    await updateDoc(userDoc, { isVerified: true });
+    setUsers(users.filter((user) => user.id !== id));
+  };
 
-    return (
-        <div>
-            <h1>Admin Dashboard</h1>
-            <table>
+  const handleReject = async (id) => {
+    const userDoc = doc(db, "Users", id);
+    await deleteDoc(userDoc);
+    setUsers(users.filter((user) => user.id !== id));
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <h1>Admin Dashboard</h1>
+      
+      {users.map((user) => (
+        <>
+          {user.userType === "Student" ? (
+            <>
+              <h1>Student:</h1>
+              <table>
                 <thead>
-                <tr>
+                  <tr>
                     <th>Image</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>College</th>
                     <th>Actions</th>
-                </tr>
+                  </tr>
                 </thead>
                 <tbody>
-                {students.map(student => (
-                    <tr key={student.id}>
-                        <td><img src={student.studentCard} alt="Student Card" style={{ width: '100px', height: '100px' }} /></td>
-                        <td>{student.firstName} {student.lastName}</td>
-                        <td>{student.email}</td>
-                        <td>{student.studentCollege}</td>
-                        <td>
-                            <button onClick={() => handleApprove(student.id)}>Approve</button>
-                            <button onClick={() => handleReject(student.id)}>Reject</button>
-                        </td>
-                    </tr>
-                ))}
+                  <td>
+                    <img
+                      src={user.studentCard}
+                      alt="Student Card"
+                      style={{ width: "100px", height: "100px" }}
+                    />
+                  </td>
+                  <td>
+                    {user.firstName} {user.lastName}
+                  </td>
+                  <td>{user.email}</td>
+                  <td>{user.studentCollege}</td>
+                  <td>
+                    <button onClick={() => handleApprove(user.id)}>
+                      Approve
+                    </button>
+                    <button onClick={() => handleReject(user.id)}>
+                      Reject
+                    </button>
+                  </td>
                 </tbody>
-            </table>
-            <AddCategory/>
-        </div>
+              </table>
+            </>
+          ) : (
+            <>
+              <h1>Company:</h1>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Company Name</th>
+                    <th>WebSite</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <td>{user.companyName}</td>
+                  <td>
+                    <Link href={user.companyWebsite} /> {user.companyWebsite}
+                  </td>
+                  <td>{user.email}</td>
+                  <td>
+                    <button onClick={() => handleApprove(user.id)}>
+                      Approve
+                    </button>
+                    <button onClick={() => handleReject(user.id)}>
+                      Reject
+                    </button>
+                  </td>
+                </tbody>
+              </table>
+            </>
+          )}
+        </>
+      ))}
 
-    );
+      <AddCategory />
+    </div>
+  );
 };
 
 export default Dashboard;

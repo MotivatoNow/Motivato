@@ -536,7 +536,7 @@ const NavBar = () => {
               <Search />
 
               <div className="flex gap-3 items-center">
-                <span>שלום {`${currentUser.firstName}`}</span>
+                <span>שלום {`${currentUser.userName}`}</span>
                 <span className="bg-[#4FE0B6] text-[#292B48] p-3 rounded-lg hover:bg-[#15CDCA] duration-500">
                   <Link to={`/profile/${currentUser.uid}`}>לפרופיל</Link>
                 </span>

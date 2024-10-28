@@ -86,11 +86,10 @@ const PostCard = ({posts}) => {
             currentUser?.uid
         );
         if (posts.user.uid !== currentUser.uid) {
-            const commentName = `${currentUser.firstName} ${currentUser.lastName}`;
             await addCommentNotification (
                 posts.id,
                 currentUser.uid,
-                commentName,
+                currentUser.userName,
                 posts.user.uid
             );
         }
@@ -166,8 +165,7 @@ const PostCard = ({posts}) => {
                     />
                     <div className="user-details">
                         <h3 className="user-name">
-                            {userData.firstName ? userData.firstName : "Unknown User"}{" "}
-                            {userData.lastName ? userData.lastName : "Unknown User"}
+                            {userData.userName}
                         </h3>
                         <p className="post-timestamp">{posts.timeStamp}</p>
                     </div>
