@@ -16,11 +16,12 @@ const Feed = () => {
     },[])
   return (
 
-    <div className="feed-page">
-      <div className="my-post">
+    <div className="">
+     
+      <div className="">
         <MyPost/>
       </div>
-      <div className="feed-post">
+      <div className="">
       {allPosts.map((post)=>{
         return(
             <div key={post.id}>

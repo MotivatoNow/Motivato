@@ -16,8 +16,16 @@ const Search = () => {
             setSearchResults([]); 
             return; 
         } 
-
+    
         try { 
+            const lowerCaseSearchTerm = searchTerm.toLowerCase(); // המרת המונח לאותיות קטנות
+    
+            const userNameQuery = query( 
+                collection(db, "Users"), 
+                where("userNameLower", ">=", lowerCaseSearchTerm),  
+                where("userNameLower", "<=", lowerCaseSearchTerm + "\uf8ff") 
+            ); 
+
             const firstNameQuery = query( 
                 collection(db, "Users"), 
                 where("firstName", ">=", searchTerm),  
@@ -41,16 +49,24 @@ const Search = () => {
                 results.push(doc.data()); 
             }); 
 
+    
+            const userNameSnapshot = await getDocs(userNameQuery); 
+    
+            
+            userNameSnapshot.forEach((doc) => { 
+                results.push(doc.data()); 
+            }); 
+              
+    
             const uniqueResults = Array.from(new Set(results.map((user) => user.uid))) 
                 .map(uid => results.find(user => user.uid === uid)); 
-
+    
             setSearchResults(uniqueResults.slice(0, 7)); // Limit to 7 results
-
+    
         } catch (error) { 
             console.error("Error fetching search results:", error); 
         } 
-    }; 
-
+    };
     const saveRecentSearch = (user) => {
         setRecentSearches((prev) => {
             const updatedRecents = [user, ...prev.filter(item => item.uid !== user.uid)];
@@ -117,7 +133,7 @@ const Search = () => {
                                     onClick={() => handleUserClick(search.uid, search)} // Navigate to user profile
                                 >
                                     <FaSearch className="text-gray-400 mr-3" size={18}/>
-                                    <p className="text-gray-700 text-lg">{search.firstName} {search.lastName}</p>
+                                    <p className="text-gray-700 text-lg">{search.userName}</p>
                                 </div>
                             ))}
                         </div>
@@ -132,12 +148,12 @@ const Search = () => {
                                     > 
                                         <img src={user.profilePicture} alt={user.firstName} className="user-profile-picture w-14 h-14 rounded-full mr-4" /> 
                                         <div className="user-info"> 
-                                            <p className="font-medium text-gray-700 text-lg">{user.firstName} {user.lastName}</p> 
+                                            <p className="font-medium text-gray-700 text-lg">{user.userName}</p> 
                                         </div> 
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-center text-gray-500 text-lg">No results found</p>
+                                <p className="text-center text-gray-500 text-lg">לא נמצאו משתמשים</p>
                             )}
                         </>
                     )}

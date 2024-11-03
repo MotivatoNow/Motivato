@@ -12,7 +12,7 @@ import { storage } from "../../firebase";
 
 const MyPost = () => {
 
-    const currentUser = useAuth ();
+    const {currentUser} = useAuth ();
     const [modalOpen, setModalOpen] = useState (false);
     const [post, setPost] = useState ("");
     const [postImage, setPostImage] = useState(null)
@@ -59,9 +59,10 @@ const MyPost = () => {
     return (
         <div className="post-status-main">
             <div className="post-status">
+            <img src={currentUser.profilePicture} className="object-fill w-16 h-16 rounded-full"/>
                 <button className="open-post-modal" onClick={() => setModalOpen (true)}>
                     {" "}
-                    Start a Post
+                    כתיבת פוסט חדש
                 </button>
             </div>
             <ModalComponent
