@@ -237,7 +237,14 @@ const Profile = () => {
                     ) : (
                       <div className="header-title">
                         <h2>
-                          שלום {currentUser.firstName} {currentUser.lastName}
+                           שלום,
+                        {
+                          currentUser.userType === 'Student' ? (
+                            <>
+                              {currentUser.firstName} {currentUser.lastName} 
+                             </>
+                             ):(<> {currentUser.companyName} </>)
+                        }
                         </h2>
                       </div>
                     )}

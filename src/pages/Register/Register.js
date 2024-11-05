@@ -68,6 +68,7 @@ const Register = () => {
         userData.companyName = companyName;
         userData.companyWebsite = companyWebsite;
         userData.userName = companyName;
+        userData.userNameLower = ((userData.companyName || '')).toLowerCase();
       } else if (userType === "Student") {
         userData.firstName = firstName;
         userData.lastName = lastName;
@@ -78,7 +79,8 @@ const Register = () => {
         userData.studentEducation = studentEducation;
         // userData.isVerify = isVerify;
         userData.location = location;
-        userData.userName = firstName + " " + lastName;
+        userData.userName =(firstName + ' ' + lastName);
+        userData.userNameLower = ((userData.firstName || '') + ' ' + (userData.lastName || '')).toLowerCase();
       }
 
       await setDoc(doc(db, "Users", user.uid), userData);

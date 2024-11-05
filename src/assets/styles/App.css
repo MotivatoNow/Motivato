@@ -15,8 +15,4 @@ body{
   overflow-x:hidden;
 }
 
-.sections{
-  width:100%;
-  min-height:100vh;
-  padding:var(--section-padding);
-}
+  

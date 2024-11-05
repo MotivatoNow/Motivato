@@ -1,21 +1,14 @@
-.post-status-main {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border:none;
-}
 .post-status {
   min-width:600px;
   max-width: 600px;
   height: 120px;
-
-  background-color: transparent;
+  background-color: #fff;
   margin-top: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border:none;
-}
+  border:1px solid #b7b7b7;
+} 
 .open-post-modal {
   width: 80%;
   height: 50px;
@@ -24,10 +17,12 @@
   outline: none;
   border-radius: 5px;
   cursor: pointer;
+  background:#f8f8f8;
   padding: 15px;
   font-weight: 600;
   font-size: 14px;
+  transition: 0.2s;
 }
 .open-post-modal:hover {
-  background-color: #dcdbdb;
+  background:#ebebeb;
 }

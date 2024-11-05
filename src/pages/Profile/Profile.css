@@ -263,11 +263,6 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.post-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
 .post-card h4 {
   font-size: 1.2rem;
   font-weight: 600;
