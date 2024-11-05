@@ -117,7 +117,7 @@ const Search = () => {
                                     onClick={() => handleUserClick(search.uid, search)} // Navigate to user profile
                                 >
                                     <FaSearch className="text-gray-400 mr-3" size={18}/>
-                                    <p className="text-gray-700 text-lg">{search.firstName} {search.lastName}</p>
+                                    <p className="text-gray-700 text-lg">{search.userName}</p>
                                 </div>
                             ))}
                         </div>
