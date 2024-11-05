@@ -7,8 +7,8 @@ import { useNavigate } from 'react-router-dom';
 const Search = () => { 
     const [searchTerm, setSearchTerm] = useState(''); 
     const [searchResults, setSearchResults] = useState([]); 
-    const [recentSearches, setRecentSearches] = useState([]); 
-    const [inputFocused, setInputFocused] = useState(false); 
+    const [recentSearches, setRecentSearches] = useState([]);
+    const [inputFocused, setInputFocused] = useState(false);
     const navigate = useNavigate(); 
 
     const handleSearch = async () => { 
