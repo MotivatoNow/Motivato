@@ -21,9 +21,6 @@ const FriendButton = ({user}) => {
     const [status, setStatus] = useState (null);
     const [isReceiver, setIsReceiver] = useState(false);
 
-
-
-
   // Accept friend request
     const handleAccept = async () => {
         try {
@@ -97,10 +94,10 @@ const FriendButton = ({user}) => {
 
     const addFriend = async () => {
         try {
+            console.log(1)
             await addDoc (collection (db, 'friendRequests'), {
                 senderId: currentUser.uid, // מזהה המשתמש השולח
-                senderFirstName: currentUser.firstName, // שם פרטי של השולח
-                senderLastName: currentUser.lastName, // שם משפחה של השולח
+                senderuserName: currentUser.userName, // שם פרטי של השולח
                 senderPicture: currentUser.profilePicture,
                 receiverId: user.uid, // מזהה המשתמש המקבל
                 status: 'pending', // סטטוס ראשוני של הבקשה

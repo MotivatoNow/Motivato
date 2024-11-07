@@ -86,6 +86,7 @@ const NavBar = () => {
           id: doc.id,
           ...doc.data(),
         }));
+        console.log(requests)
         setFriendRequests(requests);
       });
 
@@ -153,9 +154,9 @@ const NavBar = () => {
   };
   const newFriendNotification = async (newFriendId, acceptedUser) => {
     const notification = {
-      postUser: newFriendId, //natan
-      newFriendId: acceptedUser.uid, //elianor.id
-      newFriendName: `${acceptedUser.firstName} ${acceptedUser.lastName}`, //elianor.fullName
+      postUser: newFriendId, 
+      newFriendId: acceptedUser.uid, 
+      newFriendName: `${acceptedUser.userName}`, //elianor.fullName
       type: "new friend",
     };
     const notificationsRef = addDoc(
@@ -501,8 +502,7 @@ const NavBar = () => {
                                   src={request.senderPicture}
                                   alt={request.senderFirstName}
                                 />
-                                {request.senderFirstName}{" "}
-                                {request.senderLastName} שלח לך בקשת חברות
+                                {request.senderuserName} שלח לך בקשת חברות
                               </p>
                               <div className="flex justify-end gap-2 mt-2">
                                 <button

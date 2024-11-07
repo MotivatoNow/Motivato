@@ -19,6 +19,7 @@ const MyMission = () => {
         let object = {
             user: {
                 uid: currentUser?.uid || "No UID",
+                userName:currentUser?.userName||"Anonymous",
                 firstName: currentUser?.firstName || "Anonymous",
                 lastName: currentUser?.lastName || "Anonymous",
             },

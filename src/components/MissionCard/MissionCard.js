@@ -102,8 +102,7 @@ const MissionCard = ({missions,user}) => {
                     />
                     <div className="user-details">
                         <h3 className="user-name">
-                            {userData.firstName ? userData.firstName : "Unknown User"}{" "}
-                            {userData.lastName ? userData.lastName : "Unknown User"}
+                            {userData.userName ? userData.userName : "Unknown User"}
                         </h3>
                         <p className="post-timestamp">{missions.timeStamp}</p>
                     </div>
