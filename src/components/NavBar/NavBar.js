@@ -225,7 +225,6 @@ const NavBar = () => {
     if (currentUser) {
       const singleQuery = query(
         collection(db, "Notifications"),
-        where("postUser", "==", currentUser.uid)
       );
 
       const unsubscribe = onSnapshot(singleQuery, async (response) => {
@@ -234,11 +233,11 @@ const NavBar = () => {
           const notificationData = docN.data();
           let userDoc;
 
-          if (notificationData.type === "comment") {
+          if (notificationData.type === "comment" &&notificationData.postUser===currentUser.uid) {
             userDoc = await getDoc(
               doc(db, "Users", notificationData.commentId)
             );
-          } else if (notificationData.type === "like") {
+          } else if (notificationData.type === "like"&&notificationData.postUser===currentUser.uid) {
             userDoc = await getDoc(doc(db, "Users", notificationData.likeId));
           } else if (notificationData.type === "new friend") {
             userDoc = await getDoc(
@@ -458,7 +457,7 @@ const NavBar = () => {
                                       } // הצגת תמונת המשתמש הנכונה מהתגובה
                                       alt={`${users.userName}`}
                                     />
-                                    {notification.userName} הוסף משימה:{notification.missionTitle}
+                                    {notification.postUserName} הוסף משימה:{notification.missionTitle}
                                   </Link>
                                   <hr />
                                 </>

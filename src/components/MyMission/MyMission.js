@@ -43,7 +43,8 @@ const MyMission = () => {
                 user:currentUser.uid,
                 missionTitle: title,
                 missionId: missionRef.id,
-                postUser:currentUser.uid                 
+                postUser:currentUser.uid ,
+                postUserName:currentUser.userName                
             }
             
             const notificationRef=await addDoc(collection(db, "Notifications"), notification)

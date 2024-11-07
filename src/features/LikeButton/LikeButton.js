@@ -64,7 +64,7 @@ const LikeButton = ({posts}) => {
 
             await setDoc (docRef, {likeCount: newLikedCount, likedUsers}, {merge: true});
             if (liked && posts.user.uid !== currentUser.uid) {
-                const likeName = `${currentUser.firstName} ${currentUser.lastName}`
+                const likeName = `${currentUser.userName} `
                 likeNotifications (posts.id, currentUser.uid, likeName, posts.user.uid)
             }
 
