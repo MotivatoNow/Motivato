@@ -39,7 +39,7 @@ const ModalLikes = ({modalOpen, setModalOpen, postsId}) => {
             >
                 <div>
                     {users.map (user => (
-                        <div key={user.id}>
+                        <div key={user.uid}>
                             <Link to={`/profile/${user.uid}`}>
                                 <p>
                                     <img className="likeduser_picture" src={user.profilePicture}
