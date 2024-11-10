@@ -43,8 +43,8 @@ const ModalLikes = ({modalOpen, setModalOpen, postsId}) => {
                             <Link to={`/profile/${user.uid}`}>
                                 <p>
                                     <img className="likeduser_picture" src={user.profilePicture}
-                                         alt={`${user.firstName} ${user.lastName}`}/>
-                                    <span>{user.firstName} {user.lastName}</span>
+                                         alt={`${user.userName}`}/>
+                                    <span>{user.userName}</span>
                                 </p>
                             </Link>
                         </div>

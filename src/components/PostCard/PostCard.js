@@ -1,16 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
-import "./PostCard.css";
 import {
   addDoc,
-  arrayUnion,
   collection,
   doc,
   getDoc,
   onSnapshot,
   query,
-  updateDoc,
   where,
 } from "firebase/firestore";
+import { FaComment } from "react-icons/fa";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
 import LikeButton from "../../features/LikeButton/LikeButton";
@@ -48,13 +46,13 @@ const PostCard = ({ posts }) => {
             : "Unknown User";
           const userProfilePicture = userDoc.exists()
             ? userDoc.data().profilePicture
-            : "defaultProfilePictureURL"; // תמונה ברירת מחדל אם אין תמונה
+            : "defaultProfilePictureURL";
 
           commentsData.push({
             id: docC.id,
             ...commentData,
             userName,
-            userProfilePicture, // שמירת תמונת הפרופיל לתגובה
+            userProfilePicture,
           });
         }
         setComments(commentsData);
@@ -87,44 +85,13 @@ const PostCard = ({ posts }) => {
       currentUser?.uid,
       currentUser?.userName
     );
-    if (posts.user.uid !== currentUser.uid) {
-      await addCommentNotification(
-        posts.id,
-        currentUser.uid,
-        currentUser.userName,
-        posts.user.uid
-      );
-    }
     setComment("");
   };
 
-  const addCommentNotification = async (
-    postId,
-    commentId,
-    commentName,
-    postOwnerId
-  ) => {
-    const notification = {
-      postId: postId,
-      commentId: commentId,
-      type: "comment",
-      postUser: postOwnerId,
-      commentName: commentName,
-    };
-    const notificationRef = addDoc(
-      collection(db, "Notifications"),
-      notification
-    )
-      .then((res) => {
-        console.log("Document has been added succesfully");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
   useMemo(() => {
     getComments(posts.id);
   }, [posts.id]);
+
   useEffect(() => {
     if (posts && posts.user.uid) {
       const fetchUserData = async () => {
@@ -155,89 +122,91 @@ const PostCard = ({ posts }) => {
   }
 
   return (
-    <div className="post-card">
-      <div className="post-header">
-        <div className="user-info">
-          <img
-            src={userData.profilePicture || "defaultProfilePictureURL"} // Image de profil
-            alt="Profile"
-            className="user-profile-image"
-          />
-          <div className="user-details">
-            <h3 className="user-name">{userData.userName}</h3>
-            <p className="post-timestamp">{posts.timeStamp}</p>
-          </div>
+    <div className="bg-[#1F272F] rounded-lg p-6 mb-6 max-w-2xl mx-auto mt-3">
+      <div className="flex items-center mb-4">
+       <Link to={`/profile/${userData.uid}`}>
+       <img
+          src={userData.profilePicture || "defaultProfilePictureURL"}
+          alt="Profile"
+          className="w-12 h-12 rounded-full object-cover"
+        /></Link>
+        <div className="mr-4">
+          <Link to={`/profile/${userData.uid}`}>
+          <h3 className="text-lg font-semibold text-gray-200">{userData.userName}</h3></Link>
+          <p className="text-sm text-gray-200">{posts.timeStamp}</p>
         </div>
       </div>
 
-      <div className="post-content">
-        <p className="status">{posts.post}</p> {/* Texte de la publication */}
+      <div className="mb-4">
+        <p className="text-gray-200">{posts.post}</p>
         {posts.postImage && (
-          <>
-            <hr className="my-3" />
+          <div className="mt-4">
             <img
-              src={posts.postImage} // URL de l'image
+              src={posts.postImage}
               alt="Post content"
-              className="bg-contain h-96 w-full " // Assure-toi de créer une classe CSS pour le style
+              className="w-full max-h-96 object-cover rounded-lg"
             />
-          </>
+          </div>
         )}
       </div>
 
-      <hr />
-
-      <div className="post-actions">
+      <div className="flex items-center justify-between border-t border-gray-200 pt-4">
         <LikeButton posts={posts} />
         <button
-          className="action-btn"
+          className="flex items-center space-x-2 text-blue-500 hover:text-blue-600"
           onClick={() => setShowCommentBox(!showCommentBox)}
         >
-          Comment
+          <FaComment className="ml-1" />
+          <span className="text-gray-300">תגובה</span>
         </button>
         <ShareButton posts={posts} />
       </div>
 
       {showCommentBox && (
-        <>
-          <input
-            placeholder="Ajouter un commentaire"
-            className="comment-input"
-            onChange={getComment}
-            name={comment}
-            value={comment}
-          />
-          <button className="add-comment-btn" onClick={addComment}>
-            Ajouter un commentaire
-          </button>
-          {comments.length > 0 &&
-            comments.map((comment) => (
-              <div className="comment" key={comment.id}>
-                <div className="comment-header">
-                  <Link
-                    to={`/profile/${comment.userId}`}
-                    className="comment-user"
-                  >
-                    <img
-                      className="comment-user-image"
-                      src={
-                        comment.userProfilePicture || "defaultProfilePictureURL"
-                      }
-                      alt={`${comment.userName}`}
-                    />
-                    <span className="comment-user-name">
-                      {comment.userName}
-                    </span>
-                  </Link>
-                  <p className="comment-timestamp">{comment.timeStamp}</p>
-                </div>
-                <div className="comment-body">
-                  <p className="comment-text">{comment.comment}</p>
-                </div>
-                <hr className="comment-divider" />
+  <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
+    <div className="flex items-center space-x-2 mb-3">
+      <input
+        placeholder="הוסף תגובה"
+        className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        onChange={getComment}
+        name={comment}
+        value={comment}
+      />
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+        onClick={addComment}
+      >
+        הוסף תגובה
+      </button>
+    </div>
+
+    {comments.length > 0 && (
+      <div className="space-y-4">
+        {comments.map((comment) => (
+          <div className="bg-white p-3 rounded-lg  flex space-x-3" key={comment.id}>
+            <Link to={`/profile/${comment.userId}`} className="flex-shrink-0">
+              <img
+                className="w-10 h-10 rounded-full object-cover"
+                src={comment.userProfilePicture || "defaultProfilePictureURL"}
+                alt={`${comment.commentUserName}`}
+              />
+            </Link>
+            <div className="flex-grow">
+              <div className="flex items-center justify-between">
+                <Link to={`/profile/${comment.userId}`} className="text-sm font-semibold text-gray-800 hover:underline">
+                  {comment.commentUserName}
+                </Link>
+                <p className="text-xs text-gray-500">{comment.timeStamp}</p>
               </div>
-            ))}
-        </>
-      )}
+              <p className="mt-1 text-gray-700">{comment.comment}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
     </div>
   );
 };
