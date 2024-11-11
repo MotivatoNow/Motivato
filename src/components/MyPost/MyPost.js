@@ -59,7 +59,7 @@ const MyPost = () => {
     return url; // Retournez l'URL de l'image
   };
   return (
-    <div className="bg-[#1F272F] shadow-md rounded-lg p-4 mb-6 max-w-2xl mx-auto mt-5">
+    <div className="bg-white shadow-sm rounded-lg p-4 mb-6 max-w-2xl mx-auto mt-5">
       <div className="flex items-center space-x-4">
         <img
           src={currentUser.profilePicture || "defaultProfilePictureURL"}
@@ -67,7 +67,7 @@ const MyPost = () => {
           className="w-12 h-12 rounded-full object-cover ml-3"
         />
         <button
-          className="flex-grow bg-[#2C343D] hover:bg-[#2d353d] text-gray-200 py-2 px-4 rounded-lg text-right"
+          className="flex-grow bg-gray-100 hover:bg-gray-200 transition duration-100 text-gray-800 py-4 px-4 rounded-lg text-right"
           onClick={() => setModalOpen(true)}
         >
           כתיבת פוסט חדש

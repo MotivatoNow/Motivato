@@ -99,13 +99,13 @@ const LikeButton = ({ posts }) => {
   return (
     <>
       <div>
-        <div className="text-gray-200">
+        <div className="text-[#3E54D3]">
           {likedCount}
           <i
             className="open_post-likes fa-regular fa-thumbs-up"
             onClick={() => setModalOpen(true)}
           >
-            <span className="text-gray-200 mr-2">אהבו את הפוסט הזה</span>
+            <span className="text-gray-800 mr-2">אהבו את הפוסט הזה</span>
           </i>
         </div>
         <ModalLikes
@@ -120,7 +120,7 @@ const LikeButton = ({ posts }) => {
           onClick={handleLike}
         >
           <FaThumbsUp className="text-blue-500 ml-1" />
-          <span className="text-gray-200">Unlike</span>
+          <span className="text-gray-800">Unlike</span>
         </button>
       ) : (
         <button
@@ -128,7 +128,7 @@ const LikeButton = ({ posts }) => {
           onClick={handleLike}
         >
           <FaRegThumbsUp className="text-gray-500 ml-1" />
-          <span className="text-gray-300">Like</span>
+          <span className="text-gray-800">Like</span>
         </button>
       )}
     </>

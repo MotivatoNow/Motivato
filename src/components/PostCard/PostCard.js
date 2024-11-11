@@ -122,7 +122,7 @@ const PostCard = ({ posts }) => {
   }
 
   return (
-    <div className="bg-[#1F272F] rounded-lg p-6 mb-6 max-w-2xl mx-auto mt-3">
+    <div className="bg-white shadow-sm rounded-lg p-6 mb-6 max-w-2xl mx-auto mt-3">
       <div className="flex items-center mb-4">
        <Link to={`/profile/${userData.uid}`}>
        <img
@@ -132,13 +132,13 @@ const PostCard = ({ posts }) => {
         /></Link>
         <div className="mr-4">
           <Link to={`/profile/${userData.uid}`}>
-          <h3 className="text-lg font-semibold text-gray-200">{userData.userName}</h3></Link>
-          <p className="text-sm text-gray-200">{posts.timeStamp}</p>
+          <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-500 hover:underline">{userData.userName}</h3></Link>
+          <p className="text-sm text-gray-600">{posts.timeStamp}</p>
         </div>
       </div>
 
       <div className="mb-4">
-        <p className="text-gray-200">{posts.post}</p>
+        <p className="text-gray-800">{posts.post}</p>
         {posts.postImage && (
           <div className="mt-4">
             <img
@@ -149,15 +149,16 @@ const PostCard = ({ posts }) => {
           </div>
         )}
       </div>
+      <hr className="text-white"/>
 
       <div className="flex items-center justify-between border-t border-gray-200 pt-4">
         <LikeButton posts={posts} />
         <button
-          className="flex items-center space-x-2 text-blue-500 hover:text-blue-600"
+          className="flex items-center space-x-2 text-[#3E54D3] hover:text-blue-600"
           onClick={() => setShowCommentBox(!showCommentBox)}
         >
           <FaComment className="ml-1" />
-          <span className="text-gray-300">תגובה</span>
+          <span className="text-gray-800">תגובה</span>
         </button>
         <ShareButton posts={posts} />
       </div>
@@ -167,13 +168,13 @@ const PostCard = ({ posts }) => {
     <div className="flex items-center space-x-2 mb-3">
       <input
         placeholder="הוסף תגובה"
-        className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:[#3E54D3]"
         onChange={getComment}
         name={comment}
         value={comment}
       />
       <button
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+        className="bg-[#3E54D3] text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
         onClick={addComment}
       >
         הוסף תגובה

@@ -10,11 +10,11 @@ const ShareButton = ({ posts }) => {
   return (
     <>
       <button
-        className="flex items-center space-x-2 text-blue-500 hover:text-blue-600"
+        className="flex items-center space-x-2 text-[#3E54D3]"
         onClick={() => setModalOpen(true)}
       >
         <CiShare1 className="ml-1" />
-        <span className='text-gray-300'>שיתוף</span>
+        <span className='text-gray-800'>שיתוף</span>
       </button>
 
       <ModalShare

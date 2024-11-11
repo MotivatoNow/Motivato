@@ -65,9 +65,9 @@ const NavBar = () => {
   }, [currentUser]);
 
   return (
-    <header className="bg-white shadow-md">
-      <nav className="flex justify-between items-center px-5 py-2">
-        <div className="flex items-center gap-2">
+    <header className="bg-white shadow-sm">
+      <nav className="flex justify-evenly items-center px-5 py-2">
+        <div className="flex w-[33.33%] items-center gap-1 ">
           <img
             className="w-32 cursor-pointer md:flex hidden"
             src={logo}
@@ -91,26 +91,26 @@ const NavBar = () => {
         <div
           className={`${
             menuOpen ? "left-0" : "-left-full"
-          } md:left-0 fixed md:static top-0 md:flex md:flex-row flex-col items-center bg-white md:bg-transparent md:h-5 h-screen w-full md:w-auto transition-all duration-500 ease-in-out z-50`}
+          } md:left-0 fixed md:static top-0 md:flex md:flex-row flex-col justify-center items-center bg-white md:bg-transparent md:h-5 h-screen w-full md:w-[33.33%] transition-all duration-500 ease-in-out z-50`}
         >
-          <ul className="flex flex-col md:flex-row items-center gap-4 mt-20 md:mt-0">
+          <ul className="flex flex-col md:flex-row items-center gap-14 mt-20 md:mt-0">
             {currentUser && isVerified ? (
               <>
-                <li className="py-4  px-5 hover:bg-gray-100 transition rounded-md">
+                <li className="py-4 px-12 hover:border-b-4 hover:border-[#15CDCA] transition rounded-md">
                   <Link to="/feed">
-                    <FaHome size={20} />
+                    <FaHome size={24} />
                   </Link>
                 </li>
-                <li className="py-4 px-5 hover:bg-gray-100 transition rounded-md">
+                <li className="py-4 px-12 hover:border-b-4 hover:border-[#15CDCA] transition rounded-md">
                   <Link to="/chats">
-                    <FaRocketchat size={20} />
+                    <FaRocketchat size={24} />
                   </Link>
                 </li>
                 <li
                   onClick={() => setDropdownOpen2(!dropdownOpen2)}
-                  className="relative 2 py-4 cursor-pointer px-5 hover:bg-gray-100 transition rounded-md flex items-center"
+                  className="relative 2 py-4 cursor-pointer px-12 hover:border-b-4 hover:border-[#15CDCA] transition rounded-md flex items-center"
                 >
-                  <FaBell size={20} />
+                  <FaBell size={24} />
                   {unreadCount > 0 && (
                     <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-1.5">
                       {unreadCount}
@@ -132,9 +132,9 @@ const NavBar = () => {
                 </li>
                 <li
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="relative py-4 cursor-pointer px-5 hover:bg-gray-100 transition rounded-md flex items-center"
+                  className="relative py-4 cursor-pointer px-12 hover:border-b-4 hover:border-[#15CDCA] transition rounded-md flex items-center"
                 >
-                  <FaUserFriends size={20} />
+                  <FaUserFriends size={24} />
                   {friendRequests.length > 0 && (
                     <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-1.5">
                       {friendRequests.length}
@@ -157,8 +157,8 @@ const NavBar = () => {
               </>
             ) : (
               <>
-                <li className="py-4 cursor-pointer px-5 hover:bg-gray-100 transition rounded-md">
-                  <Link to="/"><FaHome size={20}/></Link>
+                <li className="py-4 cursor-pointer px-12 hover:bg-gray-100 transition rounded-md">
+                  <Link to="/"><FaHome size={24}/></Link>
                 </li>
                 <li className="py-3 bg-[#4FE0B6] text-[#292B48] px-5 hover:bg-[#15CDCA] transition rounded-md">
                   <Link to="/register">הרשמה</Link>
@@ -172,15 +172,15 @@ const NavBar = () => {
         </div>
 
         {currentUser && isVerified && (
-          <div className="flex items-center gap-2">
+          <div className="flex w-[33.33%] items-center justify-end gap-2 ">
             <Link to={`/profile/${currentUser.uid}`}>
               <img
                 src={currentUser.profilePicture || "defaultProfilePictureURL"}
                 alt="Profile"
-                className="w-8 h-8 rounded-full"
+                className="w-8 h-8 rounded-full border-[#3E54D3] border "
               />
             </Link>
-            <GrLogout onClick={handleLogout} className="cursor-pointer" size={20} />
+            <GrLogout onClick={handleLogout} className="cursor-pointer " size={24} />
           </div>
         )}
       </nav>
