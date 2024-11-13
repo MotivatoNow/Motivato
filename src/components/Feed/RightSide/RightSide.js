@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../config/firebase";
 import FriendButton from "../../FriendButton/FriendButton";
+import { loadUsers } from "../../../features/RightSide/loadUser";
 
 const RightSide = () => {
   const { currentUser } = useAuth();
@@ -16,33 +17,8 @@ const RightSide = () => {
 
   // טעינת משתמשים להצעות חברים
   useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        // שליפת החברים של המשתמש הנוכחי
-        const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
-        const friendIds = userDoc.exists() ? userDoc.data().friends || [] : [];
-
-        // שליפת כל המשתמשים
-        const usersCollection = collection(db, "Users");
-        const userDocs = await getDocs(usersCollection);
-        
-        // סינון החברים והמשתמש הנוכחי וערבוב הרשימה
-        const allUsers = userDocs.docs
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-          .filter((user) => user.id !== currentUser.uid && !friendIds.includes(user.id)) // הסרת החברים והמשתמש הנוכחי
-          
-        const randomUsers = shuffleArray(allUsers).slice(0, 6); // ערבוב וחיתוך ל-5–6 משתמשים רנדומליים
-
-        setSuggestedFriends(randomUsers);
-      } catch (error) {
-        console.error("Error loading users:", error);
-      }
-    };
-
-    loadUsers();
+    //parameters: currentUser,shuffleArray,set suggested Friends
+      loadUsers(currentUser,shuffleArray,setSuggestedFriends);
   }, [currentUser.uid]);
 
   return (

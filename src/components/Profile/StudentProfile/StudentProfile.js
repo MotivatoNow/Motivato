@@ -68,7 +68,7 @@ const StudentProfile = ({user, currentUser}) => {
   // Posts
 
   const fetchUserPosts = async () => {
-    const q = query(collection(db, "Posts"), where("user.uid", "==", user.uid));
+    const q = query(collection(db, "Posts"), where("user.uid", "==", userData.uid));
     const querySnapshot = await getDocs(q);
     const postsData = querySnapshot.docs.map((doc) => ({
       id: doc.id,
