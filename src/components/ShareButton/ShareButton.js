@@ -10,7 +10,7 @@ const ShareButton = ({ posts }) => {
   return (
     <>
       <button
-        className="flex items-center space-x-2 text-[#3E54D3]"
+        className="flex py-2 px-3 md:px-10 rounded-[10px] bg-gray-100 items-center space-x-2 text-[#3E54D3]"
         onClick={() => setModalOpen(true)}
       >
         <CiShare1 className="ml-1" />

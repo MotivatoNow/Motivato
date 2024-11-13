@@ -8,7 +8,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { FaComment } from "react-icons/fa";
+import { FaRegComment } from "react-icons/fa";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
 import LikeButton from "../../features/LikeButton/LikeButton";
@@ -154,10 +154,10 @@ const PostCard = ({ posts }) => {
       <div className="flex items-center justify-between border-t border-gray-200 pt-4">
         <LikeButton posts={posts} />
         <button
-          className="flex items-center space-x-2 text-[#3E54D3] hover:text-blue-600"
+          className="flex items-center space-x-2 text-[#3E54D3] hover:text-blue-600 py-2 px-3 md:px-10 rounded-[10px] bg-gray-100"
           onClick={() => setShowCommentBox(!showCommentBox)}
         >
-          <FaComment className="ml-1" />
+          <FaRegComment className="ml-1" />
           <span className="text-gray-800">תגובה</span>
         </button>
         <ShareButton posts={posts} />

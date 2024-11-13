@@ -88,6 +88,9 @@ const StudentProfile = ({user, currentUser}) => {
     fetchUserPosts();   
   },user.uid)
 
+
+  // followers
+  
   return (
     <>
             <div className="profile-page">
@@ -297,6 +300,7 @@ const StudentProfile = ({user, currentUser}) => {
                   closePopup={() => setActiveChatUser(null)}
                 />
               </>
+              
             )}
           </>
   )

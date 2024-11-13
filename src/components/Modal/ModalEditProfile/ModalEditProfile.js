@@ -20,14 +20,15 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
             // עדכון המסמך ב-Firestore עם הערכים החדשים
             const userRef = doc(db, "Users", user.uid);
             await updateDoc(userRef, {
-                bio: bio,
-                firstName: firstName,
-                lastName: lastName,
-                relationship: relationship,
-                userGitHub: userGitHub,
-                userWebsite: userWebsite,
+                bio: bio || "",
+                firstName: firstName || "",
+                lastName: lastName || "",
+                relationship: relationship || "",
+                userGitHub: userGitHub || "",
+                userWebsite: userWebsite || "",
+                userName: `${firstName} ${lastName}`
             });
-
+            
             // עדכון ה-state המקומי
             setUser((prevUser) => ({
                 ...prevUser,
@@ -37,14 +38,16 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
                 location: location,
                 profilePicture: profilePicture,
                 userGitHub: userGitHub,
+                userName: `${firstName} ${lastName}`,
                 userWebsite: userWebsite,
                 relationship: relationship,// The updated profile picture URL
             }));
 
             setModalOpen(false); // סגירת המודל אחרי שמירה
+            message.success("נתונים נשמרו בהצלחה");
         } catch (error) {
             console.error("Error updating user profile: ", error);
-            message.error("הנתונים נשמרו בהצלחה")
+            message.error(`בעיה בשמירת הנתונים ${error}`)
         }
     };
 
@@ -72,8 +75,8 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
                 ...prevUser,
                 profilePicture: downloadURL,
             }));
-
-            message.success("תמונת הפרופיל עודכנה בהצלחה");
+            
+            
         } catch (error) {
             console.error("Error uploading file: ", error);
             message.error("העלאת תמונה חדשה נכשלה.");

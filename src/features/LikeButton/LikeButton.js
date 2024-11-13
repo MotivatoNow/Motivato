@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { db } from "../../config/firebase";
 import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import ModalLikes from "../../components/Modal/ModalLikes/ModalLikes";
-import ModalComponent from "../../components/Modal/ModalPost/Modal";
+import { IoIosHeart } from "react-icons/io";
 import { FaThumbsUp, FaRegThumbsUp } from "react-icons/fa";
 
 const LikeButton = ({ posts }) => {
@@ -98,14 +98,16 @@ const LikeButton = ({ posts }) => {
   };
   return (
     <>
-      <div>
-        <div className="text-[#3E54D3]">
+      <div className="">
+        <div className="flex justify-center items-center">
           {likedCount}
           <i
-            className="open_post-likes fa-regular fa-thumbs-up"
+            className="open_post-likes fa-regular fa-thumbs-up flex "
             onClick={() => setModalOpen(true)}
           >
-            <span className="text-gray-800 mr-2">אהבו את הפוסט הזה</span>
+            <div className="bg-[#3E54D3] rounded-full p-1.5 flex items-center justify-center mr-1">
+              <IoIosHeart className="text-white" size={14}/>
+            </div>
           </i>
         </div>
         <ModalLikes
@@ -116,19 +118,19 @@ const LikeButton = ({ posts }) => {
       </div>
       {liked ? (
         <button
-          className="action-btn flex items-center space-x-2"
+          className="action-btn py-2 px-3 md:px-10 rounded-[10px] bg-gray-100 flex items-center space-x-2"
           onClick={handleLike}
         >
-          <FaThumbsUp className="text-blue-500 ml-1" />
-          <span className="text-gray-800">Unlike</span>
+          <FaThumbsUp className="text-blue-500 ml-1 " />
+          <span className="text-gray-800">לייק</span>
         </button>
       ) : (
         <button
-          className="action-btn flex items-center space-x-2"
+          className="action-btn flex px-3 md:px-10 rounded-[10px] bg-gray-100 items-center space-x-2"
           onClick={handleLike}
         >
           <FaRegThumbsUp className="text-gray-500 ml-1" />
-          <span className="text-gray-800">Like</span>
+          <span className="text-gray-800">לייק</span>
         </button>
       )}
     </>
