@@ -9,6 +9,7 @@ import {
   addDoc,
   updateDoc,
   orderBy,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
@@ -19,17 +20,33 @@ const ConversationView = ({ conversationId }) => {
   const [newMessage, setNewMessage] = useState("");
   const { currentUser } = useAuth();
 
+  // Fonction pour marquer les messages comme lus
+  const markMessagesAsRead = async () => {
+    const messageRef = collection(db, "Conversations", conversationId, "messages");
+    const q = query(messageRef, where("isRead", "==", false));
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(async (docSnapshot) => {
+      const messageRef = doc(db, "Conversations", conversationId, "messages", docSnapshot.id);
+      await updateDoc(messageRef, { isRead: true });
+    });
+  };
+
   useEffect(() => {
     const fetchMessagesAndParticipants = async () => {
+      // Écouter les messages en temps réel
       const messagesQuery = query(
-        collection(db, "Conversations", conversationId, "messages"),orderBy('timestamp','asc')
+        collection(db, "Conversations", conversationId, "messages"),
+        orderBy("timestamp", "asc")
       );
-      const messagesSnapshot = await getDocs(messagesQuery);
-      const messagesData = messagesSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setMessages(messagesData);
+
+      const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+        const messagesData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setMessages(messagesData);
+      });
 
       const conversationDoc = await getDoc(
         doc(db, "Conversations", conversationId)
@@ -45,6 +62,12 @@ const ConversationView = ({ conversationId }) => {
         }
       }
       setParticipantsData(usersData);
+
+      // Marquer les messages comme lus
+      markMessagesAsRead();
+
+      // Nettoyage lors de la destruction du composant
+      return () => unsubscribe();
     };
 
     fetchMessagesAndParticipants();
@@ -63,6 +86,7 @@ const ConversationView = ({ conversationId }) => {
         content: newMessage,
         timestamp: new Date(),
         type: "text",
+        isRead: false,  // Nouveau message est non lu
       });
 
       await updateDoc(doc(db, "Conversations", conversationId), {
@@ -94,16 +118,10 @@ const ConversationView = ({ conversationId }) => {
               )}
               <div
                 key={index}
-                className={`p-2 ${
-                  message.author === currentUser.uid
-                    ? "text-right"
-                    : "text-left"
-                }`}
+                className={`p-2 ${message.author === currentUser.uid ? "text-right" : "text-left"}`}
               >
                 <p
-                  className={`bg-${
-                    message.author === currentUser.uid ? "blue" : "gray"
-                  }-200 rounded-lg px-4 py-2 inline-block`}
+                  className={`bg-${message.author === currentUser.uid ? "blue" : "gray"}-200 rounded-lg px-4 py-2 inline-block`}
                 >
                   {message.content}
                 </p>

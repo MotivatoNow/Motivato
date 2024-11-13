@@ -12,17 +12,26 @@ const ChatPopup = ({ conversationId, closePopup }) => {
     useEffect(() => {
         if (!conversationId) return;
 
-
         const messagesRef = collection(db, `Conversations/${conversationId}/messages`);
         const q = query(messagesRef, orderBy('timestamp', 'asc')); 
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const fetchedMessages = snapshot.docs.map(doc => doc.data());
+            const fetchedMessages = snapshot.docs.map(doc => ({id:doc.id,...doc.data()}));
             setMessages(fetchedMessages); 
+            markMessagesAsRead(fetchedMessages)
         });
 
         return () => unsubscribe();
     }, [conversationId]);
+
+    const markMessagesAsRead=async(fetchedMessages)=>{
+
+        const unreadMessages=fetchedMessages.filter((message)=>message.author!==currentUser.uid &&!message.isRead)
+        for(const message of unreadMessages){
+            const messageRef=doc(db,`Conversations/${conversationId}/messages`,message.id)
+            updateDoc(messageRef,{isRead:true})
+        }
+    }
 
     const sendMessage = async () => {
         if (newMessage.trim() === '') return;
@@ -34,7 +43,8 @@ const ChatPopup = ({ conversationId, closePopup }) => {
                 author: currentUser.uid,
                 content: newMessage,
                 timestamp: new Date(),
-                type: 'text'
+                type: 'text',
+                isRead:false
             });
 
             await updateDoc(doc(db, "Conversations", conversationId), {

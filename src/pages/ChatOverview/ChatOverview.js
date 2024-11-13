@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import ConversationView from '../../components/ConversationView/ConversationView';
 import { useAuth } from "../../context/AuthContext";
@@ -19,21 +19,24 @@ const ChatOverview = () => {
             );
 
             const querySnapshot = await getDocs(q);
-            const convos = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
+            const convos = []
 
-            const enrichedConvos = await Promise.all(convos.map(async (convo) => {
-                const otherUserId = convo.participants.find(id => id !== currentUser.uid);
+            for (let docSnapshot of querySnapshot.docs) {
+                const convoData = docSnapshot.data();
+                const otherUserId = convoData.participants.find(id => id !== currentUser.uid);
                 const otherUser = await getUserData(otherUserId);
-                return {
-                    ...convo,
-                    otherUserName: `${otherUser.firstName} ${otherUser.lastName}`,
-                };
-            }));
 
-            setConversations(enrichedConvos);
+                const hasUnreadMessages = await checkUnreadMessages(docSnapshot.id);
+
+                convos.push({
+                    id: docSnapshot.id,
+                    ...convoData,
+                    otherUserName: `${otherUser.userName}`,
+                    hasUnreadMessages: hasUnreadMessages
+                });
+            }
+
+            setConversations(convos);
         };
 
         fetchConversations();
@@ -45,8 +48,42 @@ const ChatOverview = () => {
         return userSnapshot.exists() ? userSnapshot.data() : null;
     };
 
+    const checkUnreadMessages = async (conversationId) => {
+        const messageRef = collection(db, `Conversations/${conversationId}/messages`);
+        const q = query(messageRef, where('isRead', '==', false));
+
+        const querySnapshot = await getDocs(q);
+
+        for (const docSnapshot of querySnapshot.docs) {
+            const messageData = docSnapshot.data();
+            if (messageData.author !== currentUser.uid && !messageData.isRead) {
+                return true; 
+            }
+        }
+        return false;
+    };
+
+    const markMessagesAsRead = async (conversationId) => {
+        try {
+            const messagesRef = collection(db, `Conversations/${conversationId}/messages`);
+            const q = query(messagesRef, where('isRead', '==', false));
+
+            const querySnapshot = await getDocs(q);
+
+            querySnapshot.forEach(async (docSnapshot) => {
+                const messageRef = doc(db, `Conversations/${conversationId}/messages`, docSnapshot.id);
+                await updateDoc(messageRef, { isRead: true });
+            });
+
+            console.log("Messages marked as read");
+        } catch (error) {
+            console.error("Error marking messages as read: ", error);
+        }
+    };
+
     const openChat = (conversationId) => {
         setActiveConversationId(conversationId);
+        markMessagesAsRead(conversationId);  
     };
 
     return (
@@ -62,17 +99,22 @@ const ChatOverview = () => {
                             className="p-2 border-b hover:bg-gray-200 cursor-pointer"
                             onClick={() => openChat(convo.id)}
                         >
-                            <p className="font-semibold">
-                                {convo.isGroup ? convo.groupName : `Chat with ${convo.otherUserName}`}
-                            </p>
-                            <p className="text-sm text-gray-600">{convo.lastMessage}</p>
+                            <div>
+                                <p className="font-semibold">
+                                    {convo.isGroup ? convo.groupName : `Chat with ${convo.otherUserName}`}
+                                </p>
+                                <p className="text-sm text-gray-600">{convo.lastMessage}</p>
+                            </div>
+                            {convo.hasUnreadMessages && (
+                                <span className="bg-blue-500 h-3 w-3 rounded-full">Not Read</span>  
+                            )}
                         </div>
                     ))
                 )}
             </div>
             <div className="w-2/3">
                 {activeConversationId ? (
-                    <ConversationView conversationId={activeConversationId}/>
+                    <ConversationView conversationId={activeConversationId} />
                 ) : (
                     <p className="text-center mt-8">Select a conversation to start chatting</p>
                 )}

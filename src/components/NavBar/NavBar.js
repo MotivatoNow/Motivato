@@ -32,7 +32,7 @@ const NavBar = () => {
   const [dropdownOpen2, setDropdownOpen2] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -69,9 +69,37 @@ const NavBar = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        
+
         setNotifications(newNotifications);
         setUnreadCount(newNotifications.filter((n) => !n.read).length);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser) {
+      const conversationsRef = collection(db, "Conversations");
+      const q = query(
+        conversationsRef,
+        where("participants", "array-contains", currentUser.uid)
+      );
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const conversations = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        const unreadMessagesCount = conversations.reduce((count, convo) => {
+          const unreadMessages = Array.isArray(convo.messages)?convo.messages.filter(
+            (msg) => !msg.isRead && msg.author !== currentUser.uid
+          ):[];
+          return count + unreadMessages.length;
+        }, 0);
+
+        setUnreadMessages(unreadMessagesCount); // Met à jour le nombre de messages non lus
       });
 
       return () => unsubscribe();
@@ -128,6 +156,11 @@ const NavBar = () => {
                   <Link to="/chats">
                     <BsChatDots size={24} />
                   </Link>
+                  {unreadMessages > 0 && (
+                    <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-1.5">
+                      {unreadMessages}
+                    </span>
+                  )}
                 </li>
                 <li
                   onClick={() => setDropdownOpen2(!dropdownOpen2)}
