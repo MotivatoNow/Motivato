@@ -87,7 +87,7 @@ const CompanyProfile = ({user, currentUser}) => {
   useEffect(()=> {
     fetchUserPosts();   
   },[user.uid])
-//refresh data 
+//refresh data
   useEffect(() => {
     const userRef = doc(db, "Users", user.uid);
     const unsubscribe = onSnapshot(userRef, (snapshot) => {

@@ -68,7 +68,7 @@ const StudentProfile = ({user, currentUser}) => {
   // Posts
 
   const fetchUserPosts = async () => {
-    const q = query(collection(db, "Posts"), where("user.uid", "==", userData.uid));
+    const q = query(collection(db, "Posts"), where("user.uid", "==", user.uid));
     const querySnapshot = await getDocs(q);
     const postsData = querySnapshot.docs.map((doc) => ({
       id: doc.id,
@@ -89,7 +89,7 @@ const StudentProfile = ({user, currentUser}) => {
   },user.uid)
 
   useEffect(() => {
-    const userRef = doc(db, "Users", user.uid);
+    const userRef = doc(db, "Users", userData.uid);
     const unsubscribe = onSnapshot(userRef, (snapshot) => {
       setUserData(snapshot.data());
     });
