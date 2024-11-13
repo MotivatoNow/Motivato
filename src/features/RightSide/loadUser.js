@@ -4,7 +4,7 @@ import { db } from '../../firebase';
 
 
 
-export const loadUsers = async (currentUser,shuffleArray,setSuggestedFriends) => {
+export const loadUsers = async (currentUser,shuffleArray,setSuggestedFriends,setCount) => {
     try {
       // שליפת החברים של המשתמש הנוכחי
       const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
@@ -24,6 +24,7 @@ export const loadUsers = async (currentUser,shuffleArray,setSuggestedFriends) =>
         
       const randomUsers = shuffleArray(allUsers).slice(0, 6); // ערבוב וחיתוך ל-5–6 משתמשים רנדומליים
 
+      setCount((userDoc.data().friends).length)
       setSuggestedFriends(randomUsers);
     } catch (error) {
       console.error("Error loading users:", error);

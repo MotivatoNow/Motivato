@@ -9,7 +9,8 @@ import { loadUsers } from "../../../features/RightSide/loadUser";
 const RightSide = () => {
   const { currentUser } = useAuth();
   const [suggestedFriends, setSuggestedFriends] = useState([]);
-
+  const [count,setCount]=useState(0) //count friend 
+  
   // פונקציה לערבוב מערך
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
@@ -18,7 +19,7 @@ const RightSide = () => {
   // טעינת משתמשים להצעות חברים
   useEffect(() => {
     //parameters: currentUser,shuffleArray,set suggested Friends
-      loadUsers(currentUser,shuffleArray,setSuggestedFriends);
+      loadUsers(currentUser,shuffleArray,setSuggestedFriends,setCount);
   }, [currentUser.uid]);
 
   return (
@@ -39,7 +40,7 @@ const RightSide = () => {
         <p className="text-gray-500">{currentUser.bio}</p>
         <hr className="w-full border-t border-gray-200 my-2" />
         <div className="flex justify-center items-center flex-col">
-          <p className="text-gray-600 font-bold">Count</p>
+          <p className="text-gray-600 font-bold">{count}</p>
           <p className="text-gray-400 font-semibold">Followers</p>
         </div>
         <hr className="w-full border-t border-gray-200 my-2" />
