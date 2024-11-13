@@ -31,8 +31,8 @@ const MyPost = () => {
       user: {
         uid: currentUser?.uid || "No UID",
         username: currentUser?.userName || "Anonymouns",
-        firstName: currentUser?.firstName || "Anonymous",
-        lastName: currentUser?.lastName || "Anonymous",
+        /*firstName: currentUser?.firstName || "Anonymous",
+        lastName: currentUser?.lastName || "Anonymous",*/
       },
       post: post,
       timeStamp: getCurrentTimeStamp("LLL"),

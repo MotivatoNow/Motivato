@@ -5,11 +5,11 @@ import MyPost from '../../MyPost/MyPost';
 import PostCard from '../../PostCard/PostCard';
 import ModalEditProfileComponent from '../../Modal/ModalEditProfile/ModalEditProfile';
 import ChatPopup from '../../ChatPopup/ChatPopup';
-import { addDoc, collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../firebase';
 
 const StudentProfile = ({user, currentUser}) => {
-    const [userData,setUserData]=useState(null)
+    const [userData,setUserData]=useState(user)
     const [modalOpen, setModalOpen] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
   const [activeTab, setActiveTab] = useState("posts");
@@ -88,7 +88,14 @@ const StudentProfile = ({user, currentUser}) => {
     fetchUserPosts();   
   },user.uid)
 
-
+  useEffect(() => {
+    const userRef = doc(db, "Users", user.uid);
+    const unsubscribe = onSnapshot(userRef, (snapshot) => {
+      setUserData(snapshot.data());
+    });
+  
+    return () => unsubscribe(); 
+  }, [user.uid]);
   // followers
   
   return (
@@ -99,54 +106,54 @@ const StudentProfile = ({user, currentUser}) => {
                 <aside className="profile-sidebar">
                   <div className="sidebar-content">
                     <div className="profile-picture">
-                      <img src={user.profilePicture} alt="Profile" />
+                      <img src={userData.profilePicture} alt="Profile" />
                     </div>
                   </div>
                   <div className="profile-info">
                     <h2 className="profile-name">
-                      {user.firstName} {user.lastName}
-                      {currentUser.uid !== user.uid && (
+                      {userData.firstName} {userData.lastName}
+                      {currentUser.uid !== userData.uid && (
                         <>
                           <ChatButton
-                            onClick={() => handleChatButtonClick(user.uid)}
+                            onClick={() => handleChatButtonClick(userData.uid)}
                           />
                         </>
                       )}
                     </h2>
                     <p className="profile-location">
                       <i className="fa fa-map-marker-alt"></i>{" "}
-                      {user.location || "Location"}
+                      {userData.location || "Location"}
                     </p>
                     <p className="profile-gander">
                       <i className="fa fa-solid fa-male"></i>{" "}
-                      {user.userGender || ""}
+                      {userData.userGender || ""}
                     </p>
                     <p className="profile-relationship">
                       <i className="fa fa-solid fa-heart"></i>{" "}
-                      {user.relationship || ""}
+                      {userData.relationship || ""}
                     </p>
                     <p className="profile-github">
-                      <i className=""></i> {user.userGitHub || ""}
+                      <i className=""></i> {userData.userGitHub || ""}
                     </p>
                     <p className="profile-website">
-                      <i className=""></i> {user.userWebsite || ""}
+                      <i className=""></i> {userData.userWebsite || ""}
                     </p>
                   </div>
                   <div className="profile-details">
                     <div className="profile-section education-section">
                       <h4>Education</h4>
                       <p>
-                        {user.studentEducation || "No information"},{" "}
-                        {user.studentCollege || "No college/university"}
+                        {userData.studentEducation || "No information"},{" "}
+                        {userData.studentCollege || "No college/university"}
                       </p>
                     </div>
                     <div className="profile-section contact-section">
                       <h4>Contact</h4>
                       <p>
-                        <i className="fa fa-envelope"></i> {user.email}
+                        <i className="fa fa-envelope"></i> {userData.email}
                       </p>
                     </div>
-                    {currentUser.uid === user.uid ? (
+                    {currentUser.uid === userData.uid ? (
                       <button
                         className="settings-btn"
                         onClick={() => setModalOpen(true)}
@@ -162,7 +169,7 @@ const StudentProfile = ({user, currentUser}) => {
                 {/* Main Profile Section */}
                 <main className="profile-main">
                   <header className="profile-header">
-                    {currentUser.uid === user.uid ? (
+                    {currentUser.uid === userData.uid ? (
                       <></>
                     ) : (
                       <div className="header-title">
@@ -210,7 +217,7 @@ const StudentProfile = ({user, currentUser}) => {
 
                   {activeTab === "posts" && (
                     <section className="profile-content">
-                      {currentUser.uid === user.uid && (
+                      {currentUser.uid === userData.uid && (
                         <div className="my-post">
                           <MyPost />
                         </div>
@@ -232,7 +239,7 @@ const StudentProfile = ({user, currentUser}) => {
                   {activeTab === "about" && (
                     <section className="profile-content">
                       <h3>About Me</h3>
-                      <p>{user.bio}</p>
+                      <p>{userData.bio}</p>
                     </section>
                   )}
 

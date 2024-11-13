@@ -42,7 +42,6 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
                 userWebsite: userWebsite,
                 relationship: relationship,// The updated profile picture URL
             }));
-
             setModalOpen(false); // סגירת המודל אחרי שמירה
             message.success("נתונים נשמרו בהצלחה");
         } catch (error) {
@@ -51,7 +50,7 @@ const ModalEditProfileComponent = ({ modalOpen, setModalOpen, user, setUser }) =
         }
     };
 
-
+    //file
     const handleFileUpload = async (file) => {
         if (!file) return;
 
