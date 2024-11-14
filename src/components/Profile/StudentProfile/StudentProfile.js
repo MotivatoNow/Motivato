@@ -111,7 +111,7 @@ const StudentProfile = ({user, currentUser}) => {
                   </div>
                   <div className="profile-info">
                     <h2 className="profile-name">
-                      {userData.firstName} {userData.lastName}
+                      {userData.userName}
                       {currentUser.uid !== userData.uid && (
                         <>
                           <ChatButton

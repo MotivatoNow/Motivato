@@ -3,7 +3,6 @@ import React from 'react'
 import { db } from '../../firebase';
 
 
-
 export const loadUsers = async (currentUser,shuffleArray,setSuggestedFriends,setCount) => {
     try {
       // שליפת החברים של המשתמש הנוכחי

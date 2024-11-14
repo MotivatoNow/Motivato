@@ -65,7 +65,8 @@ const RightSide = () => {
                 className="w-8 h-8 rounded-full object-cover ml-1 border border-[#3E54D3]"
               />
               <h3 className="text-lg font-semibold text-gray-800">
-                {user.userName}
+                {user.userType === 'Student' &&(<>{user.userName}</>)}
+                {user.userType === 'Company' && (<>{user.companyName}</>)}
               </h3>
             </Link>
             <FriendButton user={user}/>
