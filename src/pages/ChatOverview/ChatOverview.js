@@ -106,7 +106,7 @@ const ChatOverview = () => {
                                 <p className="text-sm text-gray-600">{convo.lastMessage}</p>
                             </div>
                             {convo.hasUnreadMessages && (
-                                <span className="bg-blue-500 h-3 w-3 rounded-full">Not Read</span>  
+                                <span className="bg-blue-500 h-3 w-3 rounded-full">...</span>  
                             )}
                         </div>
                     ))

@@ -10,7 +10,6 @@ import {
   where,
   onSnapshot,
   updateDoc,
-  arrayUnion,
   addDoc,
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
@@ -33,6 +32,7 @@ const NavBar = () => {
   const [dropdownOpen2, setDropdownOpen2] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -60,10 +60,69 @@ const NavBar = () => {
     checkVerification();
   }, [currentUser]);
 
+  useEffect(() => {
+    if (currentUser) {
+      const notificationsRef = collection(db, "Notifications");
+      const q = query(notificationsRef, where("userId", "==", currentUser.uid));
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const newNotifications = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setNotifications(newNotifications);
+        setUnreadCount(newNotifications.filter((n) => !n.read).length);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const fetchUnreadMessage = () => {
+      const converationRef = collection(db, "Conversations");
+      const q = query(
+        converationRef,
+        where("participants", "array-contains", currentUser.uid)
+      );
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        let totalUnread = 0;
+
+        snapshot.docs.forEach((docSnapshot) => {
+          const conversation = docSnapshot.data();
+          const messagesRef = collection(
+            db,
+            `Conversations/${docSnapshot.id}/messages`
+          );
+          const messagesQuery = query(
+            messagesRef,
+            where("isRead", "==", false)
+          );
+
+          onSnapshot(messagesQuery, (messageSnapshot) => {
+            const unreadMessages = messageSnapshot.docs.filter((msg) => {
+              const data = msg.data();
+              return data.author !== currentUser.uid && !data.isRead;
+            });
+            totalUnread += unreadMessages.length;
+            setUnreadMessages(totalUnread);
+          });
+        });
+      });
+
+      return () => unsubscribe();
+    };
+
+    fetchUnreadMessage();
+  }, [currentUser]);
+
   return (
     <header className="bg-white shadow-sm  w-full top-0 z-50">
       <nav className="grid grid-cols-3 items-center px-5 py-2 bg-white">
-        {/* logo and search*/}
+        {/* Logo and Search */}
         <div className="flex items-center gap-1">
           <Link to={currentUser && isVerified ? `/feed` : `/`}>
             <img
@@ -92,7 +151,7 @@ const NavBar = () => {
           </span>
         </div>
 
-        {/* navbar*/}
+        {/* Navbar */}
         <div
           className={`${
             menuOpen ? "top-[60px]" : "-top-full"
@@ -106,11 +165,19 @@ const NavBar = () => {
                     <GrHomeRounded color="#3E54D3" size={24} />
                   </Link>
                 </li>
-                <li className="py-2 px-4 hover:border-b-2 hover:border-[#15CDCA] transition">
+                <li className="relative py-2 px-4 cursor-pointer hover:border-b-2 hover:border-[#15CDCA] transition">
                   <Link to="/chats">
-                    <BsChatDots size={24} />
+                    <div className="relative">
+                      <BsChatDots size={24} /> 
+                      {unreadMessages > 0 && (
+                        <span className="absolute top-0 right-0 transform translate-x-2 -translate-y-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                          {unreadMessages}
+                        </span>
+                      )}
+                    </div>
                   </Link>
                 </li>
+
                 <li
                   onClick={() => setDropdownOpen2(!dropdownOpen2)}
                   className="relative py-2 px-4 cursor-pointer hover:border-b-2 hover:border-[#15CDCA] transition"
@@ -150,24 +217,6 @@ const NavBar = () => {
                       {friendRequests.length}
                     </span>
                   )}
-                  {dropdownOpen && (
-                    <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 top-12 w-64 bg-white border rounded-lg shadow-lg z-10">
-                      {friendRequests.length > 0 ? (
-                        friendRequests.map((request) => (
-                          <div
-                            key={request.id}
-                            className="p-2 text-gray-700 hover:bg-gray-100"
-                          >
-                            {request.senderName} שלח לך בקשת חברות
-                          </div>
-                        ))
-                      ) : (
-                        <div className="p-2 text-gray-700 text-center">
-                          אין בקשות חדשות
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </li>
               </>
             ) : (
@@ -188,7 +237,7 @@ const NavBar = () => {
           </ul>
         </div>
 
-        {/* profile and logout*/}
+        {/* Profile and logout */}
         {currentUser && isVerified && (
           <div className="flex items-center justify-end gap-4 col-span-1 md:flex md:items-center md:justify-end ">
             <Link
