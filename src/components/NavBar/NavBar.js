@@ -10,6 +10,7 @@ import {
   where,
   onSnapshot,
   updateDoc,
+  arrayUnion,
   addDoc,
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
@@ -32,7 +33,7 @@ const NavBar = () => {
   const [dropdownOpen2, setDropdownOpen2] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [unreadMessages, setUnreadMessages] = useState(0);
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -59,57 +60,10 @@ const NavBar = () => {
     checkVerification();
   }, [currentUser]);
 
-  useEffect(() => {
-    if (currentUser) {
-      const notificationsRef = collection(db, "Notifications");
-      const q = query(notificationsRef, where("userId", "==", currentUser.uid));
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const newNotifications = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        setNotifications(newNotifications);
-        setUnreadCount(newNotifications.filter((n) => !n.read).length);
-      });
-
-      return () => unsubscribe();
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (currentUser) {
-      const conversationsRef = collection(db, "Conversations");
-      const q = query(
-        conversationsRef,
-        where("participants", "array-contains", currentUser.uid)
-      );
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const conversations = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        const unreadMessagesCount = conversations.reduce((count, convo) => {
-          const unreadMessages = Array.isArray(convo.messages)?convo.messages.filter(
-            (msg) => !msg.isRead && msg.author !== currentUser.uid
-          ):[];
-          return count + unreadMessages.length;
-        }, 0);
-
-        setUnreadMessages(unreadMessagesCount); // Met à jour le nombre de messages non lus
-      });
-
-      return () => unsubscribe();
-    }
-  }, [currentUser]);
-
   return (
     <header className="bg-white shadow-sm  w-full top-0 z-50">
       <nav className="grid grid-cols-3 items-center px-5 py-2 bg-white">
-        {/* Logo and Search */}
+        {/* logo and search*/}
         <div className="flex items-center gap-1">
           <Link to={currentUser && isVerified ? `/feed` : `/`}>
             <img
@@ -138,7 +92,7 @@ const NavBar = () => {
           </span>
         </div>
 
-        {/* Navbar */}
+        {/* navbar*/}
         <div
           className={`${
             menuOpen ? "top-[60px]" : "-top-full"
@@ -156,11 +110,6 @@ const NavBar = () => {
                   <Link to="/chats">
                     <BsChatDots size={24} />
                   </Link>
-                  {unreadMessages > 0 && (
-                    <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-1.5">
-                      {unreadMessages}
-                    </span>
-                  )}
                 </li>
                 <li
                   onClick={() => setDropdownOpen2(!dropdownOpen2)}
@@ -201,6 +150,24 @@ const NavBar = () => {
                       {friendRequests.length}
                     </span>
                   )}
+                  {dropdownOpen && (
+                    <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 top-12 w-64 bg-white border rounded-lg shadow-lg z-10">
+                      {friendRequests.length > 0 ? (
+                        friendRequests.map((request) => (
+                          <div
+                            key={request.id}
+                            className="p-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            {request.senderName} שלח לך בקשת חברות
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-2 text-gray-700 text-center">
+                          אין בקשות חדשות
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </li>
               </>
             ) : (
@@ -221,7 +188,7 @@ const NavBar = () => {
           </ul>
         </div>
 
-        {/* Profile and logout */}
+        {/* profile and logout*/}
         {currentUser && isVerified && (
           <div className="flex items-center justify-end gap-4 col-span-1 md:flex md:items-center md:justify-end ">
             <Link

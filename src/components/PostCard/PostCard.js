@@ -157,8 +157,8 @@ const PostCard = ({ posts }) => {
           className="flex items-center space-x-2 text-[#3E54D3] hover:text-blue-600 py-2 px-3 md:px-10 rounded-[10px] bg-gray-100"
           onClick={() => setShowCommentBox(!showCommentBox)}
         >
-          <FaRegComment className="ml-1" />
-          <span className="text-gray-800">תגובה</span>
+          <FaRegComment className="ml-1" size={20} />
+          {/* <span className="text-gray-800">תגובה</span> */}
         </button>
         <ShareButton posts={posts} />
       </div>

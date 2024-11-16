@@ -121,16 +121,16 @@ const LikeButton = ({ posts }) => {
           className="action-btn py-2 px-3 md:px-10 rounded-[10px] bg-gray-100 flex items-center space-x-2"
           onClick={handleLike}
         >
-          <FaThumbsUp className="text-blue-500 ml-1 " />
-          <span className="text-gray-800">לייק</span>
+          <FaThumbsUp className="text-blue-500 ml-1" size={20} />
+          {/* <span className="text-gray-800">לייק</span> */}
         </button>
       ) : (
         <button
-          className="action-btn flex px-3 md:px-10 rounded-[10px] bg-gray-100 items-center space-x-2"
+          className="action-btn flex py-2 px-3 md:px-10 rounded-[10px] bg-gray-100 items-center space-x-2"
           onClick={handleLike}
         >
-          <FaRegThumbsUp className="text-gray-500 ml-1" />
-          <span className="text-gray-800">לייק</span>
+          <FaRegThumbsUp className="text-[#3E54D3] ml-1" size={20}/>
+          {/* <span className="text-gray-800">לייק</span> */}
         </button>
       )}
     </>

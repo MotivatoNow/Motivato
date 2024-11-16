@@ -103,7 +103,7 @@ const StudentProfile = ({user, currentUser}) => {
             <div className="profile-page">
               <div className="profile-layout">
                 {/* Sidebar */}
-                <aside className="profile-sidebar">
+                <aside className="bg-white p-4 flex flex-col">
                   <div className="sidebar-content">
                     <div className="profile-picture">
                       <img src={userData.profilePicture} alt="Profile" />
