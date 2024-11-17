@@ -12,6 +12,7 @@ import {
   updateDoc,
   arrayUnion,
   addDoc,
+  getDocs,
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { FaBars, FaTimes } from "react-icons/fa";
@@ -96,7 +97,10 @@ const NavBar = () => {
           : `${acceptedUser.companyName}`, // to company name
       type: "new friend",
     };
-    const notificationsRef = addDoc(collection(db, "Notifications"), notification)
+    const notificationsRef = addDoc(
+      collection(db, "Notifications"),
+      notification
+    )
       .then((res) => {
         console.log("Document has been added succesfully");
       })
@@ -118,7 +122,7 @@ const NavBar = () => {
   // Toggle dropdown
   const toggleDropdown = () => {
     console.log("is toggle");
-    
+
     setDropdownOpen(!dropdownOpen);
     if (dropdownOpen2) setDropdownOpen2(!dropdownOpen2);
   };
@@ -188,8 +192,6 @@ const NavBar = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        //console.log(requests);
-        //console.log(requests);
         setFriendRequests(requests);
       });
 
@@ -211,12 +213,12 @@ const NavBar = () => {
           ...doc.data(),
         }));
         setNotifications(allNotifications);
-        
+
         // עדכון מספר ההתראות שלא נקראו (לדוגמה: אם כל התראות חדשות)
         const unread = allNotifications.filter(
           (notification) => !notification.read
         ).length;
-        
+
         setUnreadCount(unread);
       });
 
@@ -267,23 +269,56 @@ const NavBar = () => {
 
   //*useEffect 5 for User
   useEffect(() => {
-    const fetchUsers = async () => {
-      if (currentUser) {
-        const usersRef = collection(db, "Users"); // Référence à la collection Users
-        const unsubscribe = onSnapshot(usersRef, (snapshot) => {
-          const usersData = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setUsers(usersData); // Mise à jour de l'état local des utilisateurs
-        });
-  
-        return () => unsubscribe(); // Nettoyage de l'écouteur en cas de démontage du composant
-      }
-    };
-  
-    fetchUsers();
+    if (currentUser) {
+      const singleQuery = query(
+        collection(db, "Notifications"),
+        where("postUser", "==", currentUser.uid)
+      );
+
+      const unsubscribe = onSnapshot(singleQuery, async (response) => {
+        const notificationsData = [];
+        for (const docN of response.docs) {
+          const notificationData = docN.data();
+          let userDoc;
+          if (
+            notificationData.type === "comment" &&
+            notificationData.postUser === currentUser.uid
+          ) {
+            userDoc = await getDoc(
+              doc(db, "Users", notificationData.commentId)
+            );
+          } else if (
+            notificationData.type === "like" &&
+            notificationData.postUser === currentUser.uid
+          ) {
+            userDoc = await getDoc(doc(db, "Users", notificationData.likeId));
+          } else if (notificationData.type === "new friend") {
+            userDoc = await getDoc(
+              doc(db, "Users", notificationData.newFriendId)
+            );
+          } else {
+            userDoc = await getDoc(doc(db, "Users", notificationData.user));
+          }
+          const userName = userDoc.exists()
+            ? `${userDoc.data().firstName} ${userDoc.data().lastName}`
+            : "Unknown User";
+          const userProfilePicture = userDoc.exists()
+            ? userDoc.data().profilePicture
+            : "defaultProfilePictureURL"; 
+
+          notificationsData.push({
+            id: docN.id,
+            ...notificationData,
+            userName,
+            userProfilePicture,
+          });
+        }
+        setNotifications(notificationsData);
+      });
+      return ()=>unsubscribe()
+    }
   }, [currentUser]);
+  
   //End of useEffect
 
   return (
@@ -344,7 +379,7 @@ const NavBar = () => {
                     </div>
                   </Link>
                 </li>
-                        {/* Notification icon (the bell) */}
+                {/* Notification icon (the bell) */}
                 <li
                   onClick={() => setDropdownOpen2(!dropdownOpen2)}
                   className="relative py-2 px-4 cursor-pointer hover:border-b-2 hover:border-[#15CDCA] transition"
@@ -360,95 +395,93 @@ const NavBar = () => {
                       {notfications.length > 0 ? (
                         notfications.map((notification, index) => (
                           <div
-                          key={index}
-                          className="px-4 py-2 text-gray-700 hover:bg-gray-100"
-                        >
-                          {/*notification type*/}
-                          {/* comment */}
-                          {notification.type === "comment" && (
-                            <>
-                              <Link
-                                className="flex mb-2 items-center gap-2"
-                                to={`/post/${notification.postId}`}
-                              >
-                                <img
-                                  className="w-10 h-10 rounded-full"
-                                  src={
-                                    notification.userProfilePicture ||
-                                    "defaultProfilePictureURL"
-                                  } // הצגת תמונת המשתמש הנכונה מהתגובה
-                                  alt={`${users.userName}`}
-                                />
-                                {`${notification.commentName} הוסיף תגובה לפוסט שלך`}
-                              </Link>
-                              <hr />
-                            </>
-                          )}
-                          {/* Like */}
-                          {notification.type === "like" && (
-                            <>
-                              <Link
-                                className="flex mb-2 items-center gap-2"
-                                to={`/post/${notification.postId}`}
-                              >
-                                <img
-                                  className="w-10 h-10 rounded-full"
-                                  src={
-                                    notification.userProfilePicture ||
-                                    "defaultProfilePictureURL"
-                                  } // הצגת תמונת המשתמש הנכונה מהתגובה
-                                  alt={`${users.userName}`}
-                                />
-                                {`${notification.likeName} אהב את הפוסט שלך`}
-                              </Link>
-                              <hr />
-                            </>
-                          )}
-                          {/* friend */}
-                          {notification.type === "new friend" && (
-                            <>
-                              <Link
-                                className="flex mb-2 items-center gap-2"
-                                to={`/profile/${notification.newFriendId}`}
-                              >
-                                <img
-                                  className="w-10 h-10 rounded-full"
-                                  src={
-                                    notification.userProfilePicture ||
-                                    "defaultProfilePictureURL"
-                                  } // הצגת תמונת המשתמש הנכונה מהתגובה
-                                  alt={`${users.userName}`}
-                                />
-                                {notification.newFriendName} אישר/ה את בקשת
-                                החברות שלך
-                              </Link>
-                              <hr />
-                            </>
-                          )}
-                          {/* mission */}
-                          {notification.type === "new Mission" && (
-                            <>
-                              <Link
-                                className="flex mb-2 items-center gap-2"
-                                to={`/mission/${notification.missionId}`}
-                              >
-                                <img
-                                  className="w-10 h-10 rounded-full"
-                                  src={
-                                    notification.userProfilePicture ||
-                                    "defaultProfilePictureURL"
-                                  } // הצגת תמונת המשתמש הנכונה מהתגובה
-                                  alt={`${users.userName}`}
-                                />
-                                {notification.postUserName} הוסף משימה:
-                                {notification.missionTitle}
-                              </Link>
-                              <hr />
-                            </>
-                            
-                          )}
-                          
-                        </div>
+                            key={index}
+                            className="px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            {/*notification type*/}
+                            {/* comment */}
+                            {notification.type === "comment" && (
+                              <>
+                                <Link
+                                  className="flex mb-2 items-center gap-2"
+                                  to={`/post/${notification.postId}`}
+                                >
+                                  <img
+                                    className="w-10 h-10 rounded-full"
+                                    src={
+                                      notification.userProfilePicture ||
+                                      "defaultProfilePictureURL"
+                                    } // הצגת תמונת המשתמש הנכונה מהתגובה
+                                    alt={`${users.userName}`}
+                                  />
+                                  {`${notification.commentName} הוסיף תגובה לפוסט שלך`}
+                                </Link>
+                                <hr />
+                              </>
+                            )}
+                            {/* Like */}
+                            {notification.type === "like" && (
+                              <>
+                                <Link
+                                  className="flex mb-2 items-center gap-2"
+                                  to={`/post/${notification.postId}`}
+                                >
+                                  <img
+                                    className="w-10 h-10 rounded-full"
+                                    src={
+                                      notification.userProfilePicture ||
+                                      "defaultProfilePictureURL"
+                                    } // הצגת תמונת המשתמש הנכונה מהתגובה
+                                    alt={`${users.userName}`}
+                                  />
+                                  {`${notification.likeName} אהב את הפוסט שלך`}
+                                </Link>
+                                <hr />
+                              </>
+                            )}
+                            {/* friend */}
+                            {notification.type === "new friend" && (
+                              <>
+                                <Link
+                                  className="flex mb-2 items-center gap-2"
+                                  to={`/profile/${notification.newFriendId}`}
+                                >
+                                  <img
+                                    className="w-10 h-10 rounded-full"
+                                    src={
+                                      notification.userProfilePicture ||
+                                      "defaultProfilePictureURL"
+                                    } // הצגת תמונת המשתמש הנכונה מהתגובה
+                                    alt={`${users.userName}`}
+                                  />
+                                  {notification.newFriendName} אישר/ה את בקשת
+                                  החברות שלך
+                                </Link>
+                                <hr />
+                              </>
+                            )}
+                            {/* mission */}
+                            {notification.type === "new Mission" && (
+                              <>
+                                <Link
+                                  className="flex mb-2 items-center gap-2"
+                                  to={`/mission/${notification.missionId}`}
+                                >
+                                  <img
+                                    className="w-10 h-10 rounded-full"
+                                    src={
+                                      notification.userProfilePicture ||
+                                      "defaultProfilePictureURL"
+                                    } // הצגת תמונת המשתמש הנכונה מהתגובה
+                                    alt={`${users.userName}`}
+                                  />
+                                  {notification.postUserName} הוסף משימה:
+                                  {notification.missionTitle}
+                                </Link>
+                                <hr />
+                              </>
+                            )}
+                          </div>
                         ))
                       ) : (
                         <div className="p-2 text-gray-700 text-center">
@@ -457,8 +490,8 @@ const NavBar = () => {
                       )}
                     </div>
                   )}
-                </li> {/*End of the notification icon  */}
-
+                </li>{" "}
+                {/*End of the notification icon  */}
                 {/* friend request icon */}
                 <li
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -470,45 +503,45 @@ const NavBar = () => {
                       {friendRequests.length}
                     </span>
                   )}
-                   {dropdownOpen && (
-                      <div className="absolute right-2 top-[40%] mt-2 w-80 bg-white border rounded-lg shadow-lg z-10">
-                        {friendRequests.length > 0 ? (
-                          friendRequests.map((request) => (
-                            <div
-                              key={request.id}
-                              className="px-4 py-2 text-gray-700 hover:bg-gray-100"
-                            >
-                              <p className="flex items-center gap-2">
-                                <img
-                                  className="w-8 h-8 rounded-full"
-                                  src={request.senderPicture}
-                                  alt={request.senderFirstName}
-                                />
-                                {request.senderuserName} שלח לך בקשת חברות
-                              </p>
-                              <div className="flex justify-end gap-2 mt-2">
-                                <button
-                                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                                  onClick={() => handleAccept(request)}
-                                >
-                                  אישור
-                                </button>
-                                <button
-                                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                                  onClick={() => handleReject(request)}
-                                >
-                                  דחייה
-                                </button>
-                              </div>
+                  {dropdownOpen && (
+                    <div className="absolute right-2 top-[40%] mt-2 w-80 bg-white border rounded-lg shadow-lg z-10">
+                      {friendRequests.length > 0 ? (
+                        friendRequests.map((request) => (
+                          <div
+                            key={request.id}
+                            className="px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            <p className="flex items-center gap-2">
+                              <img
+                                className="w-8 h-8 rounded-full"
+                                src={request.senderPicture}
+                                alt={request.senderFirstName}
+                              />
+                              {request.senderuserName} שלח לך בקשת חברות
+                            </p>
+                            <div className="flex justify-end gap-2 mt-2">
+                              <button
+                                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                                onClick={() => handleAccept(request)}
+                              >
+                                אישור
+                              </button>
+                              <button
+                                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                onClick={() => handleReject(request)}
+                              >
+                                דחייה
+                              </button>
                             </div>
-                          ))
-                        ) : (
-                          <div className="px-4 py-2 text-gray-700">
-                            אין בקשות חדשות
                           </div>
-                        )}
-                      </div>
-                    )}
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-gray-700">
+                          אין בקשות חדשות
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </li>
               </>
             ) : (
