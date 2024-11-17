@@ -96,10 +96,7 @@ const NavBar = () => {
           : `${acceptedUser.companyName}`, // to company name
       type: "new friend",
     };
-    const notificationsRef = addDoc(
-      collection(db, "Notifications"),
-      notification
-    )
+    const notificationsRef = addDoc(collection(db, "Notifications"), notification)
       .then((res) => {
         console.log("Document has been added succesfully");
       })
@@ -177,7 +174,7 @@ const NavBar = () => {
     checkVerification();
   }, [currentUser]);
 
-  //**useEffect 2 for notifications
+  //**useEffect 2 for friend Request
   useEffect(() => {
     if (currentUser) {
       const q = query(
@@ -191,8 +188,8 @@ const NavBar = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        console.log(requests);
-        console.log(requests);
+        //console.log(requests);
+        //console.log(requests);
         setFriendRequests(requests);
       });
 
@@ -200,6 +197,7 @@ const NavBar = () => {
     }
   }, [currentUser]);
 
+  //useEffect 3 for Notification
   useEffect(() => {
     if (currentUser) {
       const q = query(
@@ -213,11 +211,12 @@ const NavBar = () => {
           ...doc.data(),
         }));
         setNotifications(allNotifications);
-
+        
         // עדכון מספר ההתראות שלא נקראו (לדוגמה: אם כל התראות חדשות)
         const unread = allNotifications.filter(
           (notification) => !notification.read
         ).length;
+        
         setUnreadCount(unread);
       });
 
@@ -225,7 +224,7 @@ const NavBar = () => {
     }
   }, [currentUser]);
 
-  //useEffect 3 for conversations
+  //useEffect 4 for conversations
   useEffect(() => {
     if (!currentUser) return;
     const fetchUnreadMessage = () => {
@@ -266,57 +265,25 @@ const NavBar = () => {
     fetchUnreadMessage();
   }, [currentUser]);
 
-  //*useEffect 4
+  //*useEffect 5 for User
   useEffect(() => {
-    if (currentUser) {
-      const singleQuery = query(collection(db, "Notifications"));
-      const unsubscribe = onSnapshot(singleQuery, async (response) => {
-        const notificationsData = [];
-        for (const docN of response.docs) {
-          const notificationData = docN.data();
-          let userDoc;
-          if (
-            notificationData.type === "comment" &&
-            notificationData.postUser === currentUser.uid
-          ) {
-            userDoc = await getDoc(
-              doc(db, "Users", notificationData.commentId)
-            );
-          } else if (
-            notificationData.type === "like" &&
-            notificationData.postUser === currentUser.uid
-          ) {
-            userDoc = await getDoc(doc(db, "Users", notificationData.likeId));
-          } else if (notificationData.type === "new friend") {
-            userDoc = await getDoc(
-              doc(db, "Users", notificationData.newFriendId)
-            );
-          } else {
-            if (notificationData && notificationData.user) {
-              userDoc = await getDoc(doc(db, "Users", notificationData.user));
-            }
-          }
-          const userName =
-            userDoc && userDoc.exists()
-              ? `${userDoc.data().userName}`
-              : "Unknown User";
-          const userProfilePicture =
-            userDoc && userDoc.exists()
-              ? userDoc.data().profilePicture
-              : "defaultProfilePictureURL"; // Default picture if not available
-          notificationsData.push({
-            id: docN.id,
-            ...notificationData,
-            userName,
-            userProfilePicture,
-          });
-        }
-        setNotifications(notificationsData); // Set notifications with user info
-      });
-      return () => unsubscribe(); // Clean up listener
-    }
+    const fetchUsers = async () => {
+      if (currentUser) {
+        const usersRef = collection(db, "Users"); // Référence à la collection Users
+        const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+          const usersData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setUsers(usersData); // Mise à jour de l'état local des utilisateurs
+        });
+  
+        return () => unsubscribe(); // Nettoyage de l'écouteur en cas de démontage du composant
+      }
+    };
+  
+    fetchUsers();
   }, [currentUser]);
-
   //End of useEffect
 
   return (

@@ -72,6 +72,11 @@ const PostCard = ({ posts }) => {
         userId,
         commentUserName,
       });
+      if (posts.user.uid !== currentUser.uid) {
+        const commentName = `${currentUser.userName} `;
+        commentNotifications(posts.id, currentUser.uid, commentName, posts.user.uid);
+      }
+
     } catch (error) {
       console.error(error);
     }
@@ -87,6 +92,26 @@ const PostCard = ({ posts }) => {
     );
     setComment("");
   };
+  const commentNotifications = async (postId, commentId, commentName, postOwnerId) => {
+    const notification = {
+      postId: postId,
+      commentId: commentId,
+      type: "comment",
+      postUser: postOwnerId,
+      commentName: commentName,
+    };
+    const notificationsRef = addDoc(
+      collection(db, "Notifications"),
+      notification
+    )
+      .then((res) => {
+        console.log("Document has been added succesfully");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  
 
   useMemo(() => {
     getComments(posts.id);

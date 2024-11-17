@@ -66,7 +66,8 @@ const LikeButton = ({ posts }) => {
         { likeCount: newLikedCount, likedUsers },
         { merge: true }
       );
-      if (liked && posts.user.uid !== currentUser.uid) {
+      if (!liked && posts.user.uid !== currentUser.uid) {
+        console.log("Like!!")
         const likeName = `${currentUser.userName} `;
         likeNotifications(posts.id, currentUser.uid, likeName, posts.user.uid);
       }
