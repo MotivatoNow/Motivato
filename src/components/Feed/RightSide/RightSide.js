@@ -37,7 +37,7 @@ const RightSide = () => {
             </h3>
           </Link>
         </div>
-        <p className="text-gray-500">{currentUser.bio}</p>
+        <p className="text-gray-500">{currentUser.studentEducation}</p>
         <hr className="w-full border-t border-gray-200 my-2" />
         <div className="flex justify-center items-center flex-col">
           <p className="text-gray-600 font-bold">{count}</p>
