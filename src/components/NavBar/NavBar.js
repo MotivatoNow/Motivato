@@ -14,7 +14,8 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBarsStaggered } from "react-icons/fa6";
+import { FaTimes } from "react-icons/fa";
 import { GrLogout } from "react-icons/gr";
 import { BsBell, BsChatDots } from "react-icons/bs";
 import { LiaUserFriendsSolid } from "react-icons/lia";
@@ -22,6 +23,7 @@ import { GrHomeRounded } from "react-icons/gr";
 import logo from "../../assets/images/Icon.png";
 import mobileLogo from "../../assets/images/Logo_PNG.png";
 import Search from "../Search/Search";
+import '../../App.css'
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -320,7 +322,7 @@ const NavBar = () => {
   //End of useEffect
 
   return (
-    <header className="bg-white shadow-sm  w-full top-0 z-50">
+    <header className="bg-white shadow-sm w-full top-0 z-50">
       <nav className="grid grid-cols-3 items-center px-5 py-2 bg-white">
         {/* Logo and Search */}
         <div className="flex items-center gap-1">
@@ -347,7 +349,7 @@ const NavBar = () => {
             className="text-3xl cursor-pointer z-[10001]"
             onClick={toggleMenu}
           >
-            {menuOpen ? <FaTimes /> : <FaBars />}
+            {menuOpen ? <FaTimes /> : <FaBarsStaggered />}
           </span>
         </div>
 

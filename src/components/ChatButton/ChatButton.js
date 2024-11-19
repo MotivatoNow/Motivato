@@ -4,11 +4,11 @@ import { FaBell } from 'react-icons/fa';
 const ChatButton = ({ onClick }) => {
     return (
         <button
-            className="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600"
+            className="flex items-center justify-center text-white bg-blue-500 px-3 py-3 rounded-[5px]"
             onClick={onClick}
         >
-            <FaBell className="mr-2" />
-            Message
+            <FaBell className="ml-2" />
+            הודעה
         </button>
     );
 };

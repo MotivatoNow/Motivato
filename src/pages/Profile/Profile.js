@@ -92,7 +92,7 @@ const loadFriends = async (friendIds) => {
 
   return (
     <>
-      <div className="profile_container bg-[#f2f4f7]">
+      <div className=" bg-[#f2f4f7] ">
         {userData && (
           <>
         {userData.userType === "Student" ?(
