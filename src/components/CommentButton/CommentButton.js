@@ -13,7 +13,13 @@ import { db } from "../../config/firebase";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { cancelEditing, deleteComment, editComment, handleEditComment, saveEditedComment } from "../../hooks/useContentActions";
+import {
+  cancelEditing,
+  deleteComment,
+  editComment,
+  handleEditComment,
+  saveEditedComment,
+} from "../../hooks/useContentActions";
 import { MdDeleteOutline } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 
@@ -169,84 +175,96 @@ const CommentButton = ({ posts }) => {
         </div>
 
         <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
-      {comments.length > 0 && (
-        <div className="space-y-4">
-          {comments.map((comment) => (
-            <div
-              className="bg-white p-3 rounded-lg flex space-x-3"
-              key={comment.id}
-            >
-              <Link
-                to={`/profile/${comment.userId}`}
-                className="flex-shrink-0"
-              >
-                <img
-                  className="w-10 h-10 rounded-full object-cover"
-                  src={comment.userProfilePicture || "defaultProfilePictureURL"}
-                  alt={`${comment.commentUserName}`}
-                />
-              </Link>
-              <div className="flex-grow">
-                {editingCommentId === comment.id ? (
-                  <>
-                    <input
-                      value={editedComment}
-                      onChange={(e) => setEditedComment(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg p-2 mb-2"
+          {comments.length > 0 && (
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <div
+                  className="bg-white p-3 rounded-lg flex space-x-3"
+                  key={comment.id}
+                >
+                  <Link
+                    to={`/profile/${comment.userId}`}
+                    className="flex-shrink-0"
+                  >
+                    <img
+                      className="w-10 h-10 rounded-full object-cover"
+                      src={
+                        comment.userProfilePicture || "defaultProfilePictureURL"
+                      }
+                      alt={`${comment.commentUserName}`}
                     />
+                  </Link>
+                  <div className="flex-grow">
+                    {editingCommentId === comment.id ? (
+                      <>
+                        <input
+                          value={editedComment}
+                          onChange={(e) => setEditedComment(e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg p-2 mb-2"
+                        />
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() =>
+                              saveEditedComment(
+                                comment.id,
+                                editedComment,
+                                setEditingCommentId,
+                                setEditedComment
+                              )
+                            }
+                            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                          >
+                            שמור
+                          </button>
+                          <button
+                            onClick={() =>
+                              cancelEditing(
+                                setEditingCommentId,
+                                setEditedComment
+                              )
+                            }
+                            className="bg-gray-500 text-white px-4 py-2 rounded-lg"
+                          >
+                            ביטול
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <Link
+                            to={`/profile/${comment.userId}`}
+                            className="text-sm font-semibold text-gray-800 hover:underline"
+                          >
+                            {comment.userName}
+                          </Link>
+                          <p className="text-xs text-gray-500">
+                            {comment.timeStamp}
+                          </p>
+                        </div>
+                        <p className="mt-1 text-gray-700">{comment.comment}</p>
+                      </>
+                    )}
+                  </div>
+                  {currentUser.uid === comment.userId && (
                     <div className="flex space-x-2">
-                    <button
-  onClick={() =>
-    saveEditedComment(comment.id, editedComment, setEditingCommentId, setEditedComment)
-  }
-  className="bg-blue-500 text-white px-4 py-2 rounded-lg"
->
-  שמור
-</button>
-<button
-  onClick={() => cancelEditing(setEditingCommentId, setEditedComment)}
-  className="bg-gray-500 text-white px-4 py-2 rounded-lg"
->
-  ביטול
-</button>
+                      <MdDeleteOutline
+                        className="cursor-pointer"
+                        onClick={() => deleteComment(comment.id)}
+                        size={20}
+                      />
+                      <CiEdit
+                        className="cursor-pointer"
+                        onClick={() => handleEditComment(comment,setEditingCommentId,setEditedComment)}
+                        size={20}
+                      />
                     </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center justify-between">
-                      <Link
-                        to={`/profile/${comment.userId}`}
-                        className="text-sm font-semibold text-gray-800 hover:underline"
-                      >
-                        {comment.userName}
-                      </Link>
-                      <p className="text-xs text-gray-500">
-                        {comment.timeStamp}
-                      </p>
-                    </div>
-                    <p className="mt-1 text-gray-700">{comment.comment}</p>
-                  </>
-                )}
-              </div>
-              {currentUser.uid === comment.userId && (
-                <div className="flex space-x-2">
-                  <MdDeleteOutline
-                    className="cursor-pointer"
-                    onClick={() => deleteComment(comment.id)}
-                    size={20}
-                  />
-                  <CiEdit
-                    className="cursor-pointer"
-                    onClick={() => handleEditComment(comment)}
-                    size={20}
-                  />
+                  )}
                 </div>
-              )}
+              ))}
             </div>
-          ))}
+          )}
         </div>
-      )}
-    </div>
       </div>
     </>
   );
