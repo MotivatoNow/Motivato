@@ -13,21 +13,27 @@ import { db } from "../../config/firebase";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { cancelEditing, deleteComment, editComment, handleEditComment, saveEditedComment } from "../../hooks/useContentActions";
+import { MdDeleteOutline } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
 
-const CommentButton = ({posts}) => {
-    const {currentUser} = useAuth();    
-    const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true);
-// toggle the add comment.
-const [showCommentBox, setShowCommentBox] = useState(false);
-// comments
-const [comment, setComment] = useState("");
-const [comments, setComments] = useState([]);
+const CommentButton = ({ posts }) => {
+  const { currentUser } = useAuth();
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editedComment, setEditedComment] = useState("");
 
-let commentsRef = collection(db, "Comments");
+  // toggle the add comment.
+  const [showCommentBox, setShowCommentBox] = useState(false);
+  // comments
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
 
- // here we add to setcomments.
- const getComment = (event) => {
+  let commentsRef = collection(db, "Comments");
+
+  // here we add to set comments.
+  const getComment = (event) => {
     setComment(event.target.value);
   };
 
@@ -124,84 +130,126 @@ let commentsRef = collection(db, "Comments");
   }, [posts.id]);
 
   useEffect(() => {
-      const fetchUserData = async () => {
-        try {
-          const userDoc = await getDoc(doc(db, "Users", posts.user.uid));
-          if (userDoc.exists()) {
-            setUserData(userDoc.data());
-          } else {
-            console.log("No such user!");
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        } finally {
-          setLoading(false);
+    const fetchUserData = async () => {
+      try {
+        const userDoc = await getDoc(doc(db, "Users", posts.user.uid));
+        if (userDoc.exists()) {
+          setUserData(userDoc.data());
+        } else {
+          console.log("No such user!");
         }
-      };
-      fetchUserData();
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserData();
+
     getComments(posts.id);
   }, [posts.user.uid]);
 
-
   return (
     <>
-        <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
-          <div className="flex items-center space-x-2 mb-3">
-            <input
-              placeholder="הוסף תגובה"
-              className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:[#3E54D3]"
-              onChange={getComment}
-              name={comment}
-              value={comment}
-            />
-            <button
-              className="bg-[#3E54D3] text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-              onClick={addComment}
-            >
-              הוסף תגובה
-            </button>
-          </div>
+      <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
+        <div className="flex items-center space-x-2 mb-3">
+          <input
+            placeholder="הוסף תגובה"
+            className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:[#3E54D3]"
+            onChange={getComment}
+            name={comment}
+            value={comment}
+          />
+          <button
+            className="bg-[#3E54D3] text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            onClick={addComment}
+          >
+            הוסף תגובה
+          </button>
+        </div>
 
-          {comments.length > 0 && (
-            <div className="space-y-4">
-              {comments.map((comment) => (
-                <div
-                  className="bg-white p-3 rounded-lg  flex space-x-3"
-                  key={comment.id}
-                >
-                  <Link
-                    to={`/profile/${comment.userId}`}
-                    className="flex-shrink-0"
-                  >
-                    <img
-                      className="w-10 h-10 rounded-full object-cover"
-                      src={
-                        comment.userProfilePicture || "defaultProfilePictureURL"
-                      }
-                      alt={`${comment.commentUserName}`}
+        <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
+      {comments.length > 0 && (
+        <div className="space-y-4">
+          {comments.map((comment) => (
+            <div
+              className="bg-white p-3 rounded-lg flex space-x-3"
+              key={comment.id}
+            >
+              <Link
+                to={`/profile/${comment.userId}`}
+                className="flex-shrink-0"
+              >
+                <img
+                  className="w-10 h-10 rounded-full object-cover"
+                  src={comment.userProfilePicture || "defaultProfilePictureURL"}
+                  alt={`${comment.commentUserName}`}
+                />
+              </Link>
+              <div className="flex-grow">
+                {editingCommentId === comment.id ? (
+                  <>
+                    <input
+                      value={editedComment}
+                      onChange={(e) => setEditedComment(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-2 mb-2"
                     />
-                  </Link>
-                  <div className="flex-grow">
+                    <div className="flex space-x-2">
+                    <button
+  onClick={() =>
+    saveEditedComment(comment.id, editedComment, setEditingCommentId, setEditedComment)
+  }
+  className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+>
+  שמור
+</button>
+<button
+  onClick={() => cancelEditing(setEditingCommentId, setEditedComment)}
+  className="bg-gray-500 text-white px-4 py-2 rounded-lg"
+>
+  ביטול
+</button>
+                    </div>
+                  </>
+                ) : (
+                  <>
                     <div className="flex items-center justify-between">
                       <Link
                         to={`/profile/${comment.userId}`}
                         className="text-sm font-semibold text-gray-800 hover:underline"
                       >
-                        {comment.commentUserName}
+                        {comment.userName}
                       </Link>
                       <p className="text-xs text-gray-500">
                         {comment.timeStamp}
                       </p>
                     </div>
                     <p className="mt-1 text-gray-700">{comment.comment}</p>
-                  </div>
+                  </>
+                )}
+              </div>
+              {currentUser.uid === comment.userId && (
+                <div className="flex space-x-2">
+                  <MdDeleteOutline
+                    className="cursor-pointer"
+                    onClick={() => deleteComment(comment.id)}
+                    size={20}
+                  />
+                  <CiEdit
+                    className="cursor-pointer"
+                    onClick={() => handleEditComment(comment)}
+                    size={20}
+                  />
                 </div>
-              ))}
+              )}
             </div>
-          )}
+          ))}
         </div>
+      )}
+    </div>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default CommentButton
+export default CommentButton;
