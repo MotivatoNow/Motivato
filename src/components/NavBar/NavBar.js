@@ -29,7 +29,7 @@ import '../../App.css'
 const NavBar = () => {
   const navigate = useNavigate();
   const [isVerified, setIsVerified] = useState(false);
-  const [friendRequests, setFriendRequests] = useState([]);
+  const [followerRequests, setFollowerRequests] = useState([]);
   const [notfications, setNotifications] = useState([]);
   const { currentUser } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false); // Managing the dropdown state
@@ -57,17 +57,17 @@ const NavBar = () => {
   // Accept friend request
   const handleAccept = async (request) => {
     try {
-      const requestDocRef = doc(db, "friendRequests", request.id);
+      const requestDocRef = doc(db, "followerRequests", request.id);
 
       // Update the status in Firebase to "accepted"
       await updateDoc(requestDocRef, { status: "accepted" });
 
       // Update the friends list for both users
       await updateDoc(doc(db, "Users", currentUser.uid), {
-        friends: arrayUnion(request.senderId),
+        followers: arrayUnion(request.senderId),
       });
       await updateDoc(doc(db, "Users", request.senderId), {
-        friends: arrayUnion(currentUser.uid),
+        followers: arrayUnion(currentUser.uid),
       });
 
       // Send a notification to the user who sent the friend request
@@ -84,7 +84,7 @@ const NavBar = () => {
         console.log(e);
       }
     } catch (error) {
-      console.error("Error accepting friend request:", error);
+      console.error("Error accepting follower request:", error);
     }
   };
 
@@ -92,12 +92,13 @@ const NavBar = () => {
   const newFriendNotification = async (newFriendId, acceptedUser) => {
     const notification = {
       postUser: newFriendId,
-      newFriendId: acceptedUser.uid,
-      newFriendName:
-        acceptedUser.type === "student"
-          ? `${acceptedUser.userName}` //to student name
-          : `${acceptedUser.companyName}`, // to company name
-      type: "new friend",
+      newFollowerdId: acceptedUser.uid,
+      newFollowerName: acceptedUser.userName,
+        // acceptedUser.type === "student"
+        //   ? `${acceptedUser.userName}` //to student name
+        //   : `${acceptedUser.companyName}`, // to company name
+      type: "new follower",
+      newFollowerProfilePicture:acceptedUser.profilePicture
     };
     const notificationsRef = addDoc(
       collection(db, "Notifications"),
@@ -114,10 +115,10 @@ const NavBar = () => {
   // Reject friend request
   const handleReject = async (request) => {
     try {
-      const requestDocRef = doc(db, "friendRequests", request.id);
+      const requestDocRef = doc(db, "followerRequests", request.id);
       await updateDoc(requestDocRef, { status: "rejected" });
     } catch (error) {
-      console.error("Error rejecting friend request:", error);
+      console.error("Error rejecting follower request:", error);
     }
   };
 
@@ -184,7 +185,7 @@ const NavBar = () => {
   useEffect(() => {
     if (currentUser) {
       const q = query(
-        collection(db, "friendRequests"),
+        collection(db, "followerRequests"),
         where("receiverId", "==", currentUser.uid),
         where("status", "==", "pending")
       );
@@ -194,7 +195,7 @@ const NavBar = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        setFriendRequests(requests);
+        setFollowerRequests(requests);
       });
 
       return () => unsubscribe();
@@ -294,9 +295,9 @@ const NavBar = () => {
             notificationData.postUser === currentUser.uid
           ) {
             userDoc = await getDoc(doc(db, "Users", notificationData.likeId));
-          } else if (notificationData.type === "new friend") {
+          } else if (notificationData.type === "new follower") {
             userDoc = await getDoc(
-              doc(db, "Users", notificationData.newFriendId)
+              doc(db, "Users", notificationData.newFollowerId)
             );
           } else {
             userDoc = await getDoc(doc(db, "Users", notificationData.user));
@@ -442,11 +443,11 @@ const NavBar = () => {
                               </>
                             )}
                             {/* friend */}
-                            {notification.type === "new friend" && (
+                            {notification.type === "new follower" && (
                               <>
                                 <Link
                                   className="flex mb-2 items-center gap-2"
-                                  to={`/profile/${notification.newFriendId}`}
+                                  to={`/profile/${notification.newFollowerId}`}
                                 >
                                   <img
                                     className="w-10 h-10 rounded-full"
@@ -456,7 +457,7 @@ const NavBar = () => {
                                     } // הצגת תמונת המשתמש הנכונה מהתגובה
                                     alt={`${users.userName}`}
                                   />
-                                  {notification.newFriendName} אישר/ה את בקשת
+                                  {notification.newFollowerName} אישר/ה את בקשת
                                   החברות שלך
                                 </Link>
                                 <hr />
@@ -500,15 +501,15 @@ const NavBar = () => {
                   className="relative py-2 px-4 cursor-pointer hover:border-b-2 hover:border-[#15CDCA] transition"
                 >
                   <LiaUserFriendsSolid size={24} onClick={toggleDropdown} />
-                  {friendRequests.length > 0 && (
+                  {followerRequests.length > 0 && (
                     <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs px-1.5">
-                      {friendRequests.length}
+                      {followerRequests.length}
                     </span>
                   )}
                   {dropdownOpen && (
                     <div className="absolute right-2 top-[40%] mt-2 w-80 bg-white border rounded-lg shadow-lg z-10">
-                      {friendRequests.length > 0 ? (
-                        friendRequests.map((request) => (
+                      {followerRequests.length > 0 ? (
+                        followerRequests.map((request) => (
                           <div
                             key={request.id}
                             className="px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -519,7 +520,7 @@ const NavBar = () => {
                                 src={request.senderPicture}
                                 alt={request.senderFirstName}
                               />
-                              {request.senderuserName} שלח לך בקשת חברות
+                              {request.senderUserName} שלח לך בקשת חברות
                             </p>
                             <div className="flex justify-end gap-2 mt-2">
                               <button

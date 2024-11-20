@@ -33,7 +33,7 @@ const ModalEditProfileComponent = ({
         userGitHub: userGitHub || "",
         userWebsite: userWebsite || "",
         userLinkedin: userLinkedin || "",
-        userName: `${firstName} ${lastName}`,
+        userName: `${firstName} ${lastName}` || "",
       });
 
       // עדכון ה-state המקומי

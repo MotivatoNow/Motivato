@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../config/firebase";
 import FriendButton from "../../FriendButton/FriendButton";
-import { loadUsers } from "../../../features/RightSide/loadUser";
 
 const RightSide = () => {
   const { currentUser } = useAuth();
@@ -19,7 +18,7 @@ const RightSide = () => {
   // טעינת משתמשים להצעות חברים
   useEffect(() => {
     //parameters: currentUser,shuffleArray,set suggested Friends
-      loadUsers(currentUser,shuffleArray,setSuggestedFriends,setCount);
+      // loadUsers(currentUser,shuffleArray,setSuggestedFriends,setCount);
   }, [currentUser.uid]);
 
   return (

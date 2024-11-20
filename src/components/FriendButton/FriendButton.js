@@ -25,37 +25,37 @@ const FriendButton = ({user}) => {
     const handleAccept = async () => {
         try {
             const requestQuery = query(
-                collection(db, "friendRequests"),
-                where("senderId", "==", user.uid),
-                where("receiverId", "==", currentUser.uid)
+                collection(db, "followerRequests"),
+                where("senderId", "==", user.uid), //who send the request
+                where("receiverId", "==", currentUser.uid) //who received the request
             );
 
             const requestSnapshot = await getDocs(requestQuery);
 
             if (!requestSnapshot.empty) {
-                const requestDoc = requestSnapshot.docs[0].ref; // Récupère la référence du document
+                const requestDoc = requestSnapshot.docs[0].ref; 
 
                 await updateDoc(requestDoc, { status: "accepted" });
 
                 await updateDoc(doc(db, "Users", currentUser.uid), {
-                    friends: arrayUnion(user.uid),
+                    followers: arrayUnion(user.uid),
                 });
                 await updateDoc(doc(db, "Users", user.uid), {
-                    friends: arrayUnion(currentUser.uid),
+                    followers: arrayUnion(currentUser.uid),
                 });
 
-                await newFriendNotification(user.uid, currentUser);
+                await newFollowerNotification(user.uid, currentUser);
             }
         } catch (error) {
             console.error("Error accepting friend request:", error);
         }
     };
-    const newFriendNotification = async (newFriendId, acceptedUser) => {
+    const newFollowerNotification = async (newFollowerId, acceptedUser) => {
         const notification = {
-            postUser: newFriendId,
-            newFriendId: acceptedUser.uid,
-            newFriendName: `${acceptedUser.firstName} ${acceptedUser.lastName}`,
-            type: "new friend",
+            postUser: newFollowerId, //Who send the request
+            newFollowerId: acceptedUser.uid, //who accept the request
+            newFollowerName: `${acceptedUser.userName}`, //the name of user accept
+            type: "new follower",
         };
 
         try {
@@ -70,7 +70,7 @@ const FriendButton = ({user}) => {
     const handleReject = async (request) => {
         try {
             const requestQuery = query(
-                collection(db, "friendRequests"),
+                collection(db, "followerRequests"),
                 where("senderId", "==", user.uid),
                 where("receiverId", "==", currentUser.uid)
             );
@@ -82,7 +82,7 @@ const FriendButton = ({user}) => {
                 await updateDoc(requestDoc, { status: "rejected" });
             }
         } catch (error) {
-            console.error("Error rejecting friend request:", error);
+            console.error("Error rejecting follower request:", error);
         }
     };
 
@@ -95,27 +95,28 @@ const FriendButton = ({user}) => {
     const addFriend = async () => {
         try {
             console.log(1)
-            await addDoc (collection (db, 'friendRequests'), {
-                senderId: currentUser.uid, // מזהה המשתמש השולח
-                senderuserName: currentUser.userName, // שם פרטי של השולח
-                senderPicture: currentUser.profilePicture,
-                receiverId: user.uid, // מזהה המשתמש המקבל
-                status: 'pending', // סטטוס ראשוני של הבקשה
-                timestamp: new Date ().toISOString () // תאריך הבקשה
+            await addDoc (collection (db, 'followerRequests'), {
+                senderId: currentUser.uid, // The id of the sender
+                senderUserName: currentUser.userName, // The username  of the sender
+                senderPicture: currentUser.profilePicture, // The profile picture of the sender
+                receiverId: user.uid, // The unique identifier of the receiver
+                status: 'pending', // Initial status of the request (pending, accepted, declined)
+                timestamp: new Date().toISOString() // The timestamp of the request was created
+                
             });
             setStatus ('pending');
-            console.log ('Friend request sent!');
+            console.log ('Follower request sent!');
         } catch (error) {
-            console.log ('Error sending friend request:', error);
+            console.log ('Error sending follower request:', error);
         }
     };
 
 
     const removeFriend = async () => {
         try {
-            // מחפשים את בקשת החברות באוסף friendRequests כאשר המשתמש הנוכחי הוא השולח או המקבל
+
             const q = query (
-                collection (db, 'friendRequests'),
+                collection (db, 'followerRequests'),
                 where (
                     'senderId', 'in', [currentUser.uid, user.uid]
                 ),
@@ -138,16 +139,16 @@ const FriendButton = ({user}) => {
                 });
 
                 // מסירים את המשתמש הנוכחי ממערך friends של החבר
-                const friendUserDocRef = doc (db, 'Users', user.uid);
-                await updateDoc (friendUserDocRef, {
-                    friends: arrayRemove (currentUser.uid)
+                const followerUserDocRef = doc (db, 'Users', user.uid);
+                await updateDoc (followerUserDocRef, {
+                    followers: arrayRemove (currentUser.uid)
                 });
 
                 setStatus (null); // מחזירים את הסטטוס ל-null
-                console.log ("Friend removed successfully!");
+                console.log ("follower removed successfully!");
             }
         } catch (error) {
-            console.log ("Error removing friend:", error);
+            console.log ("Error removing follower:", error);
         }
     };
 
@@ -158,14 +159,14 @@ const FriendButton = ({user}) => {
         const friendRequest = async () => {
             try {
                 const q = query (
-                    collection (db, 'friendRequests'),
+                    collection (db, 'followerRequests'),
                     where ('senderId', '==', currentUser.uid),
                     where ('receiverId', '==', user.uid)
                 )
                 const querySnapshot = await getDocs (q);
                 if (querySnapshot.empty) {
                     const q = query (
-                        collection (db, 'friendRequests'),
+                        collection (db, 'followerRequests'),
                         where ('senderId', '==', user.uid),
                         where ('receiverId', '==', currentUser.uid)
                     )

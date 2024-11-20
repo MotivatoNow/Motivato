@@ -10,6 +10,7 @@ import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
 import StudentProfile from "../../components/Profile/StudentProfile/StudentProfile";
 import CompanyProfile from "../../components/Profile/CompanyProfile/CompanyProfile";
+import { loadData, loadFollowers } from "../../hooks/useLoadUsers";
 
 const Profile = () => {
   const { id } = useParams();
@@ -22,47 +23,8 @@ const Profile = () => {
   const [photos, setPhotos] = useState([]);
   const [activeChatUser, setActiveChatUser] = useState(null);
 
-// Friends
-const loadFriends = async (friendIds) => {
-  try {
-    const friendPromises = friendIds.map((friendId) =>
-      getDoc(doc(db, "Users", friendId))
-    );
-    const friendDocs = await Promise.all(friendPromises);
-
-    const loadedFriends = friendDocs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setFollowers(loadedFriends); // שמירת החברים בסטייט
-  } catch (error) {
-    console.error("Error loading friends:", error);
-  }
-};
-
-  //user
-  const loadData = async () => {
-    try {
-      const userDoc = await getDoc(doc(db, "Users", id));
-      if (userDoc.exists()) {
-        setUserData({ id: userDoc.id, ...userDoc.data() });
-        setUserNotFound(false);
-        if (userDoc.data().friends) {
-          loadFriends(userDoc.data().friends);
-        }
-      } else {
-        setUserNotFound(true);
-      }
-    } catch (error) {
-      console.error("Error getting user: ", error);
-    }
-    setLoading(false);
-  };
 
 
-  
-
-  
 
   useEffect(() => {
     if (!id && currentUser) {
@@ -71,7 +33,7 @@ const loadFriends = async (friendIds) => {
     }
 
     if (id) {
-      loadData();
+      loadData(id,setUserData,setUserNotFound,loadFollowers,setLoading,setFollowers);
     }
   }, [id, currentUser, navigate]);
 
@@ -96,7 +58,7 @@ const loadFriends = async (friendIds) => {
         {userData && (
           <>
         {userData.userType === "Student" ?(
-            <StudentProfile user={userData} currentUser={currentUser}/>
+            <StudentProfile user={userData} id={id} currentUser={currentUser} />
         ):
         (
           <CompanyProfile user={userData} currentUser={currentUser}/>
