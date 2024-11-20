@@ -109,14 +109,16 @@ const StudentProfile = ({ user, id,currentUser }) => {
     const unsubscribe = onSnapshot(userRef, (snapshot) => {
       setUserData(snapshot.data());
     });
-    loadFollowers(userData.uid,setFollowers)
-
+    if (userData && userData.followers) {
+      loadFollowers(userData.followers, setFollowers);
+    }
     return () => unsubscribe();
-  }, [user.uid]);
+  }, [user.uid,userData]);
   // followers
 
   return (
     <>
+  
       <div className="w-full min-h-screen grid grid-rows-[1fr_2fr]">
         {/* ROW 1 */}
         <div className="bg-[#FDFDFF] px-5 py-2 grid grid-cols-[3fr_3fr]">
@@ -132,7 +134,8 @@ const StudentProfile = ({ user, id,currentUser }) => {
             <div className="flex flex-col px-3">
               {/* Name */}
               <h1 className="text-2xl font-semibold">{userData.userName}
-                {followers.length}
+              
+
               </h1>
 
               {/* Student Education */}

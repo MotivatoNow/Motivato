@@ -7,10 +7,11 @@ import ModalEditProfileComponent from '../../Modal/ModalEditProfile/ModalEditPro
 import ChatPopup from '../../ChatPopup/ChatPopup';
 import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../firebase';
+import { loadFollowers } from '../../../hooks/useLoadUsers';
 
 const CompanyProfile = ({user, currentUser}) => {
   const [userData,setUserData]=useState(user)//USERDATA  מעתיק USER
-    const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
   const [activeTab, setActiveTab] = useState("posts");
   const [followers, setFollowers] = useState([]);
@@ -93,9 +94,11 @@ const CompanyProfile = ({user, currentUser}) => {
     const unsubscribe = onSnapshot(userRef, (snapshot) => {
       setUserData(snapshot.data());
     });
-  
+    if (userData && userData.followers) {
+      loadFollowers(userData.followers, setFollowers);
+    }
     return () => unsubscribe(); 
-  }, [user.uid]);
+  }, [user.uid,userData]);
 
   return (
     <>
@@ -111,6 +114,7 @@ const CompanyProfile = ({user, currentUser}) => {
                   <div className="profile-info">
                     <h2 className="profile-name">
                       {userData.companyName}
+                      {followers.length}
                       {currentUser.uid !== userData.uid && (
                         <>
                           <ChatButton

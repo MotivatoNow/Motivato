@@ -76,7 +76,7 @@ const NavBar = () => {
         const docSnap = await getDoc(receiverUserDocRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          const receiverName = `${data.firstName} ${data.lastName}`;
+          // const receiverName = `${data.userName}`;
           console.log(data); //natan    currentUser=elianor
           await newFriendNotification(data.uid, currentUser);
         }
@@ -92,13 +92,13 @@ const NavBar = () => {
   const newFriendNotification = async (newFriendId, acceptedUser) => {
     const notification = {
       postUser: newFriendId,
-      newFollowerdId: acceptedUser.uid,
+      newFollowerId: acceptedUser.uid,
       newFollowerName: acceptedUser.userName,
         // acceptedUser.type === "student"
         //   ? `${acceptedUser.userName}` //to student name
         //   : `${acceptedUser.companyName}`, // to company name
       type: "new follower",
-      newFollowerProfilePicture:acceptedUser.profilePicture
+      newFollowerProfilePicture:acceptedUser.profilePicture,
     };
     const notificationsRef = addDoc(
       collection(db, "Notifications"),
@@ -452,10 +452,10 @@ const NavBar = () => {
                                   <img
                                     className="w-10 h-10 rounded-full"
                                     src={
-                                      notification.userProfilePicture ||
+                                      notification.newFollowerProfilePicture ||
                                       "defaultProfilePictureURL"
                                     } // הצגת תמונת המשתמש הנכונה מהתגובה
-                                    alt={`${users.userName}`}
+                                    alt={`${notfications.newFollowerName}`}
                                   />
                                   {notification.newFollowerName} אישר/ה את בקשת
                                   החברות שלך

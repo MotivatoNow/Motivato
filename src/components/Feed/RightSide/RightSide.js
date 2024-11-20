@@ -4,21 +4,22 @@ import { Link } from "react-router-dom";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../config/firebase";
 import FriendButton from "../../FriendButton/FriendButton";
+import { loadFollowers, loadUsers } from "../../../hooks/useLoadUsers";
 
 const RightSide = () => {
   const { currentUser } = useAuth();
   const [suggestedFriends, setSuggestedFriends] = useState([]);
-  const [count,setCount]=useState(0) //count friend 
+  const [followers,setFollowers] = useState([]);
   
-  // פונקציה לערבוב מערך
-  const shuffleArray = (array) => {
-    return array.sort(() => Math.random() - 0.5);
-  };
+
 
   // טעינת משתמשים להצעות חברים
   useEffect(() => {
     //parameters: currentUser,shuffleArray,set suggested Friends
-      // loadUsers(currentUser,shuffleArray,setSuggestedFriends,setCount);
+    if (currentUser && currentUser.followers) {
+      loadUsers(currentUser,setSuggestedFriends)
+      loadFollowers(currentUser.followers, setFollowers);
+    }
   }, [currentUser.uid]);
 
   return (
@@ -39,7 +40,7 @@ const RightSide = () => {
         <p className="text-gray-500">{currentUser.studentEducation}</p>
         <hr className="w-full border-t border-gray-200 my-2" />
         <div className="flex justify-center items-center flex-col">
-          <p className="text-gray-600 font-bold">{count}</p>
+          <p className="text-gray-600 font-bold">{followers.length}</p>
           <p className="text-gray-400 font-semibold">Followers</p>
         </div>
         <hr className="w-full border-t border-gray-200 my-2" />

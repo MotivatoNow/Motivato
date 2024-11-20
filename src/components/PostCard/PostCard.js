@@ -15,11 +15,17 @@ import LikeButton from "../../features/LikeButton/LikeButton";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { Link } from "react-router-dom";
 import ShareButton from "../ShareButton/ShareButton";
+import { CiEdit } from "react-icons/ci";
+import { MdDeleteOutline } from "react-icons/md";
+import { deletePost, editPost } from "../../hooks/useContentActions";
+import ModalEditPost from "../Modal/ModalEditPost/ModalEditPost";
 
 const PostCard = ({ posts }) => {
   const { currentUser } = useAuth();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [isEditing, setIsEditing] = useState(false);
 
   // toggle the add comment.
   const [showCommentBox, setShowCommentBox] = useState(false);
@@ -74,9 +80,13 @@ const PostCard = ({ posts }) => {
       });
       if (posts.user.uid !== currentUser.uid) {
         const commentName = `${currentUser.userName} `;
-        commentNotifications(posts.id, currentUser.uid, commentName, posts.user.uid);
+        commentNotifications(
+          posts.id,
+          currentUser.uid,
+          commentName,
+          posts.user.uid
+        );
       }
-
     } catch (error) {
       console.error(error);
     }
@@ -92,7 +102,12 @@ const PostCard = ({ posts }) => {
     );
     setComment("");
   };
-  const commentNotifications = async (postId, commentId, commentName, postOwnerId) => {
+  const commentNotifications = async (
+    postId,
+    commentId,
+    commentName,
+    postOwnerId
+  ) => {
     const notification = {
       postId: postId,
       commentId: commentId,
@@ -111,7 +126,6 @@ const PostCard = ({ posts }) => {
         console.log(err);
       });
   };
-  
 
   useMemo(() => {
     getComments(posts.id);
@@ -149,17 +163,41 @@ const PostCard = ({ posts }) => {
   return (
     <div className="bg-white shadow-sm rounded-lg p-6 mb-6 max-w-2xl mx-auto mt-3">
       <div className="flex items-center mb-4">
-       <Link to={`/profile/${userData.uid}`}>
-       <img
-          src={userData.profilePicture || "defaultProfilePictureURL"}
-          alt="Profile"
-          className="w-12 h-12 rounded-full object-cover"
-        /></Link>
+        <Link to={`/profile/${userData.uid}`}>
+          <img
+            src={userData.profilePicture || "defaultProfilePictureURL"}
+            alt="Profile"
+            className="w-12 h-12 rounded-full object-cover"
+          />
+        </Link>
         <div className="mr-4">
           <Link to={`/profile/${userData.uid}`}>
-          <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-500 hover:underline">{userData.userName}</h3></Link>
+            <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-500 hover:underline">
+              {userData.userName}
+            </h3>
+          </Link>
           <p className="text-sm text-gray-600">{posts.timeStamp}</p>
         </div>
+        {currentUser.uid === userData.uid && (
+          <div className="flex gap-3">
+            <MdDeleteOutline
+              onClick={() => deletePost(posts.id)}
+              size={20}
+            />
+            <CiEdit 
+            onClick={() => editPost(setIsEditing)}
+            size={20} />
+            {isEditing && (
+                <ModalEditPost
+                    isOpen={isEditing}
+                    onClose={() => setIsEditing(false)}
+                    posts={posts}
+                    user={currentUser}
+                />
+            )}
+            
+          </div>
+        )}
       </div>
 
       <div className="mb-4">
@@ -174,7 +212,7 @@ const PostCard = ({ posts }) => {
           </div>
         )}
       </div>
-      <hr className="text-white"/>
+      <hr className="text-white" />
 
       <div className="flex items-center justify-between border-t border-gray-200 pt-4">
         <LikeButton posts={posts} />
@@ -189,50 +227,62 @@ const PostCard = ({ posts }) => {
       </div>
 
       {showCommentBox && (
-  <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
-    <div className="flex items-center space-x-2 mb-3">
-      <input
-        placeholder="הוסף תגובה"
-        className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:[#3E54D3]"
-        onChange={getComment}
-        name={comment}
-        value={comment}
-      />
-      <button
-        className="bg-[#3E54D3] text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-        onClick={addComment}
-      >
-        הוסף תגובה
-      </button>
-    </div>
-
-    {comments.length > 0 && (
-      <div className="space-y-4">
-        {comments.map((comment) => (
-          <div className="bg-white p-3 rounded-lg  flex space-x-3" key={comment.id}>
-            <Link to={`/profile/${comment.userId}`} className="flex-shrink-0">
-              <img
-                className="w-10 h-10 rounded-full object-cover"
-                src={comment.userProfilePicture || "defaultProfilePictureURL"}
-                alt={`${comment.commentUserName}`}
-              />
-            </Link>
-            <div className="flex-grow">
-              <div className="flex items-center justify-between">
-                <Link to={`/profile/${comment.userId}`} className="text-sm font-semibold text-gray-800 hover:underline">
-                  {comment.commentUserName}
-                </Link>
-                <p className="text-xs text-gray-500">{comment.timeStamp}</p>
-              </div>
-              <p className="mt-1 text-gray-700">{comment.comment}</p>
-            </div>
+        <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
+          <div className="flex items-center space-x-2 mb-3">
+            <input
+              placeholder="הוסף תגובה"
+              className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:[#3E54D3]"
+              onChange={getComment}
+              name={comment}
+              value={comment}
+            />
+            <button
+              className="bg-[#3E54D3] text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              onClick={addComment}
+            >
+              הוסף תגובה
+            </button>
           </div>
-        ))}
-      </div>
-    )}
-  </div>
-)}
 
+          {comments.length > 0 && (
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <div
+                  className="bg-white p-3 rounded-lg  flex space-x-3"
+                  key={comment.id}
+                >
+                  <Link
+                    to={`/profile/${comment.userId}`}
+                    className="flex-shrink-0"
+                  >
+                    <img
+                      className="w-10 h-10 rounded-full object-cover"
+                      src={
+                        comment.userProfilePicture || "defaultProfilePictureURL"
+                      }
+                      alt={`${comment.commentUserName}`}
+                    />
+                  </Link>
+                  <div className="flex-grow">
+                    <div className="flex items-center justify-between">
+                      <Link
+                        to={`/profile/${comment.userId}`}
+                        className="text-sm font-semibold text-gray-800 hover:underline"
+                      >
+                        {comment.commentUserName}
+                      </Link>
+                      <p className="text-xs text-gray-500">
+                        {comment.timeStamp}
+                      </p>
+                    </div>
+                    <p className="mt-1 text-gray-700">{comment.comment}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

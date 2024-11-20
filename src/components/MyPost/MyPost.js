@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./MyPost.css";
 import { useParams } from "react-router-dom";
 import { postStatus } from "../../context/Firestore";
-import ModalComponent from "../Modal/ModalPost/Modal";
+import ModalPost from "../Modal/ModalPost/ModalPost";
 import { useAuth } from "../../context/AuthContext";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { collection, doc, getDoc } from "firebase/firestore";
@@ -73,7 +73,7 @@ const MyPost = () => {
           כתיבת פוסט חדש
         </button>
       </div>
-      <ModalComponent
+      <ModalPost
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         setPost={setPost}
