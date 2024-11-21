@@ -1,7 +1,7 @@
 import {  deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { message } from 'antd';
-
+//Post functions
 export const deletePost = (postId) => {
     if (window.confirm("האם אתה בטוח שברצונך למחוק את הפוסט הזה?")) {
         handleDeletePost(postId);
@@ -76,3 +76,29 @@ export const editComment = async (commentDoc, updatedFields) => {
     setEditingCommentId(null);
     setEditedComment("");
   };
+
+
+//Missions functions
+export const deleteMissions = (missionId) => {
+  if (window.confirm("האם אתה בטוח שברצונך למחוק את המשימה הזה?")) {
+      handleDeleteMission(missionId);
+  }
+};
+
+const handleDeleteMission = async (missionId) => {
+  const missionRef = doc(db, "Missions", missionId);
+  try {
+      await deleteDoc(missionRef);
+      
+      message.success("המשימה נמחק בהצלחה!");
+  } catch (error) {
+      console.error("שגיאה בעת מחיקת המשימה:", error);
+      alert("נכשל בניסיון למחוק את המשימה.");
+  }
+};
+
+export const editMission=(setIsEditing)=>{
+  if (window.confirm("האם אתה בטוח שברצונך לעדכן את המשימה הזה?")) {
+      setIsEditing(true)
+  }
+}
