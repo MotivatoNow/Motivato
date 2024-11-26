@@ -36,7 +36,7 @@ const ModalMission = ({
         <input
           value={title}
           className="modal-input"
-          placeholder="Title*"
+          placeholder="כותרת*"
           onChange={(e) => setTitle(e.target.value)}
           required
         />
@@ -44,7 +44,7 @@ const ModalMission = ({
         <input
           value={place}
           className="modal-input"
-          placeholder="Place*"
+          placeholder="מיקום*"
           onChange={(e) => setPlace(e.target.value)}
           required
         />

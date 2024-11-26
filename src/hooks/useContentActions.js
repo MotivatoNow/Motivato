@@ -90,7 +90,7 @@ const handleDeleteMission = async (missionId) => {
   try {
       await deleteDoc(missionRef);
       
-      message.success("המשימה נמחק בהצלחה!");
+      message.success("המשימה נמחקה בהצלחה!");
   } catch (error) {
       console.error("שגיאה בעת מחיקת המשימה:", error);
       alert("נכשל בניסיון למחוק את המשימה.");

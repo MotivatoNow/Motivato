@@ -104,7 +104,7 @@ const [isEditing,setIsEditing]=useState(false)
         <div className="post-header">
           <div className="user-info">
             <img
-              src={userData.profilePicture || "defaultProfilePictureURL"} // Image de profil
+              src={userData.profilePicture || "defaultProfilePictureURL"}
               alt="Profile"
               className="user-profile-image"
             />
