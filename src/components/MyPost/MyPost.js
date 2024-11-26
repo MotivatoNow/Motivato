@@ -53,10 +53,10 @@ const MyPost = () => {
     const storageRef = ref(
       storage,
       `ImagePost/${currentUser.uid}/${file.name}`
-    ); // Chemin vers le stockage
-    await uploadBytes(storageRef, file); // Téléchargez le fichier
-    const url = await getDownloadURL(storageRef); // Obtenez l'URL de téléchargement
-    return url; // Retournez l'URL de l'image
+    ); // file path
+    await uploadBytes(storageRef, file); // uploading file
+    const url = await getDownloadURL(storageRef); // URL
+    return url; // return url image
   };
   return (
     <div className="bg-white shadow-sm rounded-lg p-4 mb-6 max-w-2xl mx-auto mt-5">

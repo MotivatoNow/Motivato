@@ -16,12 +16,13 @@ import { useAuth } from "../../context/AuthContext";
 import {
   cancelEditing,
   deleteComment,
-  editComment,
   handleEditComment,
   saveEditedComment,
 } from "../../hooks/useContentActions";
 import { MdDeleteOutline } from "react-icons/md";
-import { CiEdit } from "react-icons/ci";
+import { CiCamera, CiEdit } from "react-icons/ci";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../firebase";
 
 const CommentButton = ({ posts }) => {
   const { currentUser } = useAuth();
@@ -29,6 +30,7 @@ const CommentButton = ({ posts }) => {
   const [loading, setLoading] = useState(true);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
+  const [commentImage, setCommentImage] = useState(null);
 
   // toggle the add comment.
   const [showCommentBox, setShowCommentBox] = useState(false);
@@ -73,15 +75,24 @@ const CommentButton = ({ posts }) => {
   };
 
   // Adding to firebase.
-  const postComment = (postId, comment, timeStamp, userId, commentUserName) => {
+  const postComment = (
+    postId,
+    comment,
+    commentImage,
+    timeStamp,
+    userId,
+    commentUserName
+  ) => {
     try {
-      addDoc(commentsRef, {
-        postId,
-        comment,
-        timeStamp,
-        userId,
-        commentUserName,
-      });
+      let object={
+        postId:postId,
+        comment:comment,
+        commentImage:commentImage,//link image 
+        timeStamp:timeStamp,
+        userId:userId,
+        commentUserName:commentUserName
+      }
+      addDoc(commentsRef, object);
       if (posts.user.uid !== currentUser.uid) {
         const commentName = `${currentUser.userName} `;
         commentNotifications(
@@ -90,6 +101,7 @@ const CommentButton = ({ posts }) => {
           commentName,
           posts.user.uid
         );
+        
       }
     } catch (error) {
       console.error(error);
@@ -97,21 +109,53 @@ const CommentButton = ({ posts }) => {
   };
   //function to add comments.
   const addComment = async () => {
-    postComment(
-      posts.id,
-      comment,
-      getCurrentTimeStamp("LLL"),
-      currentUser?.uid,
-      currentUser?.userName
-    );
-    setComment("");
+    let imageURL = "";
+    if (commentImage) {
+      try {
+        imageURL = await uploadCommentImage(commentImage);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return;
+      }
+    }
+    try {
+      postComment(
+        posts.id,
+        comment,
+        imageURL,
+        getCurrentTimeStamp("LLL"),
+        currentUser?.uid,
+        currentUser?.userName
+      );
+      setComment("");
+      setCommentImage(null);
+    } 
+    catch (error) {
+      console.log(error);
+    }
   };
+
+  const deleteImage = (commentImage) => {
+    setCommentImage("");
+  };
+  const uploadCommentImage = async (file) => {
+    const storageRef = ref(
+      storage,
+      `ImageComment/${posts.id}/${currentUser.uid}/${file.name}`
+    );
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    return url;
+  };
+
+  //Notification
   const commentNotifications = async (
     postId,
     commentId,
     commentName,
     postOwnerId
   ) => {
+    console.log(commentId)
     const notification = {
       postId: postId,
       commentId: commentId,
@@ -141,8 +185,6 @@ const CommentButton = ({ posts }) => {
         const userDoc = await getDoc(doc(db, "Users", posts.user.uid));
         if (userDoc.exists()) {
           setUserData(userDoc.data());
-        } else {
-          console.log("No such user!");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -166,6 +208,39 @@ const CommentButton = ({ posts }) => {
             name={comment}
             value={comment}
           />
+          <div className="flex items-center gap-4 mb-4">
+            <label
+              htmlFor="file-upload"
+              className="cursor-pointer inline-block bg-[#3E54D3] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-[5px] border-none shadow-sm transition"
+            >
+              <CiCamera size={24} />
+            </label>
+
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => setCommentImage(e.target.files[0])}
+            />
+            {commentImage && (
+              <div className="relative flex items-center justify-center text-gray-500 bg-gray-100 py-2 px-4 rounded-[5px] border-none shadow-sm cursor-pointer">
+                {commentImage && (
+                  <>
+                    <img src={commentImage} className="h-6 w-6" />
+                  </>
+                )}
+                <span className="absolute top-1 right-0">
+                  {commentImage.name}
+                  <MdDeleteOutline
+                    onClick={() => deleteImage(commentImage)}
+                    size={20}
+                  />
+                </span>
+              </div>
+            )}
+            {/*  */}
+          </div>
           <button
             className="bg-[#3E54D3] text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
             onClick={addComment}
@@ -194,6 +269,7 @@ const CommentButton = ({ posts }) => {
                       alt={`${comment.commentUserName}`}
                     />
                   </Link>
+
                   <div className="flex-grow">
                     {editingCommentId === comment.id ? (
                       <>
@@ -242,6 +318,17 @@ const CommentButton = ({ posts }) => {
                             {comment.timeStamp}
                           </p>
                         </div>
+                        <div className="mb-4">
+                          {comment.commentImage && (
+                            <div className="mt-4">
+                              <img
+                                src={comment.commentImage}
+                                alt="Post content"
+                                className="w-full max-h-96 object-cover rounded-lg"
+                              />
+                            </div>
+                          )}
+                        </div>
                         <p className="mt-1 text-gray-700">{comment.comment}</p>
                       </>
                     )}
@@ -255,7 +342,13 @@ const CommentButton = ({ posts }) => {
                       />
                       <CiEdit
                         className="cursor-pointer"
-                        onClick={() => handleEditComment(comment,setEditingCommentId,setEditedComment)}
+                        onClick={() =>
+                          handleEditComment(
+                            comment,
+                            setEditingCommentId,
+                            setEditedComment
+                          )
+                        }
                         size={20}
                       />
                     </div>
