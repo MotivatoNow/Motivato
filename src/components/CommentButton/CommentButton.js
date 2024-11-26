@@ -8,7 +8,6 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { FaRegComment } from "react-icons/fa";
 import { db } from "../../config/firebase";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { Link } from "react-router-dom";
@@ -277,7 +276,22 @@ const CommentButton = ({ posts }) => {
                           value={editedComment}
                           onChange={(e) => setEditedComment(e.target.value)}
                           className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-                        />
+                        />{commentImage && (
+                          <div className="relative flex items-center justify-center text-gray-500 bg-gray-100 py-2 px-4 rounded-[5px] border-none shadow-sm cursor-pointer">
+                            {commentImage && (
+                              <>
+                                <img src={commentImage} className="h-6 w-6" />
+                              </>
+                            )}
+                            <span className="absolute top-1 right-0">
+                              {commentImage.name}
+                              <MdDeleteOutline
+                                onClick={() => deleteImage(commentImage)}
+                                size={20}
+                              />
+                            </span>
+                          </div>
+                        )}
                         <div className="flex space-x-2">
                           <button
                             onClick={() =>

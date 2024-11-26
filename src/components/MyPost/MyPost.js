@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./MyPost.css";
-import { useParams } from "react-router-dom";
 import { postStatus } from "../../context/Firestore";
 import ModalPost from "../Modal/ModalPost/ModalPost";
 import { useAuth } from "../../context/AuthContext";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { collection} from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
