@@ -15,6 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 import {
   cancelEditing,
   deleteComment,
+  deleteOldImage,
   handleEditComment,
   saveEditedComment,
 } from "../../hooks/useContentActions";
@@ -28,11 +29,13 @@ const CommentButton = ({ posts }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editingCommentId, setEditingCommentId] = useState(null);
-  const [editedComment, setEditedComment] = useState("");
+  const [editedComment, setEditedComment] = useState(""); //edit comment text
   const [commentImage, setCommentImage] = useState(null);
+  const [editedCommentImage, setEditedCommentImage] = useState(null);
 
   // toggle the add comment.
   const [showCommentBox, setShowCommentBox] = useState(false);
+
   // comments
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
@@ -40,10 +43,6 @@ const CommentButton = ({ posts }) => {
   let commentsRef = collection(db, "Comments");
 
   // here we add to set comments.
-  const getComment = (event) => {
-    setComment(event.target.value);
-  };
-
   const getComments = (postId) => {
     try {
       const singlePostQuery = query(commentsRef, where("postId", "==", postId));
@@ -83,14 +82,14 @@ const CommentButton = ({ posts }) => {
     commentUserName
   ) => {
     try {
-      let object={
-        postId:postId,
-        comment:comment,
-        commentImage:commentImage,//link image 
-        timeStamp:timeStamp,
-        userId:userId,
-        commentUserName:commentUserName
-      }
+      let object = {
+        postId: postId,
+        comment: comment,
+        commentImage: commentImage, //link image
+        timeStamp: timeStamp,
+        userId: userId,
+        commentUserName: commentUserName,
+      };
       addDoc(commentsRef, object);
       if (posts.user.uid !== currentUser.uid) {
         const commentName = `${currentUser.userName} `;
@@ -100,7 +99,6 @@ const CommentButton = ({ posts }) => {
           commentName,
           posts.user.uid
         );
-        
       }
     } catch (error) {
       console.error(error);
@@ -108,34 +106,35 @@ const CommentButton = ({ posts }) => {
   };
   //function to add comments.
   const addComment = async () => {
-    let imageURL = "";
-    if (commentImage) {
-      try {
-        imageURL = await uploadCommentImage(commentImage);
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        return;
+    if (comment !== "" || commentImage !== null) {
+      let imageURL = "";
+      if (commentImage) {
+        try {
+          imageURL = await uploadCommentImage(commentImage);
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          return;
+        }
       }
-    }
-    try {
-      postComment(
-        posts.id,
-        comment,
-        imageURL,
-        getCurrentTimeStamp("LLL"),
-        currentUser?.uid,
-        currentUser?.userName
-      );
-      setComment("");
-      setCommentImage(null);
-    } 
-    catch (error) {
-      console.log(error);
+      try {
+        postComment(
+          posts.id,
+          comment,
+          imageURL,
+          getCurrentTimeStamp("LLL"),
+          currentUser?.uid,
+          currentUser?.userName
+        );
+        setComment("");
+        setCommentImage(null);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
-  const deleteImage = (commentImage) => {
-    setCommentImage("");
+  const deleteImage = () => {
+    setCommentImage(null);
   };
   const uploadCommentImage = async (file) => {
     const storageRef = ref(
@@ -154,7 +153,7 @@ const CommentButton = ({ posts }) => {
     commentName,
     postOwnerId
   ) => {
-    console.log(commentId)
+    console.log(commentId);
     const notification = {
       postId: postId,
       commentId: commentId,
@@ -192,18 +191,18 @@ const CommentButton = ({ posts }) => {
       }
     };
     fetchUserData();
-
     getComments(posts.id);
   }, [posts.user.uid]);
 
   return (
     <>
       <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
+        {/*New Comment input */}
         <div className="flex items-center space-x-2 mb-3">
           <input
             placeholder="הוסף תגובה"
             className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:[#3E54D3]"
-            onChange={getComment}
+            onChange={(e) => setComment(e.target.value)}
             name={comment}
             value={comment}
           />
@@ -224,18 +223,16 @@ const CommentButton = ({ posts }) => {
             />
             {commentImage && (
               <div className="relative flex items-center justify-center text-gray-500 bg-gray-100 py-2 px-4 rounded-[5px] border-none shadow-sm cursor-pointer">
-                {commentImage && (
-                  <>
-                    <img src={commentImage} className="h-6 w-6" />
-                  </>
-                )}
-                <span className="absolute top-1 right-0">
-                  {commentImage.name}
-                  <MdDeleteOutline
-                    onClick={() => deleteImage(commentImage)}
-                    size={20}
-                  />
-                </span>
+                <img
+                  src={URL.createObjectURL(commentImage)}
+                  alt="Preview"
+                  className="h-10 w-10 object-cover rounded-lg"
+                />
+                <MdDeleteOutline
+                  className="absolute top-1 right-1 cursor-pointer"
+                  size={20}
+                  onClick={deleteImage}
+                />
               </div>
             )}
             {/*  */}
@@ -247,7 +244,7 @@ const CommentButton = ({ posts }) => {
             הוסף תגובה
           </button>
         </div>
-
+        {/*All comments */}
         <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
           {comments.length > 0 && (
             <div className="space-y-4">
@@ -272,34 +269,57 @@ const CommentButton = ({ posts }) => {
                   <div className="flex-grow">
                     {editingCommentId === comment.id ? (
                       <>
+                        {/*current user */}
                         <input
                           value={editedComment}
                           onChange={(e) => setEditedComment(e.target.value)}
                           className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-                        />{commentImage && (
-                          <div className="relative flex items-center justify-center text-gray-500 bg-gray-100 py-2 px-4 rounded-[5px] border-none shadow-sm cursor-pointer">
-                            {commentImage && (
-                              <>
-                                <img src={commentImage} className="h-6 w-6" />
-                              </>
-                            )}
-                            <span className="absolute top-1 right-0">
-                              {commentImage.name}
-                              <MdDeleteOutline
-                                onClick={() => deleteImage(commentImage)}
-                                size={20}
-                              />
-                            </span>
-                          </div>
+                        />
+                        <label
+                          htmlFor="edit-file-upload"
+                          className="cursor-pointer inline-block bg-[#3E54D3] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-[5px] border-none shadow-sm transition"
+                        >
+                          <CiCamera size={24} />
+                        </label>
+                        <input
+                          id="edit-file-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) =>
+                            setEditedCommentImage(e.target.files[0])
+                          }
+                        />
+                        {comment.commentImage && (
+                          <>
+                            <img
+                              src={comment.commentImage}
+                              alt="Comment media"
+                              className="mt-2 max-h-60 object-cover rounded-lg"
+                            />
+                            <MdDeleteOutline
+                              onClick={() =>
+                                deleteOldImage(commentImage, setEditedCommentImage)
+                              }
+                              size={20}
+                              className="absolute top-1 right-0"
+                            />
+                          </>
                         )}
+
                         <div className="flex space-x-2">
                           <button
                             onClick={() =>
                               saveEditedComment(
+                                currentUser.uid,
+                                posts.id,
                                 comment.id,
                                 editedComment,
+                                commentImage,
+                                editedCommentImage,
                                 setEditingCommentId,
-                                setEditedComment
+                                setEditedComment,
+                                setEditedCommentImage
                               )
                             }
                             className="bg-blue-500 text-white px-4 py-2 rounded-lg"
@@ -310,7 +330,8 @@ const CommentButton = ({ posts }) => {
                             onClick={() =>
                               cancelEditing(
                                 setEditingCommentId,
-                                setEditedComment
+                                setEditedComment,
+                                setEditedCommentImage
                               )
                             }
                             className="bg-gray-500 text-white px-4 py-2 rounded-lg"
@@ -321,6 +342,7 @@ const CommentButton = ({ posts }) => {
                       </>
                     ) : (
                       <>
+                        {/*other users */}
                         <div className="flex items-center justify-between">
                           <Link
                             to={`/profile/${comment.userId}`}

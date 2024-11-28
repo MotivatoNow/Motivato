@@ -1,6 +1,7 @@
 import {  deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import { message } from 'antd';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 //Post functions
 export const deletePost = (postId) => {
     if (window.confirm("האם אתה בטוח שברצונך למחוק את הפוסט הזה?")) {
@@ -27,7 +28,16 @@ export const editPost=(setIsEditing)=>{
 }
 
 //Comments functions
-
+export const deleteOldImage=async(imageURL,setCommentImage)=>{
+  try{
+    const storageRef=ref(storage,imageURL)
+    await deleteObject(storageRef)
+    setCommentImage(null)
+  }
+  catch(error){
+    console.error(error)
+  }
+}
 export const deleteComment = (commentId) => {
     if (window.confirm("האם ברצונך למחוק את התגובה?")) {
         handleDeleteComment(commentId);
@@ -61,20 +71,49 @@ export const editComment = async (commentDoc, updatedFields) => {
     setEditedComment(comment.comment);
   };
 
-  export const saveEditedComment = async (commentId,editedComment,setEditingCommentId,setEditedComment) => {
+  export const saveEditedComment = async (
+    currentUserId,
+    postId,
+    commentId,
+    editedComment,
+    commentImage,
+    editedCommentImage,
+    setEditingCommentId,
+    setEditedComment,
+    setCommentImage
+  ) => {
     try {
+      let imageURL = commentImage;
+  
+      if (editedCommentImage) {
+        if(commentImage){
+          await deleteObject(ref(storage,commentImage))
+          imageURL=""
+        }
+        const storageRef = ref(
+          storage,
+          `ImageComment/${postId}/${currentUserId}/${editedCommentImage.name}`
+        );
+        await uploadBytes(storageRef, editedCommentImage);
+        imageURL = await getDownloadURL(storageRef);
+      }
+  
       const commentDoc = doc(db, "Comments", commentId);
-      await editComment(commentDoc, { comment: editedComment });
+      await editComment(commentDoc, { comment: editedComment, commentImage: imageURL });
+  
       setEditingCommentId(null);
       setEditedComment("");
+      setCommentImage(null);
     } catch (error) {
       console.error("Error editing comment:", error);
     }
   };
+  
 
-  export const cancelEditing = (setEditingCommentId,setEditedComment) => {
+  export const cancelEditing = (setEditingCommentId,setEditedComment,setCommentImage) => {
     setEditingCommentId(null);
     setEditedComment("");
+    setCommentImage(null)
   };
 
 
