@@ -18,7 +18,7 @@ import { db } from "../../../config/firebase";
 const ModalShare = ({ modalOpen, setModalOpen, postsId }) => {
   const { currentUser } = useAuth();
   const shareLink = `${window.location.origin}/post/${postsId}`;
-  const [friends, setFriends] = useState([]);
+  const [followers, setFollowers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Load user friends
@@ -27,13 +27,13 @@ const ModalShare = ({ modalOpen, setModalOpen, postsId }) => {
       try {
         const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
         if (userDoc.exists()) {
-          const friendIds = userDoc.data().friends || [];
-          const friendPromises = friendIds.map((friendId) =>
-            getDoc(doc(db, "Users", friendId))
+          const followerIds = userDoc.data().followers || [];
+          const followersPromises = followerIds.map((followerId) =>
+            getDoc(doc(db, "Users", followerId))
           );
-          const friendDocs = await Promise.all(friendPromises);
+          const followerDocs = await Promise.all(followersPromises);
 
-          setFriends(friendDocs.map((doc) => ({ id: doc.id, ...doc.data() })));
+          setFollowers(followerDocs.map((doc) => ({ id: doc.id, ...doc.data() })));
         }
       } catch (error) {
         console.error("Error loading friends:", error);
@@ -43,12 +43,12 @@ const ModalShare = ({ modalOpen, setModalOpen, postsId }) => {
     loadData();
   }, [currentUser.uid]);
 
-  // Send post link to a specific friend
-  const handleFriendClick = async (friendId) => {
-    const participants = [currentUser.uid, friendId];
+  // Send post link to a specific follower
+  const handleFollowerClick = async (follower) => {
+    const participants = [currentUser.uid, follower.uid];
 
     try {
-      // Get or create a conversation with the friend
+      // Get or create a conversation with the follower
       let conversationId = await getExistingConversation(participants);
       if (conversationId == null)
         conversationId = await createConversation(participants);
@@ -65,7 +65,7 @@ const ModalShare = ({ modalOpen, setModalOpen, postsId }) => {
         lastMessageTimestamp: new Date(),
       });
 
-      toast.success(`Link sent to ${friendId}`);
+      toast.success(`Link sent to ${follower.userName}`);
     } catch (error) {
       console.error("Error sending link to friend:", error);
       toast.error("Failed to send link");
@@ -111,28 +111,29 @@ const ModalShare = ({ modalOpen, setModalOpen, postsId }) => {
       title="Share Post"
       centered
       open={modalOpen}
+      onOk={() => setModalOpen(false)}
       onCancel={() => setModalOpen(false)}
       footer={null}
     >
-      {friends.length > 0 ? (
+      {followers.length > 0 ? (
         <div className="flex flex-col">
-          {friends.map((friend) => (
-            <div key={friend.id} className="flex items-center space-x-3">
+          {followers.map((follower) => (
+            <div key={follower.id} className="flex items-center space-x-3">
               <img
-                src={friend.profilePicture || "/default-profile.png"}
-                alt={friend.firstName}
+                src={follower.profilePicture || "/default-profile.png"}
+                alt={follower.firstName}
                 className="rounded-full w-[3em] h-[3em]"
-                onClick={() => handleFriendClick(friend.id)} // Send the link when clicking on a friend
+                onClick={() => handleFollowerClick(follower)} // Send the link when clicking on a follower
               />
               <span>
-                {friend.userType === "Student" && <>{friend.userName}</>}
-                {friend.userType === "Company" && <>{friend.companyName}</>}
+                {follower.userType === "Student" && <>{follower.userName}</>}
+                {follower.userType === "Company" && <>{follower.companyName}</>}
               </span>
             </div>
           ))}
         </div>
       ) : (
-        <p>No friends to share with.</p>
+        <p>No followers to share with.</p>
       )}
       <ToastContainer
         position="top-center"

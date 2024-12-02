@@ -5,8 +5,6 @@ import { CiShare1 } from "react-icons/ci";
 const ShareButton = ({ posts }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
-  const HandleShare = async () => {};
-
   return (
     <>
       <button

@@ -20,6 +20,7 @@ const FriendButton = ({user}) => {
     const [request, setRequest] = useState ([]);
     const [status, setStatus] = useState (null);
     const [isReceiver, setIsReceiver] = useState(false);
+    const [isSender, setIsSender] = useState(false);
 
   // Accept friend request
     const handleAccept = async () => {
@@ -178,7 +179,7 @@ const FriendButton = ({user}) => {
                       if (request.receiverId === currentUser.uid) {
                         setIsReceiver(true);
                       } else {
-                        setIsReceiver(false);
+                        setIsSender(true);
                       } return;
                     } else {
                         setStatus (null); // אם אין בקשת חברות, נאפס את הסטטוס
@@ -211,7 +212,7 @@ const FriendButton = ({user}) => {
               </button>
           ) : (
               <>
-                {status === 'pending' && isReceiver && (
+                {status === 'pending' && isReceiver && !isSender&& (
                     <>
                       <div className="flex justify-end gap-2 mt-2">
                         <button
