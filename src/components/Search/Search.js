@@ -83,9 +83,9 @@ const Search = () => {
 
   const handleUserClick = (uid, user) => {
     saveRecentSearch(user); // Save the recent search
+    navigate(`/profile/${uid}`);
     setSearchTerm(""); // Clear the input field
     setInputFocused(false); // Close the search dropdown
-    navigate(`/profile/${uid}`);
   };
 
   const handleOverlayClick = () => {
