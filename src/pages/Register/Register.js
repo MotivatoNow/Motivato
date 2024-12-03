@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { auth, db, storage } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import profilePic from "../../assets/images/profilepicture.png";
 import "./Register.css";
@@ -23,6 +23,7 @@ const Register = () => {
   const [studentCard, setStudentCard] = useState(null);
   const [location, setLocation] = useState("");
   const [error, setError] = useState("");
+  const [categories, setCategories]=useState([])
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -92,6 +93,14 @@ const Register = () => {
       setError(error.message);
     }
   };
+  useMemo(()=>{
+    onSnapshot(collection(db,"Categories"),(response)=>{
+      setCategories(
+        response.docs.map((doc) => ({ id: doc.id, ...doc.data() })
+      ))
+    })
+  })
+  
 
   return (
     <>
@@ -192,14 +201,19 @@ const Register = () => {
                   </div>
                   <div className="form-group">
                     <label htmlFor="inputEducation">תחום לימודי</label>
-                    <input
-                      type="text"
-                      id="inputEducation"
-                      value={studentEducation}
-                      onChange={(e) => setStudentEducation(e.target.value)}
-                      placeholder="תחום לימודי"
-                      required
-                    />
+                    <select
+                    name="education"
+                    id="inputEducation"
+                    onChange={(e) => setStudentEducation(e.target.value)}
+                    required
+                  >
+                    <option value=""></option>
+                    {
+                      categories.map((categorie)=>{
+                        return <option value={categorie.nameCategory} key={categorie.id}>{categorie.nameCategory}</option>
+                      })
+                    }
+                  </select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="inputStudentCard">העלאת כרטיס סטודנט</label>
@@ -211,21 +225,7 @@ const Register = () => {
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="inputGender">מין</label>
-
-                    <select
-                      name="gender"
-                      id="inputGender"
-                      onChange={(e) => setUserGender(e.target.value)}
-                    >
-                      <option value=""></option>
-                      <option value="זכר">זכר</option>
-                      <option value="נקבה">נקבה</option>
-                      <option value="אחר">אחר</option>
-                    </select>
-                  </div>
-                </>
+                                  </>
               )}
               {userType === "Company" && (
                 <>
