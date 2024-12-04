@@ -82,6 +82,7 @@ const Register = () => {
         userData.location = location;
         userData.userName =(firstName + ' ' + lastName);
         userData.userNameLower = ((userData.firstName || '') + ' ' + (userData.lastName || '')).toLowerCase();
+        
       }
 
       await setDoc(doc(db, "Users", user.uid), userData);

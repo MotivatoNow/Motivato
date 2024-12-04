@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button, Modal, Input, message, Divider, Row,Col } from "antd";
-import { doc, updateDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // ייבוא של הפונקציות מ-Firebase Storage
 import { db, storage } from "../../../config/firebase";
 import "./ModalEditProfile.css";
@@ -20,7 +20,7 @@ const ModalEditProfileComponent = ({
   const [userGitHub, setUserGitHub] = useState(user.userGitHub);
   const [userWebsite, setUserWebsite] = useState(user.userWebsite);
   const [userLinkedin, setUserLinkedin] = useState(user.userLinkedin);
-
+const [categories,setCategories]=useState([])
   const handleSave = async () => {
     try {
       // עדכון המסמך ב-Firestore עם הערכים החדשים
@@ -92,6 +92,14 @@ const ModalEditProfileComponent = ({
       setUploading(false);
     }
   };
+  useMemo(()=>{
+    onSnapshot(collection(db,"Categories"),(response)=>{
+      setCategories(
+        response.docs.map((doc) => ({ id: doc.id, ...doc.data() })
+      ))
+    })
+  })
+  
 
   return (
     <>
