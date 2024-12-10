@@ -7,6 +7,7 @@ import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import RightSide from "../../components/Feed/RightSide/RightSide";
+import LeftSide from "../../components/Feed/LeftSide/LeftSide"
 
 const Feed = () => {
   const { currentUser } = useAuth();
@@ -35,6 +36,9 @@ const Feed = () => {
     </div>
   </div>
 
+  <div className="hidden lg:block  lg:col-span-1">
+          <LeftSide/>
+  </div>
   {/* עמודת המלצות - צד ימין */}
   <div className="hidden lg:block lg:col-span-1">
     <div className="hover:bg-[#1F272F] rounded-lg p-2 mt-5 mr-4">
@@ -54,6 +58,7 @@ const Feed = () => {
       </Link>
     </div>
   </div>
+  
 </div>
 
   );

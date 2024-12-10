@@ -11,8 +11,6 @@ const RightSide = () => {
   const [suggestedFriends, setSuggestedFriends] = useState([]);
   const [followers,setFollowers] = useState([]);
   
-
-
   // טעינת משתמשים להצעות חברים
   useEffect(() => {
     //parameters: currentUser,shuffleArray,set suggested Friends
