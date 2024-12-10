@@ -24,7 +24,7 @@ import { GrHomeRounded } from "react-icons/gr";
 import logo from "../../assets/images/Icon.png";
 import mobileLogo from "../../assets/images/Logo_PNG.png";
 import Search from "../Search/Search";
-import '../../App.css'
+import "../../App.css";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -38,6 +38,12 @@ const NavBar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [users, setUsers] = useState([]);
   const [unreadMessages, setUnreadMessages] = useState(0);
+
+  const [isDropdownOpenProfile, setDropdownOpenProfile] = useState(false);
+
+  const toggleDropdownProfile = () => {
+    setDropdownOpenProfile(!isDropdownOpenProfile);
+  };
 
   //function that toggle the hamburger menu
   const toggleMenu = () => {
@@ -94,11 +100,11 @@ const NavBar = () => {
       postUser: newFriendId,
       newFollowerId: acceptedUser.uid,
       newFollowerName: acceptedUser.userName,
-        // acceptedUser.type === "student"
-        //   ? `${acceptedUser.userName}` //to student name
-        //   : `${acceptedUser.companyName}`, // to company name
+      // acceptedUser.type === "student"
+      //   ? `${acceptedUser.userName}` //to student name
+      //   : `${acceptedUser.companyName}`, // to company name
       type: "new follower",
-      newFollowerProfilePicture:acceptedUser.profilePicture,
+      newFollowerProfilePicture: acceptedUser.profilePicture,
     };
     const notificationsRef = addDoc(
       collection(db, "Notifications"),
@@ -307,7 +313,7 @@ const NavBar = () => {
             : "Unknown User";
           const userProfilePicture = userDoc.exists()
             ? userDoc.data().profilePicture
-            : "defaultProfilePictureURL"; 
+            : "defaultProfilePictureURL";
 
           notificationsData.push({
             id: docN.id,
@@ -318,10 +324,10 @@ const NavBar = () => {
         }
         setNotifications(notificationsData);
       });
-      return ()=>unsubscribe()
+      return () => unsubscribe();
     }
   }, [currentUser]);
-  
+
   //End of useEffect
 
   return (
@@ -568,9 +574,9 @@ const NavBar = () => {
         {/* Profile and logout */}
         {currentUser && isVerified && (
           <div className="flex items-center justify-end gap-4 col-span-1 md:flex md:items-center md:justify-end ">
-            <Link
-              to={`/profile/${currentUser.uid}`}
-              className="md:flex md:justify-between md:items-center md:gap-2 md:bg-gray-100 md:py-2 md:px-5 md:rounded-[15px]"
+            <div
+              onClick={toggleDropdownProfile}
+              className="md:flex relative md:justify-between md:items-center md:gap-2 md:bg-gray-100 md:py-2 md:px-5 md:rounded-[15px]"
             >
               <img
                 src={currentUser.profilePicture || "defaultProfilePictureURL"}
@@ -578,12 +584,24 @@ const NavBar = () => {
                 className="w-8 h-8 rounded-full border-[#3E54D3] border"
               />
               <span className="md:block hidden">{currentUser.userName}</span>
-            </Link>
-            <GrLogout
-              onClick={handleLogout}
-              className="cursor-pointer"
-              size={24}
-            />
+              {isDropdownOpenProfile && (
+                <div className="absolute flex flex-col items-center justify-center left-0 top-10 mt-2 bg-white shadow-lg rounded-md py-2 w-48">
+                  <Link
+                    to={`/profile/${currentUser.uid}`}
+                    className=" px-4 py-2 text-sm text-[#3E54D3] font-medium"
+                  >
+                    כניסה לפרופיל
+                  </Link>
+                  <hr className="w-44 border-t border-gray-200 my-2"/>
+                  <button
+                   onClick={handleLogout}
+                    className="px-4 py-2 font-semibold text-sm text-gray-700"
+                  >
+                    התנתקות
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </nav>

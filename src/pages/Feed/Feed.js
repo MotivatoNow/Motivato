@@ -39,26 +39,6 @@ const Feed = () => {
   <div className="hidden lg:block  lg:col-span-1">
           <LeftSide/>
   </div>
-  {/* עמודת המלצות - צד ימין */}
-  <div className="hidden lg:block lg:col-span-1">
-    <div className="hover:bg-[#1F272F] rounded-lg p-2 mt-5 mr-4">
-      <Link to={`/profile/${currentUser.uid}`}>
-        <div className="flex items-center space-x-4">
-          <img
-            src={currentUser.profilePicture || "defaultProfilePictureURL"}
-            alt="Profile"
-            className="w-10 h-10 rounded-full object-cover ml-1"
-          />
-          <div>
-            <h3 className="text-lg font-semibold text-gray-200">
-              {currentUser.userName}
-            </h3>
-          </div>
-        </div>
-      </Link>
-    </div>
-  </div>
-  
 </div>
 
   );
