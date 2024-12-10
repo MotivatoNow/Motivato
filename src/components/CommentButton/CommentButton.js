@@ -196,8 +196,8 @@ const CommentButton = ({ posts }) => {
 
   return (
     <>
-      <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner ">
-      <div className="relative rounded-lg p-2 shadow-sm bg-white">
+      <div className="mt-4 p-4 rounded-lg ">
+      <div className="relative rounded-lg border p-2 shadow-sm bg-white">
   <textarea
     placeholder="הוסף תגובה..."
     className="w-full focus:outline-none resize-none overflow-hidden px-10 py-2 text-sm"
@@ -256,7 +256,7 @@ const CommentButton = ({ posts }) => {
 
 
         {/*All comments */}
-        <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
+        <div className="mt-4 p-4 bg-white rounded-lg shadow-inner">
           {comments.length > 0 && (
             <div className="space-y-4">
               {comments.map((comment) => (
