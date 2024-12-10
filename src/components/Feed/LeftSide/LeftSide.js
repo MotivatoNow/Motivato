@@ -13,26 +13,38 @@ const LeftSide = () => {
 
   return (
     <div className="rounded-lg p-2 mt-5 ml-4">
-      <div className="rounded-lg bg-white p-2 items-center flex justify-center flex-col gap-1 space-x-4">
-      {allMissions && allMissions.length > 0 ? (
-          <>{allMissions.map((mission) => (
-            <div key={mission.id}>
-            <Link to={`/mission/${mission.id}`}>
-              <p>{mission.user.userName}</p>
-              <h3>{mission.title}</h3>
-              <h4>{mission.place}</h4>
-              <hr/>
+      <div className="rounded-lg bg-white p-2  flex justify-center flex-col gap-4 space-x-4">
+        {allMissions?.length > 0 ? (
+          <>
+            {allMissions.map((mission) =>
+              mission.user.uid !== currentUser.uid ? (
+                <div className="flex gap-5" key={mission.id}>
+                  <Link to={`/mission/${mission.id}`}>
+                    <div className="flex flex-col w-72 items-start gap-1 p-3 bg-gray-50 rounded-lg shadow-sm">
+                      <p className="text-sm text-gray-500 font-medium">
+                        {mission.user.userName}
+                      </p>
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        {mission.title}
+                      </h3>
+                      <h4 className="text-md text-gray-600">{mission.place}</h4>
+                    </div>
+
+                    <hr />
+                  </Link>
+                </div>
+              ) : null
+            )}
+            {allMissions.filter(
+              (mission) => mission.user.uid !== currentUser.uid
+            ).length > 5 && (
+              <Link to={`/missions`}>
+                <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                  View more
+                </button>
               </Link>
-            </div>
-          )
-          )}
-          <Link to={`/missions`}>
-          <button>
-            View more
-          </button>
-          </Link>
+            )}
           </>
-          
         ) : (
           <p>Not Found a Mission.</p>
         )}
