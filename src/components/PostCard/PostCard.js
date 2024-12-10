@@ -94,7 +94,7 @@ const PostCard = ({ posts }) => {
       </div>
 
       <div className="mb-4">
-        <p className="text-gray-800">{posts.post}</p>
+        <p className="break-words max-w-full whitespace-pre-wrap overflow-hidden text-gray-800">{posts.post}</p>
         {posts.postImage && (
           <div className="mt-4">
             <img

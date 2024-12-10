@@ -196,32 +196,39 @@ const CommentButton = ({ posts }) => {
 
   return (
     <>
-      <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
-        {/*New Comment input */}
-        <div className="flex items-center space-x-2 mb-3">
-          <input
-            placeholder="הוסף תגובה"
-            className="flex-grow border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:[#3E54D3]"
-            onChange={(e) => setComment(e.target.value)}
-            name={comment}
-            value={comment}
-          />
-          <div className="flex items-center gap-4 mb-4">
-            <label
-              htmlFor="file-upload"
-              className="cursor-pointer inline-block bg-[#3E54D3] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-[5px] border-none shadow-sm transition"
-            >
-              <CiCamera size={24} />
-            </label>
-
-            <input
-              id="file-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => setCommentImage(e.target.files[0])}
-            />
-            {commentImage && (
+      <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner ">
+      <div className="relative rounded-lg p-2 shadow-sm bg-white">
+  <textarea
+    placeholder="הוסף תגובה..."
+    className="w-full focus:outline-none resize-none overflow-hidden px-10 py-2 text-sm"
+    style={{ height: comment ? '80px' : '40px' }} // גובה דינמי
+    onChange={(e) => {
+      setComment(e.target.value);
+      if (!e.target.value) {
+        e.target.style.height = "40px"; // חזרה לגובה המקורי
+      } else {
+        e.target.style.height = "auto"; // איפוס הגובה
+        e.target.style.height = `${e.target.scrollHeight}px`; // התאמת הגובה לתוכן
+      }
+    }}
+    value={comment}
+  />
+  
+  {/* אייקון המצלמה */}
+  <label
+    htmlFor="file-upload"
+    className="absolute top-2 left-2 cursor-pointer text-gray-500 hover:text-blue-600"
+  >
+    <CiCamera size={24} />
+  </label>
+  <input
+    id="file-upload"
+    type="file"
+    accept="image/*"
+    className="hidden"
+    onChange={(e) => setCommentImage(e.target.files[0])}
+  />
+   {commentImage && (
               <div className="relative flex items-center justify-center text-gray-500 bg-gray-100 py-2 px-4 rounded-[5px] border-none shadow-sm cursor-pointer">
                 <img
                   src={URL.createObjectURL(commentImage)}
@@ -235,15 +242,19 @@ const CommentButton = ({ posts }) => {
                 />
               </div>
             )}
-            {/*  */}
-          </div>
-          <button
-            className="bg-[#3E54D3] text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-            onClick={addComment}
-          >
-            הוסף תגובה
-          </button>
-        </div>
+  {/* כפתור שליחת תגובה */}
+  {comment && (
+    <button
+      className="absolute bottom-2 left-2 bg-[#3E54D3] text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
+      onClick={addComment}
+    >
+      שלח
+    </button>
+  )}
+</div>
+
+
+
         {/*All comments */}
         <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-inner">
           {comments.length > 0 && (
@@ -270,11 +281,17 @@ const CommentButton = ({ posts }) => {
                     {editingCommentId === comment.id ? (
                       <>
                         {/*current user */}
-                        <input
+                        <textarea
                           value={editedComment}
-                          onChange={(e) => setEditedComment(e.target.value)}
-                          className="w-full border border-gray-300 rounded-lg p-2 mb-2"
+                          onChange={(e) => {
+                            setEditedComment(e.target.value);
+                            e.target.style.height = "auto"; // איפוס הגובה
+                            e.target.style.height = `${e.target.scrollHeight}px`; // התאמת הגובה לתוכן
+                          }}
+                          className="w-full border border-gray-300 rounded-lg p-2 mb-2 resize-none overflow-hidden"
+                          placeholder="ערוך תגובה"
                         />
+
                         <label
                           htmlFor="edit-file-upload"
                           className="cursor-pointer inline-block bg-[#3E54D3] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-[5px] border-none shadow-sm transition"
@@ -299,7 +316,10 @@ const CommentButton = ({ posts }) => {
                             />
                             <MdDeleteOutline
                               onClick={() =>
-                                deleteOldImage(commentImage, setEditedCommentImage)
+                                deleteOldImage(
+                                  commentImage,
+                                  setEditedCommentImage
+                                )
                               }
                               size={20}
                               className="absolute top-1 right-0"
@@ -365,7 +385,9 @@ const CommentButton = ({ posts }) => {
                             </div>
                           )}
                         </div>
-                        <p className="mt-1 text-gray-700">{comment.comment}</p>
+                        <p className="mt-1 text-gray-700 break-all whitespace-pre-wrap overflow-hidden">
+                          {comment.comment}
+                        </p>
                       </>
                     )}
                   </div>
