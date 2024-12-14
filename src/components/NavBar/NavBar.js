@@ -573,7 +573,7 @@ const NavBar = () => {
 
         {/* Profile and logout */}
         {currentUser && isVerified && (
-          <div className="flex items-center justify-end gap-4 col-span-1 md:flex md:items-center md:justify-end ">
+          <div className="flex items-center cursor-pointer justify-end gap-4 col-span-1 md:flex md:items-center md:justify-end ">
             <div
               onClick={toggleDropdownProfile}
               className="md:flex relative md:justify-between md:items-center md:gap-2 md:bg-gray-100 md:py-2 md:px-5 md:rounded-[15px]"

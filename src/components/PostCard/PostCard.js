@@ -79,8 +79,8 @@ const PostCard = ({ posts }) => {
         </div>
         {currentUser.uid === userData.uid && (
           <div className="flex gap-3">
-            <MdDeleteOutline onClick={() => deletePost(posts.id)} size={20} />
-            <CiEdit onClick={() => editPost(setIsEditing)} size={20} />
+            <MdDeleteOutline className="cursor-pointer" onClick={() => deletePost(posts.id)} size={20} />
+            <CiEdit className="cursor-pointer" onClick={() => editPost(setIsEditing)} size={20} />
             {isEditing && (
               <ModalEditPost
                 isOpen={isEditing}
