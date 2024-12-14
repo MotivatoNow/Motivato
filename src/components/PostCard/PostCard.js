@@ -60,8 +60,10 @@ const PostCard = ({ posts }) => {
   }
 
   return (
-    <div className="bg-white shadow-sm rounded-lg p-6 mb-6 max-w-2xl mx-auto mt-3">
-      <div className="flex items-center mb-4">
+    <div className="bg-white  overflow-hidden shadow-sm rounded-lg p-6 mb-6 max-w-[25rem] md:max-w-2xl mx-auto mt-3">
+    {/* User Information */}
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+      <div className="flex items-center">
         <Link to={`/profile/${userData.uid}`}>
           <img
             src={userData.profilePicture || "defaultProfilePictureURL"}
@@ -77,50 +79,64 @@ const PostCard = ({ posts }) => {
           </Link>
           <p className="text-sm text-gray-600">{posts.timeStamp}</p>
         </div>
-        {currentUser.uid === userData.uid && (
-          <div className="flex gap-3">
-            <MdDeleteOutline className="cursor-pointer" onClick={() => deletePost(posts.id)} size={20} />
-            <CiEdit className="cursor-pointer" onClick={() => editPost(setIsEditing)} size={20} />
-            {isEditing && (
-              <ModalEditPost
-                isOpen={isEditing}
-                onClose={() => setIsEditing(false)}
-                posts={posts}
-                user={currentUser}
-              />
-            )}
-          </div>
-        )}
       </div>
-
-      <div className="mb-4">
-        <p className="break-words max-w-full whitespace-pre-wrap overflow-hidden text-gray-800">{posts.post}</p>
-        {posts.postImage && (
-          <div className="mt-4">
-            <img
-              src={posts.postImage}
-              alt="Post content"
-              className="w-full max-h-96 object-cover rounded-lg"
+      {currentUser.uid === userData.uid && (
+        <div className="flex gap-3 mt-3 sm:mt-0">
+          <MdDeleteOutline
+            className="cursor-pointer"
+            onClick={() => deletePost(posts.id)}
+            size={20}
+          />
+          <CiEdit
+            className="cursor-pointer"
+            onClick={() => editPost(setIsEditing)}
+            size={20}
+          />
+          {isEditing && (
+            <ModalEditPost
+              isOpen={isEditing}
+              onClose={() => setIsEditing(false)}
+              posts={posts}
+              user={currentUser}
             />
-          </div>
-        )}
-      </div>
-      <hr className="text-white" />
-
-      <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-        <LikeButton posts={posts} />
-        <button
-          className="flex items-center space-x-2 text-[#3E54D3] hover:text-blue-600 py-2 px-3 md:px-10 rounded-[10px] bg-gray-100"
-          onClick={() => setShowCommentBox(!showCommentBox)}
-        >
-          <FaRegComment className="ml-1" size={20} /> {/*Icon of the comment */}
-        </button>
-        <ShareButton posts={posts} />
-      </div>
-      {showCommentBox&&(
-        <CommentButton posts={posts} />
+          )}
+        </div>
       )}
     </div>
+  
+    {/* Post Content */}
+    <div className="mb-4">
+      <p className="break-words max-w-full whitespace-pre-wrap overflow-hidden text-gray-800">
+        {posts.post}
+      </p>
+      {posts.postImage && (
+        <div className="mt-4">
+          <img
+            src={posts.postImage}
+            alt="Post content"
+            className="w-full max-h-96 object-cover rounded-lg"
+          />
+        </div>
+      )}
+    </div>
+    <hr className="text-white" />
+  
+    {/* Interaction Buttons */}
+    <div className="flex flex-wrap items-center justify-between border-t border-gray-200 pt-4">
+      <LikeButton posts={posts} />
+      <button
+        className="flex items-center space-x-2 text-[#3E54D3] hover:text-blue-600 py-2 px-3 rounded-[10px] bg-gray-100 mt-2 md:mt-0"
+        onClick={() => setShowCommentBox(!showCommentBox)}
+      >
+        <FaRegComment className="ml-1" size={20} />
+      </button>
+      <ShareButton posts={posts} />
+    </div>
+  
+    {/* Comment Section */}
+    {showCommentBox && <CommentButton posts={posts} />}
+  </div>
+  
   );
 };
 

@@ -26,7 +26,7 @@ import {
 } from "react-icons/ci";
 import { loadData, loadFollowers } from "../../../hooks/useLoadUsers";
 
-const StudentProfile = ({ user, id,currentUser }) => {
+const StudentProfile = ({ user, id, currentUser }) => {
   const [userData, setUserData] = useState(user);
   const [modalOpen, setModalOpen] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
@@ -34,6 +34,7 @@ const StudentProfile = ({ user, id,currentUser }) => {
   const [followers, setFollowers] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [activeChatUser, setActiveChatUser] = useState(null);
+  const [isLightboxOpen, setLightboxOpen] = useState(false);
 
   // Chat
 
@@ -113,30 +114,41 @@ const StudentProfile = ({ user, id,currentUser }) => {
       loadFollowers(userData.followers, setFollowers);
     }
     return () => unsubscribe();
-  }, [user.uid,userData]);
+  }, [user.uid, userData]);
   // followers
 
   return (
     <>
-  
-      <div className="w-full min-h-screen grid grid-rows-[1fr_2fr]">
+      <div className="w-full min-h-screen grid  md:grid-rows-[1fr_2fr]">
         {/* ROW 1 */}
         <div className="bg-[#FDFDFF] px-5 py-2 grid grid-cols-[3fr_3fr]">
           {/* Col 1 */}
           <div className="flex space-x-4">
             {/* Profile Image */}
             <img
-              className="rounded-[5px] h-48 w-48 shadow-md object-cover "
+              className="rounded-[5px] cursor-pointer h-48 w-48 shadow-md object-cover "
               src={userData.profilePicture}
               alt={`${userData.userName} profile image`}
+              onClick={() => setLightboxOpen(true)}
             />
+            {/* Lightbox */}
+            {isLightboxOpen && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+                onClick={() => setLightboxOpen(false)}
+              >
+                <img
+                  className="rounded-[5px] max-h-[90vh] max-w-[90vw] object-contain"
+                  src={userData.profilePicture}
+                  alt={`${userData.userName} profile image enlarged`}
+                />
+              </div>
+            )}
+
             {/* Profile Info */}
             <div className="flex flex-col px-3">
               {/* Name */}
-              <h1 className="text-2xl font-semibold">{userData.userName}
-              
-
-              </h1>
+              <h1 className="text-2xl font-semibold">{userData.userName}</h1>
 
               {/* Student Education */}
               <p className="text-gray-500">
@@ -144,7 +156,7 @@ const StudentProfile = ({ user, id,currentUser }) => {
               </p>
 
               {/* Location and Additional Info */}
-              <div className="mt-2 flex justify-between">
+              <div className="mt-2 flex flex-col md:flex-row md:justify-between">
                 {/* Location and Email */}
                 <div className="flex flex-col">
                   {/* Location */}
@@ -159,7 +171,7 @@ const StudentProfile = ({ user, id,currentUser }) => {
                 </div>
 
                 {/* Additional Info */}
-                <div className="flex flex-col text-gray-600 mr-10">
+                <div className="flex flex-col text-gray-600 mt-4 md:mt-0 md:mr-10">
                   {/* Line 1 */}
                   <p className="flex items-center">
                     <CiCircleQuestion className="ml-2" color="#3E54D3" /> לחשוב
@@ -193,19 +205,20 @@ const StudentProfile = ({ user, id,currentUser }) => {
 
             {currentUser.uid === userData.uid && (
               <button
-                className="flex items-center justify-between bg-[#4F80E2] text-white px-4 py-2 rounded-[5px]"
+                className="flex md:items-center md:justify-center just md:bg-[#4F80E2] md:text-white px-4 py-2 rounded-[5px]"
                 onClick={() => setModalOpen(true)}
               >
-                <CiSettings className="mr-2" /> הגדרות
+                <CiSettings className="md:right-0 right-10 md:bottom-0 bottom-2 md:left-4 relative md:text-white text-[#4F80E2] text-[2em] mr-0 sm:mr-2" />
+                <span className="hidden md:inline">הגדרות</span>
               </button>
             )}
           </div>
         </div>{" "}
         {/* End of row 1 */}
         {/* ROW 2 */}
-        <div className="bg-gray-50 flex flex-col px-5 py-8 space-x-4">
-          <div className="grid grid-cols-[3fr_3fr_3fr] gap-4">
-            {/* עמודה 1 */}
+        <div className="bg-gray-50 flex flex-col px-5 py-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-[3fr_3fr_3fr]">
+            {/* Col 1 */}
             <div className="flex flex-col">
               <h3 className="font-semibold text-gray-800">קישורים ברשת</h3>
               <ul className="mt-2">
@@ -224,19 +237,85 @@ const StudentProfile = ({ user, id,currentUser }) => {
               </ul>
             </div>
 
-            {/* עמודה 2 */}
+            {/* Col 2 */}
             <div className="break-words max-w-full whitespace-pre-wrap overflow-hidden text-gray-800">
               <h3 className="text-gray-800 font-semibold">אודות</h3>
               <p className="py-2">{userData.bio}</p>
             </div>
 
-            {/* עמודה 3 */}
+            {/* Col 3 */}
             <div>
               <p>3</p>
             </div>
           </div>
         </div>
         {/*End Of row 2 */}
+      </div>
+
+      <div className="min-h-screen w-full grid gap-2 grid-rows-[auto_1fr] md:grid-cols-[1fr_2fr] p-3">
+
+        <div className="mt-5 max-h-[50vh] overflow-hidden w-full grid gap-2 grid-rows-[auto,auto]">
+                  {/* Followers/Friends Section */}
+          <section className="bg-white p-3 rounded-[5px] max-h-[30vh] overflow-hidden">
+            <h3 className="font-semibold mb-3">עוקבים/חברים</h3>
+            <div className="grid grid-cols-3 gap-1">
+              {followers.slice(0, 9).map((follower) => (
+                <div
+                  key={follower.id}
+                  className="text-center flex flex-col items-center space-y-2"
+                >
+                  <img
+                    src={follower.profilePicture || "/default-profile.png"}
+                    alt={follower.userName}
+                    className="w-24 h-24 rounded-lg object-cover"
+                  />
+                  <span className="text-gray-800 text-sm font-medium">
+                    {follower.userName}
+                  </span>
+                </div>
+              ))}
+            </div>
+            {followers.length > 9 && (
+              <button className="mt-4 text-blue-600 hover:underline text-sm font-medium">
+                הצג עוד חברים
+              </button>
+            )}
+          </section>
+          <section className="bg-white p-3 rounded-[5px] max-h-[50vh] overflow-hidden">
+          <h3 className="font-semibold mb-3">תמונות</h3>
+          {photos.length > 0 ? (
+                          photos.map((post) => (
+                            <div
+                            key={post.id}
+                            className="text-center flex flex-col p-5 space-y-2"
+                          >
+                             <img
+                              key={post.id}
+                              src={post.postImage}
+                              alt={`${userData.firstName} profile `}
+                              className="w-24 h-24 rounded-lg object-cover"
+                              
+                            />
+                          </div>
+                          ))
+                        ) : (
+                          <p>No photos found.</p>
+                        )}
+          </section>
+        </div>
+
+        {/* Posts Section */}
+        <section className="flex justify-start">
+
+          <div className="">
+          <MyPost />
+            {allPosts.map((post) => (
+              <div key={post.id}>
+                <PostCard posts={post} user={currentUser} />
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
 
       {activeChatUser && (
