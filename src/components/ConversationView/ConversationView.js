@@ -20,7 +20,7 @@ const ConversationView = ({ conversationId }) => {
   const [newMessage, setNewMessage] = useState("");
   const { currentUser } = useAuth();
 
-  // Fonction pour marquer les messages comme lus
+  
   const markMessagesAsRead = async () => {
     const messageRef = collection(db, "Conversations", conversationId, "messages");
     const q = query(messageRef, where("isRead", "==", false));
@@ -34,7 +34,7 @@ const ConversationView = ({ conversationId }) => {
 
   useEffect(() => {
     const fetchMessagesAndParticipants = async () => {
-      // Écouter les messages en temps réel
+      
       const messagesQuery = query(
         collection(db, "Conversations", conversationId, "messages"),
         orderBy("timestamp", "asc")
@@ -63,10 +63,8 @@ const ConversationView = ({ conversationId }) => {
       }
       setParticipantsData(usersData);
 
-      // Marquer les messages comme lus
       markMessagesAsRead();
 
-      // Nettoyage lors de la destruction du composant
       return () => unsubscribe();
     };
 
@@ -86,7 +84,7 @@ const ConversationView = ({ conversationId }) => {
         content: newMessage,
         timestamp: new Date(),
         type: "text",
-        isRead: false,  // Nouveau message est non lu
+        isRead: false, 
       });
 
       await updateDoc(doc(db, "Conversations", conversationId), {
