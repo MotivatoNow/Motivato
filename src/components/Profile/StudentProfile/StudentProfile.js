@@ -19,18 +19,21 @@ import { db } from "../../../firebase";
 
 import {
   CiCircleQuestion,
+  CiEdit,
   CiLinkedin,
   CiLocationOn,
   CiMail,
   CiSettings,
 } from "react-icons/ci";
 import { loadData, loadFollowers } from "../../../hooks/useLoadUsers";
+import { Link } from "react-router-dom";
+import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
 
 const StudentProfile = ({ user, id, currentUser }) => {
   const [userData, setUserData] = useState(user);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpenEditProfile, setModalOpenEditProfile] = useState(false);
+  const [modalOpenEditWebsites, setModalEditWebsites] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
-  const [activeTab, setActiveTab] = useState("posts");
   const [followers, setFollowers] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [activeChatUser, setActiveChatUser] = useState(null);
@@ -106,22 +109,25 @@ const StudentProfile = ({ user, id, currentUser }) => {
   }, user.uid);
 
   useEffect(() => {
-    const userRef = doc(db, "Users", userData.uid);
+    const userRef = doc(db, "Users", id);
     const unsubscribe = onSnapshot(userRef, (snapshot) => {
       setUserData(snapshot.data());
+      if (snapshot.data()?.followers) {
+        loadFollowers(snapshot.data().followers, setFollowers);
+      }
     });
-    if (userData && userData.followers) {
-      loadFollowers(userData.followers, setFollowers);
-    }
     return () => unsubscribe();
-  }, [user.uid, userData]);
+  }, [id]);
   // followers
 
   return (
     <>
-      <div className="w-full min-h-screen grid  md:grid-rows-[1fr_2fr]">
+      <div className="w-full  min-h-screen grid md:grid-rows-[1fr_3fr]">
         {/* ROW 1 */}
-        <div className="bg-[#FDFDFF] px-5 py-2 grid grid-cols-[3fr_3fr]">
+        <div
+          className="bg-[#FDFDFF] px-5 py-2 grid grid-cols-[3fr_3fr]"
+          style={{}}
+        >
           {/* Col 1 */}
           <div className="flex space-x-4">
             {/* Profile Image */}
@@ -206,7 +212,7 @@ const StudentProfile = ({ user, id, currentUser }) => {
             {currentUser.uid === userData.uid && (
               <button
                 className="flex md:items-center md:justify-center just md:bg-[#4F80E2] md:text-white px-4 py-2 rounded-[5px]"
-                onClick={() => setModalOpen(true)}
+                onClick={() => setModalOpenEditProfile(true)}
               >
                 <CiSettings className="md:right-0 right-10 md:bottom-0 bottom-2 md:left-4 relative md:text-white text-[#4F80E2] text-[2em] mr-0 sm:mr-2" />
                 <span className="hidden md:inline">הגדרות</span>
@@ -216,15 +222,27 @@ const StudentProfile = ({ user, id, currentUser }) => {
         </div>{" "}
         {/* End of row 1 */}
         {/* ROW 2 */}
-        <div className="bg-gray-50 flex flex-col px-5 py-8">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-[3fr_3fr_3fr]">
+        <div className="bg-gray-50 flex  flex-col px-5 py-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_2fr_2fr]">
             {/* Col 1 */}
             <div className="flex flex-col">
-              <h3 className="font-semibold text-gray-800">קישורים ברשת</h3>
+              <h3 className="font-semibold flex items-center text-gray-800 ">
+                קישורים ברשת{" "}
+                <span>
+                  <button onClick={() => setModalEditWebsites(true)}>
+                    <CiEdit size={20} />
+                  </button>
+                </span>
+              </h3>
               <ul className="mt-2">
                 <li className="flex items-center mb-2 text-gray-800">
                   <CiLinkedin className="ml-2" size={20} color="#3e54d3" />
-                  {userData.userLinkedin}
+                  <a
+                    className="text-blue-700 font-semibold"
+                    href={userData.userLinkedin}
+                  >
+                    {userData.nameUserLinkedin}
+                  </a>
                 </li>
                 <li className="flex items-center mb-2 text-gray-800">
                   <CiLinkedin className="ml-2" size={20} color="#3e54d3" />
@@ -239,13 +257,29 @@ const StudentProfile = ({ user, id, currentUser }) => {
 
             {/* Col 2 */}
             <div className="break-words max-w-full whitespace-pre-wrap overflow-hidden text-gray-800">
-              <h3 className="text-gray-800 font-semibold">אודות</h3>
+              <h3 className="text-gray-800 font-semibold flex items-center">
+                אודות{" "}
+                <span>
+                  <button>
+                    <CiEdit size={20} />
+                  </button>
+                </span>
+              </h3>
               <p className="py-2">{userData.bio}</p>
             </div>
 
             {/* Col 3 */}
             <div>
-              <p>3</p>
+              <h3 className="text-gray-800 font-semibold flex items-center">
+                מיומנויות וכישורים{" "}
+                <span>
+                  <button>
+                    <CiEdit size={20} />
+                  </button>
+                </span>
+              </h3>
+              
+
             </div>
           </div>
         </div>
@@ -253,26 +287,27 @@ const StudentProfile = ({ user, id, currentUser }) => {
       </div>
 
       <div className="min-h-screen w-full grid gap-2 grid-rows-[auto_1fr] md:grid-cols-[1fr_2fr] p-3">
-
         <div className="mt-5 max-h-[50vh] overflow-hidden w-full grid gap-2 grid-rows-[auto,auto]">
-                  {/* Followers/Friends Section */}
+          {/* Followers/Friends Section */}
           <section className="bg-white p-3 rounded-[5px] max-h-[30vh] overflow-hidden">
             <h3 className="font-semibold mb-3">עוקבים/חברים</h3>
             <div className="grid grid-cols-3 gap-1">
               {followers.slice(0, 9).map((follower) => (
-                <div
-                  key={follower.id}
-                  className="text-center flex flex-col items-center space-y-2"
-                >
-                  <img
-                    src={follower.profilePicture || "/default-profile.png"}
-                    alt={follower.userName}
-                    className="w-24 h-24 rounded-lg object-cover"
-                  />
-                  <span className="text-gray-800 text-sm font-medium">
-                    {follower.userName}
-                  </span>
-                </div>
+                <Link to={`/profile/${follower.uid}`} key={follower.uid}>
+                  <div
+                    key={follower.id}
+                    className="text-center flex flex-col items-center space-y-2"
+                  >
+                    <img
+                      src={follower.profilePicture || "/default-profile.png"}
+                      alt={follower.userName}
+                      className="w-24 h-24 rounded-lg object-cover"
+                    />
+                    <span className="text-gray-800 text-sm font-medium">
+                      {follower.userName}
+                    </span>
+                  </div>
+                </Link>
               ))}
             </div>
             {followers.length > 9 && (
@@ -282,33 +317,39 @@ const StudentProfile = ({ user, id, currentUser }) => {
             )}
           </section>
           <section className="bg-white p-3 rounded-[5px] max-h-[50vh] overflow-hidden">
-          <h3 className="font-semibold mb-3">תמונות</h3>
-          {photos.length > 0 ? (
-                          photos.map((post) => (
-                            <div
-                            key={post.id}
-                            className="text-center flex flex-col p-5 space-y-2"
-                          >
-                             <img
-                              key={post.id}
-                              src={post.postImage}
-                              alt={`${userData.firstName} profile `}
-                              className="w-24 h-24 rounded-lg object-cover"
-                              
-                            />
-                          </div>
-                          ))
-                        ) : (
-                          <p>No photos found.</p>
-                        )}
+            <h3 className="font-semibold mb-3">תמונות</h3>
+            {photos.length > 0 ? (
+              photos.map((post) => (
+                <div
+                  key={post.id}
+                  className="text-center flex flex-col p-5 space-y-2"
+                >
+                  <img
+                    key={post.id}
+                    src={post.postImage}
+                    alt={`${userData.firstName} profile `}
+                    className="w-24 h-24 rounded-lg object-cover"
+                  />
+                </div>
+              ))
+            ) : (
+              <p>למשתמש אין תמונות</p>
+            )}
           </section>
         </div>
 
         {/* Posts Section */}
-        <section className="flex justify-start">
-
+        <section
+          className={`${
+            currentUser.uid === user.uid ? "" : "mt-2"
+          } flex justify-start`}
+        >
           <div className="">
-          <MyPost />
+            {currentUser.uid === user.uid && (
+              <>
+                <MyPost />
+              </>
+            )}
             {allPosts.map((post) => (
               <div key={post.id}>
                 <PostCard posts={post} user={currentUser} />
@@ -316,6 +357,19 @@ const StudentProfile = ({ user, id, currentUser }) => {
             ))}
           </div>
         </section>
+        {/* Modal Component */}
+        <ModalEditProfileComponent
+          modalOpenEditProfile={modalOpenEditProfile}
+          setModalOpenEditProfile={setModalOpenEditProfile}
+          setUser={setUserData}
+          user={currentUser}
+        />
+        <ModalEditWebsites
+          modalOpenEditWebsites={modalOpenEditWebsites}
+          setModalEditWebsites={setModalEditWebsites}
+          setUser={setUserData}
+          user={currentUser}
+        />
       </div>
 
       {activeChatUser && (

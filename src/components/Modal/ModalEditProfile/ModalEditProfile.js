@@ -5,8 +5,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // ייבו
 import { db, storage } from "../../../config/firebase";
 import "./ModalEditProfile.css";
 const ModalEditProfileComponent = ({
-  modalOpen,
-  setModalOpen,
+  modalOpenEditProfile,
+  setModalOpenEditProfile,
   user,
   setUser,
 }) => {
@@ -16,10 +16,6 @@ const ModalEditProfileComponent = ({
   const [location, setLocation] = useState(user.location);
   const [profilePicture, setProfilePicture] = useState(user.profilePicture);
   const [uploading, setUploading] = useState(false);
-  const [relationship, setRelationship] = useState(user.relationship);
-  const [userGitHub, setUserGitHub] = useState(user.userGitHub);
-  const [userWebsite, setUserWebsite] = useState(user.userWebsite);
-  const [userLinkedin, setUserLinkedin] = useState(user.userLinkedin);
 const [categories,setCategories]=useState([])
   const handleSave = async () => {
     try {
@@ -29,10 +25,6 @@ const [categories,setCategories]=useState([])
         bio: bio || "",
         firstName: firstName || "",
         lastName: lastName || "",
-        relationship: relationship || "",
-        userGitHub: userGitHub || "",
-        userWebsite: userWebsite || "",
-        userLinkedin: userLinkedin || "",
         userName: `${firstName} ${lastName}` || "",
       });
 
@@ -44,13 +36,8 @@ const [categories,setCategories]=useState([])
         lastName: lastName,
         location: location,
         profilePicture: profilePicture,
-        userGitHub: userGitHub,
-        userName: `${firstName} ${lastName}`,
-        userWebsite: userWebsite,
-        userLinkedin: userLinkedin,
-        relationship: relationship,
       }));
-      setModalOpen(false); // סגירת המודל אחרי שמירה
+      setModalOpenEditProfile(false); // סגירת המודל אחרי שמירה
       message.success("נתונים נשמרו בהצלחה");
     } catch (error) {
       console.error("Error updating user profile: ", error);
@@ -106,11 +93,11 @@ const [categories,setCategories]=useState([])
       <Modal
         title="עריכת פרופיל"
         centered
-        open={modalOpen}
+        open={modalOpenEditProfile}
         onOk={handleSave}
-        onCancel={() => setModalOpen(false)}
+        onCancel={() => setModalOpenEditProfile(false)}
         footer={[
-          <Button key="cancel" onClick={() => setModalOpen(false)}>
+          <Button key="cancel" onClick={() => setModalOpenEditProfile(false)}>
             ביטול
           </Button>,
           <Button key="submit" type="primary" onClick={handleSave}>
@@ -164,43 +151,6 @@ const [categories,setCategories]=useState([])
           />
           <Divider />
 
-          <label>מין:</label>
-          <select
-            name="relation"
-            id="inputRelation"
-            value={relationship}
-            onChange={(e) => setRelationship(e.target.value)}
-          >
-            <option value=""></option>
-            <option value="רווק/ה">רווק/ה</option>
-            <option value="נשוי/ה">נשוי/ה</option>
-            <option value="גרוש/ה">גרוש/ה</option>
-          </select>
-          <Divider />
-
-          <h3>קישורים ברשת</h3>
-          <label>GitHub:</label>
-          <Input
-            type="text"
-            value={userGitHub}
-            onChange={(e) => setUserGitHub(e.target.value)}
-          />
-          <Divider />
-
-          <label>אתר אישי:</label>
-          <Input
-            type="text"
-            value={userWebsite}
-            onChange={(e) => setUserWebsite(e.target.value)}
-          />
-          <Divider />
-
-          <label>LinkedIn:</label>
-          <Input
-            type="text"
-            value={userLinkedin}
-            onChange={(e) => setUserLinkedin(e.target.value)}
-          />
         </div>
       </Modal>
     </>
