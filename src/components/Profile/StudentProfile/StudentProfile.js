@@ -7,16 +7,18 @@ import ModalEditProfileComponent from "../../Modal/ModalEditProfile/ModalEditPro
 import ChatPopup from "../../ChatPopup/ChatPopup";
 import {
   addDoc,
+  arrayRemove,
   collection,
   doc,
   getDoc,
   getDocs,
   onSnapshot,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../../../firebase";
-
+import { AiOutlineClose } from "react-icons/ai"
 import {
   CiCircleQuestion,
   CiEdit,
@@ -28,11 +30,15 @@ import {
 import { loadData, loadFollowers } from "../../../hooks/useLoadUsers";
 import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
+import ModalEditSkills, { handleDeleteSkillFromStudent } from "../../Modal/ModalEditProfile/ModalEditSkills/ModalEditSkills";
+import { message } from "antd";
 
 const StudentProfile = ({ user, id, currentUser }) => {
   const [userData, setUserData] = useState(user);
+  const [skills, setSkills] = useState([]); // מיומנויות
   const [modalOpenEditProfile, setModalOpenEditProfile] = useState(false);
   const [modalOpenEditWebsites, setModalEditWebsites] = useState(false);
+  const [modalOpenEditSkills, setModalOpenEditSkills] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [photos, setPhotos] = useState([]);
@@ -108,17 +114,38 @@ const StudentProfile = ({ user, id, currentUser }) => {
     fetchUserPosts();
   }, user.uid);
 
-  useEffect(() => {
-    const userRef = doc(db, "Users", id);
-    const unsubscribe = onSnapshot(userRef, (snapshot) => {
+useEffect(() => {
+  const userRef = doc(db, "Users", id);
+  const unsubscribe = onSnapshot(userRef, (snapshot) => {
+    if (snapshot.exists()) {
       setUserData(snapshot.data());
+      setSkills(snapshot.data().skills || []); // עדכון המיומנויות
       if (snapshot.data()?.followers) {
-        loadFollowers(snapshot.data().followers, setFollowers);
+        loadFollowers(snapshot.data().followers, setFollowers); // טעינת עוקבים
       }
+    } else {
+      console.warn("Document does not exist!");
+    }
+  });
+
+  return () => unsubscribe(); // ניקוי המאזין
+}, [id]);
+
+const handleDeleteSkillFromStudent = async (skill) => {
+  try {
+    const userRef = doc(db, "Users", user.uid);
+    await updateDoc(userRef, {
+      skills: arrayRemove(skill),
     });
-    return () => unsubscribe();
-  }, [id]);
-  // followers
+
+    // עדכון הסטייט המקומי
+    setSkills((prev) => prev.filter((s) => s !== skill));
+    message.success("מיומנות נמחקה בהצלחה");
+  } catch (error) {
+    console.error("Error removing skill: ", error);
+    message.error("שגיאה בעת מחיקת מיומנות");
+  }
+};
 
   return (
     <>
@@ -270,15 +297,38 @@ const StudentProfile = ({ user, id, currentUser }) => {
 
             {/* Col 3 */}
             <div>
-              <h3 className="text-gray-800 font-semibold flex items-center">
-                מיומנויות וכישורים{" "}
-                <span>
-                  <button>
-                    <CiEdit size={20} />
-                  </button>
-                </span>
-              </h3>
-              
+            <h3 className="text-gray-800 font-semibold flex items-center">
+        מיומנויות וכישורים{" "}
+        <span>
+          <button onClick={() => setModalOpenEditSkills(true)}>
+            <CiEdit size={20} />
+          </button>
+        </span>
+      </h3>
+
+      {/* הצגת המיומנויות */}
+
+<ul className="flex flex-wrap justify-center gap-4 mt-4">
+  {skills.length > 0 ? (
+    skills.map((skill, index) => (
+      <li
+        key={index}
+        className=" text-gray-700 font-semibold flex items-center justify-evenly  px-4 py-4 rounded-md bg-[#15CDCA13] shadow-sm"
+      >
+        {skill}
+        {/* אייקון מחיקה */}
+        <button
+          onClick={() => handleDeleteSkillFromStudent(skill)}
+          className=" text-red-500 hover:text-red-700"
+        >
+          <AiOutlineClose size={16} />
+        </button>
+      </li>
+    ))
+  ) : (
+    <p className="text-gray-500">אין מיומנויות להצגה</p>
+  )}
+</ul>
 
             </div>
           </div>
@@ -367,6 +417,12 @@ const StudentProfile = ({ user, id, currentUser }) => {
         <ModalEditWebsites
           modalOpenEditWebsites={modalOpenEditWebsites}
           setModalEditWebsites={setModalEditWebsites}
+          setUser={setUserData}
+          user={currentUser}
+        />
+         <ModalEditSkills
+          modalOpenEditSkills={modalOpenEditSkills}
+          setModalOpenEditSkills={setModalOpenEditSkills}
           setUser={setUserData}
           user={currentUser}
         />
