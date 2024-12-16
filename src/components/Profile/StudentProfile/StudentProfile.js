@@ -100,14 +100,16 @@ const StudentProfile = ({ user, id, currentUser }) => {
 
   const fetchUserPosts = async () => {
     const q = query(collection(db, "Posts"), where("user.uid", "==", user.uid));
-    const querySnapshot = await getDocs(q);
-    const postsData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setAllPosts(postsData);
-    const photos = postsData.filter((post) => post.postImage);
-    setPhotos(photos);
+    const unsubscribe = onSnapshot(q,(snapshot)=>{
+      const postsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setAllPosts(postsData);
+      const photos = postsData.filter((post) => post.postImage);
+      setPhotos(photos);
+    })
+    return ()=>unsubscribe();
   };
 
   useMemo(() => {
