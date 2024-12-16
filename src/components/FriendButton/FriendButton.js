@@ -136,7 +136,7 @@ const FriendButton = ({user}) => {
                 // מסירים את החבר ממערך friends של המשתמש הנוכחי
                 const currentUserDocRef = doc (db, 'Users', currentUser.uid);
                 await updateDoc (currentUserDocRef, {
-                    friends: arrayRemove (user.uid)
+                    followers: arrayRemove (user.uid)
                 });
 
                 // מסירים את המשתמש הנוכחי ממערך friends של החבר

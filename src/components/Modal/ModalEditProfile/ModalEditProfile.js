@@ -22,7 +22,6 @@ const [categories,setCategories]=useState([])
       // עדכון המסמך ב-Firestore עם הערכים החדשים
       const userRef = doc(db, "Users", user.uid);
       await updateDoc(userRef, {
-        bio: bio || "",
         firstName: firstName || "",
         lastName: lastName || "",
         userName: `${firstName} ${lastName}` || "",
@@ -31,7 +30,6 @@ const [categories,setCategories]=useState([])
       // עדכון ה-state המקומי
       setUser((prevUser) => ({
         ...prevUser,
-        bio: bio,
         firstName: firstName,
         lastName: lastName,
         location: location,
@@ -90,69 +88,88 @@ const [categories,setCategories]=useState([])
 
   return (
     <>
-      <Modal
-        title="עריכת פרופיל"
-        centered
-        open={modalOpenEditProfile}
-        onOk={handleSave}
-        onCancel={() => setModalOpenEditProfile(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setModalOpenEditProfile(false)}>
-            ביטול
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleSave}>
-            שמור שינויים
-          </Button>,
-        ]}
-      >
-        <div className="modal-content">
-          <label>תמונת פרופיל:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleFileUpload(e.target.files[0])}
-          />
-          <Divider />
+<Modal
+  title="עריכת פרופיל"
+  centered
+  open={modalOpenEditProfile}
+  onOk={handleSave}
+  onCancel={() => setModalOpenEditProfile(false)}
+  footer={[
+    <Button
+      key="cancel"
+      onClick={() => setModalOpenEditProfile(false)}
+      className="bg-gray-200 text-gray-700 hover:bg-gray-300"
+    >
+      ביטול
+    </Button>,
+    <Button
+      key="submit"
+      type="primary"
+      onClick={handleSave}
+      className="bg-blue-500 text-white hover:bg-blue-600"
+    >
+      שמור שינויים
+    </Button>,
+  ]}
+>
+  <div className="modal-content space-y-4">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        תמונת פרופיל:
+      </label>
+      <label className="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md cursor-pointer hover:bg-blue-600">
+        העלאת תמונה
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => handleFileUpload(e.target.files[0])}
+          className="hidden"
+        />
+      </label>
+    </div>
+    <Divider />
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <label>שם פרטי:</label>
-              <Input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-            </Col>
-            <Col span={12}>
-              <label>שם משפחה:</label>
-              <Input
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-            </Col>
-          </Row>
-          <Divider />
+    <Row gutter={16}>
+      <Col span={12}>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          שם פרטי:
+        </label>
+        <Input
+          type="text"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </Col>
+      <Col span={12}>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          שם משפחה:
+        </label>
+        <Input
+          type="text"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </Col>
+    </Row>
+    <Divider />
 
-          <label>אודות:</label>
-<textarea
-  type="text"
-  value={bio}
-  className="bioText"
-  onChange={(e) => setBio(e.target.value)}
-/>
-          <Divider />
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        מיקום:
+      </label>
+      <Input
+        type="text"
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+    <Divider />
+  </div>
+</Modal>
 
-          <label>מיקום:</label>
-          <Input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-          <Divider />
-
-        </div>
-      </Modal>
     </>
   );
 };

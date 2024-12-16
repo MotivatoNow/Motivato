@@ -135,47 +135,44 @@ const MissionCard = ({ missions, user }) => {
     setSelectedFile(file);
   };
 
+  const getApplicationsData = async (applications) => {
+    return Promise.all(
+      applications.docs.map(async (docA) => {
+        const applicationData = docA.data();
+        const userDoc = await getDoc(doc(db, "Users", applicationData.userId));
+        
+        return {
+          id: docA.id,
+          ...applicationData,
+          userName: userDoc.exists() ? userDoc.data().userName : "Unknown User",
+          userProfilePicture: userDoc.exists()
+            ? userDoc.data().profilePicture
+            : "defaultProfilePictureURL",
+        };
+      })
+    );
+  };
+
+  const getApplications = async (missionId,setApplications) => {
+    const applicationsRef = collection(db, "Applications");
+    const q = query(applicationsRef, where("missionId", "==", missionId));
+
+    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+      const applicationsData = await getApplicationsData(querySnapshot);
+      setApplications(applicationsData)
+     
+    });
+    return () => unsubscribe();
+  };
+
   useEffect(() => {
-    const getApplications = async (missionId) => {
-      const applicationsRef = collection(db, "Applications");
-      const q = query(applicationsRef, where("missionId", "==", missionId));
-  
-      const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-        const applicationsData = await Promise.all(
-          querySnapshot.docs.map(async (docA) => {
-            const applicationData = docA.data();
-  
-           const userDoc = await getDoc(
-              doc(db, "Users", applicationData.userId)
-            );
-  
-            const userName = userDoc.exists()
-              ? userDoc.data().userName
-              : "Unknown User";
-            const userProfilePicture = userDoc.exists()
-              ? userDoc.data().profilePicture
-              : "defaultProfilePictureURL";
-  
-            return {
-              id: docA.id,
-              ...applicationData,
-              userName,
-              userProfilePicture,
-            };
-          })
-        );
-  
-        setApplications(applicationsData); 
-      });
-      return () => unsubscribe();
-    };
   
     if (missions.id) {
-      getApplications(missions.id);
-      console.log(missions.title)
+      console.log(missions.id)
+      getApplications(missions.id,setApplications);
       console.log(applications)
     }
-  }, [missions?.id]);
+  }, [missions.id]);
   
   if (loading) {
     return <div>Loading...</div>;
@@ -237,14 +234,14 @@ const MissionCard = ({ missions, user }) => {
           <>
             <label
               htmlFor="file-upload"
-              className="absolute top-2 left-2 cursor-pointer text-gray-500 hover:text-blue-600"
+              className="absolute cursor-pointer text-gray-500 hover:text-blue-600"
             >
               upload file
             </label>
             <input
               id="file-upload"
               type="file"
-              accept=".pdf,.doc,.docx"
+              accept=".pdf"
               onChange={handleFileChange}
             />
             {selectFile && <p>{selectFile.name}</p>}
@@ -258,24 +255,19 @@ const MissionCard = ({ missions, user }) => {
             </div>
           </>
         )}
-        {currentUser.uid === userData.uid && (
+        {currentUser.uid === userData.uid && applications.length>0 && (
           <>
             <div>
               <p>Applications ({applications.length})</p>
-              <ul>
-                {applications.map((application) => {
-                  <>
-                    <div key={application.id}>
-                      <img src={application.userProfilePicture} />
-                      <span>{application.userName}</span>
-                      <a href={application.fileUrl} target="_blank">
-                        {application.fileName}
-                      </a>
-                      <i>{application.timeStamp}</i>
-                    </div>
-                  </>;
-                })}
-              </ul>
+              {applications.map((application) => (
+  <div key={application.id}>
+    <img src={application.userProfilePicture} />
+    <span>{application.userName}</span>
+    <img src={application.fileName}/>
+    <i>{application.timeStamp}</i>
+  </div>
+))}
+
             </div>
           </>
         )}

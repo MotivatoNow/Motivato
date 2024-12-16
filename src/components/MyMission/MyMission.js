@@ -19,7 +19,8 @@ const MyMission = () => {
         let object = {
             user: {
                 uid: currentUser?.uid || "No UID",
-                userName:currentUser?.userName||"Anonymous"
+                userName:currentUser?.userName||"Anonymous",
+                userType:currentUser?.userType||"Anonymous",
             },
             post: post,
             timeStamp: getCurrentTimeStamp("LLL"),
@@ -73,6 +74,7 @@ const MyMission = () => {
                 setPlace={setPlace}
                 type={type}
                 setType={setType}
+                userType={currentUser.userType}
             />
         </div>
     );

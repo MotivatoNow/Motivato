@@ -54,7 +54,7 @@ const Profile = () => {
 
   return (
     <>
-      <div className=" bg-[#f2f4f7] ">
+      <div className="">
         {userData && (
           <>
         {userData.userType === "Student" ?(

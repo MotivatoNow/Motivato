@@ -66,7 +66,7 @@ const MyPost = () => {
           className="w-12 h-12 rounded-full object-cover ml-3"
         />
         <button
-          className="flex-grow bg-gray-100 hover:bg-gray-200 transition duration-100 text-gray-800 py-4 px-4 rounded-lg text-right"
+          className="flex-grow bg-gray-50 hover:bg-gray-100 transition duration-100 text-gray-800 py-4 px-4 rounded-lg text-right"
           onClick={() => setModalOpen(true)}
         >
           כתיבת פוסט חדש

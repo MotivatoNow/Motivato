@@ -18,7 +18,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../../firebase";
-import { AiOutlineClose } from "react-icons/ai"
+import { AiOutlineClose } from "react-icons/ai";
 import {
   CiCircleQuestion,
   CiEdit,
@@ -32,6 +32,10 @@ import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
 import ModalEditSkills from "../../Modal/ModalEditProfile/ModalEditSkills/ModalEditSkills";
 import { message } from "antd";
+import { CgWebsite } from "react-icons/cg";
+import { FaGithubSquare, FaLinkedinIn } from "react-icons/fa";
+import { FaEarthEurope } from "react-icons/fa6";
+import ModalEditBio from "../../Modal/ModalEditProfile/ModalEditBio/ModalEditBio";
 
 const StudentProfile = ({ user, id, currentUser }) => {
   const [userData, setUserData] = useState(user);
@@ -39,6 +43,7 @@ const StudentProfile = ({ user, id, currentUser }) => {
   const [modalOpenEditProfile, setModalOpenEditProfile] = useState(false);
   const [modalOpenEditWebsites, setModalEditWebsites] = useState(false);
   const [modalOpenEditSkills, setModalOpenEditSkills] = useState(false);
+  const [modalOpenEditBio, setModalOpenEditBio] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [photos, setPhotos] = useState([]);
@@ -114,227 +119,227 @@ const StudentProfile = ({ user, id, currentUser }) => {
     fetchUserPosts();
   }, user.uid);
 
-useEffect(() => {
-  const userRef = doc(db, "Users", id);
-  const unsubscribe = onSnapshot(userRef, (snapshot) => {
-    if (snapshot.exists()) {
-      setUserData(snapshot.data());
-      setSkills(snapshot.data().skills || []); // עדכון המיומנויות
-      if (snapshot.data()?.followers) {
-        loadFollowers(snapshot.data().followers, setFollowers); // טעינת עוקבים
+  useEffect(() => {
+    const userRef = doc(db, "Users", id);
+    const unsubscribe = onSnapshot(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setUserData(snapshot.data());
+        setSkills(snapshot.data().skills || []); // עדכון המיומנויות
+        if (snapshot.data()?.followers) {
+          loadFollowers(snapshot.data().followers, setFollowers); // טעינת עוקבים
+        }
+      } else {
+        console.warn("Document does not exist!");
       }
-    } else {
-      console.warn("Document does not exist!");
-    }
-  });
-
-  return () => unsubscribe(); // ניקוי המאזין
-}, [id]);
-
-const handleDeleteSkillFromStudent = async (skill) => {
-  try {
-    const userRef = doc(db, "Users", user.uid);
-    await updateDoc(userRef, {
-      skills: arrayRemove(skill),
     });
 
-    // עדכון הסטייט המקומי
-    setSkills((prev) => prev.filter((s) => s !== skill));
-    message.success("מיומנות נמחקה בהצלחה");
-  } catch (error) {
-    console.error("Error removing skill: ", error);
-    message.error("שגיאה בעת מחיקת מיומנות");
-  }
-};
+    return () => unsubscribe(); // ניקוי המאזין
+  }, [id]);
+
+  const handleDeleteSkillFromStudent = async (skill) => {
+    try {
+      const userRef = doc(db, "Users", user.uid);
+      await updateDoc(userRef, {
+        skills: arrayRemove(skill),
+      });
+
+      // עדכון הסטייט המקומי
+      setSkills((prev) => prev.filter((s) => s !== skill));
+      message.success("מיומנות נמחקה בהצלחה");
+    } catch (error) {
+      console.error("Error removing skill: ", error);
+      message.error("שגיאה בעת מחיקת מיומנות");
+    }
+  };
 
   return (
     <>
-      <div className="w-full  min-h-screen grid md:grid-rows-[1fr_3fr]">
-        {/* ROW 1 */}
+     <div className="w-full min-h-[10vh] grid md:grid-rows-[1fr_2fr]">
+  {/* ROW 1 */}
+  <div className="bg-[#FDFDFF] px-5 py-4 grid grid-cols-[3fr_3fr]">
+    {/* Col 1 */}
+    <div className="flex space-x-4">
+      {/* Profile Image */}
+      <img
+        className="rounded-[5px] cursor-pointer h-48 w-48 shadow-md object-cover"
+        src={userData.profilePicture}
+        alt={`${userData.userName} profile image`}
+        onClick={() => setLightboxOpen(true)}
+      />
+      {isLightboxOpen && (
         <div
-          className="bg-[#FDFDFF] px-5 py-2 grid grid-cols-[3fr_3fr]"
-          style={{}}
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+          onClick={() => setLightboxOpen(false)}
         >
-          {/* Col 1 */}
-          <div className="flex space-x-4">
-            {/* Profile Image */}
-            <img
-              className="rounded-[5px] cursor-pointer h-48 w-48 shadow-md object-cover "
-              src={userData.profilePicture}
-              alt={`${userData.userName} profile image`}
-              onClick={() => setLightboxOpen(true)}
-            />
-            {/* Lightbox */}
-            {isLightboxOpen && (
-              <div
-                className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-                onClick={() => setLightboxOpen(false)}
-              >
-                <img
-                  className="rounded-[5px] max-h-[90vh] max-w-[90vw] object-contain"
-                  src={userData.profilePicture}
-                  alt={`${userData.userName} profile image enlarged`}
-                />
-              </div>
-            )}
-
-            {/* Profile Info */}
-            <div className="flex flex-col px-3">
-              {/* Name */}
-              <h1 className="text-2xl font-semibold">{userData.userName}</h1>
-
-              {/* Student Education */}
-              <p className="text-gray-500">
-                {userData.studentEducation}, {userData.studentCollege}
-              </p>
-
-              {/* Location and Additional Info */}
-              <div className="mt-2 flex flex-col md:flex-row md:justify-between">
-                {/* Location and Email */}
-                <div className="flex flex-col">
-                  {/* Location */}
-                  <p className="flex items-center">
-                    <CiLocationOn className="ml-2" color="#3E54D3" />{" "}
-                    {userData.location}
-                  </p>
-                  {/* Email */}
-                  <p className="flex items-center">
-                    <CiMail className="ml-2" color="#3E54D3" /> {userData.email}
-                  </p>
-                </div>
-
-                {/* Additional Info */}
-                <div className="flex flex-col text-gray-600 mt-4 md:mt-0 md:mr-10">
-                  {/* Line 1 */}
-                  <p className="flex items-center">
-                    <CiCircleQuestion className="ml-2" color="#3E54D3" /> לחשוב
-                    מה לשים פה
-                  </p>
-                  {/* Line 2 */}
-                  <p className="flex items-center">
-                    <CiCircleQuestion className="ml-2" color="#3E54D3" /> לחשוב
-                    מה לשים פה
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Col 2 */}
-          <div
-            className={`flex flex-col  ${
-              currentUser.uid === userData.uid
-                ? "justify-start items-end"
-                : "justify-around items-end"
-            }`}
-          >
-            {currentUser.uid !== userData.uid && (
-              <>
-                <FriendButton user={user} />
-                <ChatButton
-                  onClick={() => handleChatButtonClick(userData.uid)}
-                />
-              </>
-            )}
-
-            {currentUser.uid === userData.uid && (
-              <button
-                className="flex md:items-center md:justify-center just md:bg-[#4F80E2] md:text-white px-4 py-2 rounded-[5px]"
-                onClick={() => setModalOpenEditProfile(true)}
-              >
-                <CiSettings className="md:right-0 right-10 md:bottom-0 bottom-2 md:left-4 relative md:text-white text-[#4F80E2] text-[2em] mr-0 sm:mr-2" />
-                <span className="hidden md:inline">הגדרות</span>
-              </button>
-            )}
-          </div>
-        </div>{" "}
-        {/* End of row 1 */}
-        {/* ROW 2 */}
-        <div className="bg-gray-50 flex  flex-col px-5 py-8">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_2fr_2fr]">
-            {/* Col 1 */}
-            <div className="flex flex-col">
-              <h3 className="font-semibold flex items-center text-gray-800 ">
-                קישורים ברשת{" "}
-                <span>
-                  <button onClick={() => setModalEditWebsites(true)}>
-                    <CiEdit size={20} />
-                  </button>
-                </span>
-              </h3>
-              <ul className="mt-2">
-                <li className="flex items-center mb-2 text-gray-800">
-                  <CiLinkedin className="ml-2" size={20} color="#3e54d3" />
-                  <a
-                    className="text-blue-700 font-semibold"
-                    href={userData.userLinkedin}
-                  >
-                    {userData.nameUserLinkedin}
-                  </a>
-                </li>
-                <li className="flex items-center mb-2 text-gray-800">
-                  <CiLinkedin className="ml-2" size={20} color="#3e54d3" />
-                  {userData.userGitHub}
-                </li>
-                <li className="flex items-center mb-2 text-gray-800">
-                  <CiLinkedin className="ml-2" size={20} color="#3e54d3" />
-                  {userData.userWebsite}
-                </li>
-              </ul>
-            </div>
-
-            {/* Col 2 */}
-            <div className="break-words max-w-full whitespace-pre-wrap overflow-hidden text-gray-800">
-              <h3 className="text-gray-800 font-semibold flex items-center">
-                אודות{" "}
-                <span>
-                  <button>
-                    <CiEdit size={20} />
-                  </button>
-                </span>
-              </h3>
-              <p className="py-2">{userData.bio}</p>
-            </div>
-
-            {/* Col 3 */}
-            <div>
-            <h3 className="text-gray-800 font-semibold flex items-center">
-        מיומנויות וכישורים{" "}
-        <span>
-          <button onClick={() => setModalOpenEditSkills(true)}>
-            <CiEdit size={20} />
-          </button>
-        </span>
-      </h3>
-
-      {/* הצגת המיומנויות */}
-
-<ul className="flex flex-wrap justify-center gap-4 mt-4">
-  {skills.length > 0 ? (
-    skills.map((skill, index) => (
-      <li
-        key={index}
-        className=" text-gray-700 font-semibold flex items-center justify-evenly text-center px-4 py-4 rounded-md bg-[#15CDCA13] shadow-sm"
-      >
-        {skill}
-        {/* אייקון מחיקה */}
-        <button
-          onClick={() => handleDeleteSkillFromStudent(skill)}
-          className=" text-red-500 hover:text-red-700"
-        >
-          <AiOutlineClose size={16} />
-        </button>
-      </li>
-    ))
-  ) : (
-    <p className="text-gray-500">אין מיומנויות להצגה</p>
-  )}
-</ul>
-
-            </div>
-          </div>
+          <img
+            className="rounded-[5px] max-h-[90vh] max-w-[90vw] object-contain"
+            src={userData.profilePicture}
+            alt={`${userData.userName} profile image enlarged`}
+          />
         </div>
-        {/*End Of row 2 */}
+      )}
+
+      {/* Profile Info */}
+      <div className="flex flex-col px-3">
+        <h1 className="text-2xl font-semibold">{userData.userName}</h1>
+
+        {/* Student Education */}
+        {userData.studentEducation && userData.studentCollege ? (
+          <p className="text-gray-500">
+            {userData.studentEducation}, {userData.studentCollege}
+          </p>
+        ) : (
+          currentUser.uid === userData.uid && (
+            <p className="text-gray-500">לא הוספת פרטי לימודים עדיין</p>
+          )
+        )}
+
+        {/* Location */}
+        {userData.location ? (
+          <div className="mt-2 flex items-center">
+            <CiLocationOn className="ml-2" color="#3E54D3" />
+            {userData.location}
+          </div>
+        ) : (
+          currentUser.uid === userData.uid && (
+            <p className="text-gray-500">לא הוספת מיקום</p>
+          )
+        )}
+
+        {/* Email */}
+        {userData.email && (
+          <p className="flex items-center">
+            <CiMail className="ml-2" color="#3E54D3" />
+            {userData.email}
+          </p>
+        )}
       </div>
+    </div>
+
+    {/* Col 2 */}
+    <div
+      className={`flex flex-col ${
+        currentUser.uid === userData.uid
+          ? "justify-start items-end"
+          : "justify-around items-end"
+      }`}
+    >
+      {currentUser.uid !== userData.uid && (
+        <>
+          <FriendButton user={user} />
+          <ChatButton onClick={() => handleChatButtonClick(userData.uid)} />
+        </>
+      )}
+
+      {currentUser.uid === userData.uid && (
+        <button
+          className="flex md:items-center md:justify-center just md:bg-[#4F80E2] md:text-white px-4 py-2 rounded-[5px]"
+          onClick={() => setModalOpenEditProfile(true)}
+        >
+          <CiSettings className="md:right-0 right-10 md:bottom-0 bottom-2 md:left-4 relative md:text-white text-[#4F80E2] text-[2em] mr-0 sm:mr-2" />
+          <span className="hidden md:inline">הגדרות</span>
+        </button>
+      )}
+    </div>
+  </div>
+
+  {/* ROW 2 */}
+  <div className="bg-[#C7DAFF15] flex flex-col px-5 py-8">
+    <div className="grid grid-cols-1 gap-10 md:grid-cols-[0.5fr_2fr_1fr]">
+      {/* Links */}
+      <div className="flex flex-col">
+        <h3 className="font-semibold text-gray-800 flex items-center">
+          קישורים ברשת
+          {currentUser.uid === userData.uid && (
+            <button onClick={() => setModalEditWebsites(true)} className="ml-2">
+              <CiEdit size={20} />
+            </button>
+          )}
+        </h3>
+        {userData.userLinkedin || userData.userGitHub || userData.userWebsite ? (
+          <ul className="mt-2">
+            {userData.userLinkedin && (
+              <li className="flex items-center mb-2 text-gray-800">
+                <FaLinkedinIn className="ml-2 text-[#4F80E270] hover:text-[#4F80E2]" size={20} />
+                <a href={userData.userLinkedin}>{userData.nameUserLinkedin}</a>
+              </li>
+            )}
+            {userData.userGitHub && (
+              <li className="flex items-center mb-2 text-gray-800">
+                <FaGithubSquare className="ml-2 text-[#4F80E270] hover:text-[#4F80E2]" size={20} />
+                <a href={userData.userGitHub}>{userData.nameUserGithub}</a>
+              </li>
+            )}
+            {userData.userWebsite && (
+              <li className="flex items-center mb-2 text-gray-800">
+                <FaEarthEurope className="ml-2 text-[#4F80E270] hover:text-[#4F80E2]" size={20} />
+                <a href={userData.userWebsite}>{userData.nameUserWebsite}</a>
+              </li>
+            )}
+          </ul>
+        ) : currentUser.uid === userData.uid ? (
+          <p className="text-gray-500">לא הוספת קישורים עדיין</p>
+        ) : (
+          <p className="text-gray-500">המשתמש לא הוסיף קישורים עדיין</p>
+        )}
+      </div>
+
+      {/* About */}
+      <div className="break-words max-w-full text-gray-800">
+        <h3 className="font-semibold flex items-center">
+          אודות
+          {currentUser.uid === userData.uid && (
+            <button onClick={() => setModalOpenEditBio(true)} className="ml-2">
+              <CiEdit size={24} />
+            </button>
+          )}
+        </h3>
+        {userData.bio ? (
+          <p>{userData.bio}</p>
+        ) : currentUser.uid === userData.uid ? (
+          <p className="text-gray-500">לא עדכנת את האודות עדיין</p>
+        ) : (
+          <p className="text-gray-500">המשתמש לא עדכן את האודות עדיין</p>
+        )}
+      </div>
+
+      {/* Skills */}
+      <div>
+        <h3 className="font-semibold flex items-center">
+          מיומנויות וכישורים
+          {currentUser.uid === userData.uid && (
+            <button onClick={() => setModalOpenEditSkills(true)} className="ml-2">
+              <CiEdit size={20} />
+            </button>
+          )}
+        </h3>
+        {skills.length > 0 ? (
+          <ul className="flex flex-wrap gap-4 mt-4">
+            {skills.map((skill, index) => (
+              <li
+                key={index}
+                className="text-gray-700 font-semibold flex items-center cursor-pointer hover:bg-[#4F80E213] justify-evenly min-w-[20%] px-10 py-2 rounded-md bg-[#15CDCA13] shadow-sm relative group"
+              >
+                {skill}
+                <span
+                  onClick={() => handleDeleteSkillFromStudent(skill)}
+                  className="text-red-500 hover:text-red-700 absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+                >
+                  <AiOutlineClose className="font-bold" size={20} />
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : currentUser.uid === userData.uid ? (
+          <p className="text-gray-500">לא עדכנת מיומנויות עדיין</p>
+        ) : (
+          <p className="text-gray-500">המשתמש לא הוסיף מיומנויות עדיין</p>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+
 
       <div className="min-h-screen w-full grid gap-2 grid-rows-[auto_1fr] md:grid-cols-[1fr_2fr] p-3">
         <div className="mt-5 max-h-[50vh] overflow-hidden w-full grid gap-2 grid-rows-[auto,auto]">
@@ -420,9 +425,15 @@ const handleDeleteSkillFromStudent = async (skill) => {
           setUser={setUserData}
           user={currentUser}
         />
-         <ModalEditSkills
+        <ModalEditSkills
           modalOpenEditSkills={modalOpenEditSkills}
           setModalOpenEditSkills={setModalOpenEditSkills}
+          setUser={setUserData}
+          user={currentUser}
+        />
+         <ModalEditBio         
+          modalOpenEditBio={modalOpenEditBio}
+          setModalOpenEditBio={setModalOpenEditBio}
           setUser={setUserData}
           user={currentUser}
         />

@@ -16,7 +16,7 @@ const Feed = () => {
     getPosts(setAllPosts);
   }, []);
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-[#f2f4f7] w-full mx-auto ">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-[#F6F9FC] w-full mx-auto ">
   {/* עמודת פרופיל - צד שמאל */}
   <div className="hidden lg:block  lg:col-span-1">
           <RightSide />

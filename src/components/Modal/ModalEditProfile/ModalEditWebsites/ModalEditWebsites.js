@@ -13,6 +13,8 @@ const ModalEditWebsites = ({
   const [userWebsite, setUserWebsite] = useState(user.userWebsite);
   const [userLinkedin, setUserLinkedin] = useState(user.userLinkedin);
   const [nameUserLinkedin, setNameUserLinkedin] = useState(user.nameUserLinkedin)
+  const [nameUserWebsite, setNameUserWebsite] = useState(user.nameUserWebsite)
+  const [nameUserGithub, setNameUserGithub] = useState(user.nameUserGithub)
 
   const handleSave = async () => {
     try {
@@ -22,6 +24,8 @@ const ModalEditWebsites = ({
         userWebsite: userWebsite || "",
         userLinkedin: userLinkedin || "",
         nameUserLinkedin : nameUserLinkedin || "",
+        nameUserWebsite : nameUserWebsite || "",
+        nameUserGithub : nameUserGithub || "",
       });
 
       // עדכון ה-state המקומי
@@ -30,7 +34,8 @@ const ModalEditWebsites = ({
         userGitHub: userGitHub,
         userWebsite: userWebsite,
         userLinkedin: userLinkedin,
-        nameUserLinkedin:nameUserLinkedin,
+        nameUserWebsite:nameUserWebsite,
+        nameUserGithub:nameUserGithub,
       }));
       setModalEditWebsites(false);
       message.success("נתונים נשמרו בהצלחה");
@@ -59,7 +64,7 @@ const ModalEditWebsites = ({
         <Divider />
         <Row gutter={16}>
         <Col span={12}>
-        <label>קישור ללינקדין:</label>
+        <label>כתובת הלינקדין:</label>
           <Input
             type="text"
             value={userLinkedin}
@@ -78,21 +83,41 @@ const ModalEditWebsites = ({
           </Row>
           <Divider />
         <Row gutter={16}>
-        <label>אתר אישי:</label>
+       <Col span={12}>
+       <label>כתובת האתר:</label>
           <Input
             type="text"
             value={userWebsite}
             onChange={(e) => setUserWebsite(e.target.value)}
           />
+       </Col>
+       <Col span={12}>
+       <label>שם האתר</label>
+          <Input
+            type="text"
+            value={nameUserWebsite}
+            onChange={(e) => setNameUserWebsite(e.target.value)}
+          />
+       </Col>
           </Row>
           <Divider />
         <Row gutter={16}>
-        <label>גיטהאב:</label>
+       <Col span={12}>
+       <label>כתובת גיטהאב:</label>
         <Input
             type="text"
             value={userGitHub}
             onChange={(e) => setUserGitHub(e.target.value)}
           />
+       </Col>
+       <Col span={12}>
+       <label>שם גיטהאב</label>
+          <Input
+            type="text"
+            value={nameUserGithub}
+            onChange={(e) => setNameUserGithub(e.target.value)}
+          />
+       </Col>
           </Row>
 
         

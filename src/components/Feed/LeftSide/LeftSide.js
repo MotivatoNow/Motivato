@@ -22,7 +22,7 @@ const LeftSide = () => {
                   <Link to={`/mission/${mission.id}`}>
                     <div className="flex flex-col w-72 items-start gap-1 p-3 bg-gray-50 rounded-lg shadow-sm">
                       <p className="text-sm text-gray-500 font-medium">
-                        {mission.user.userName}
+                        {mission.user.userName} -  {mission.user.userType === "Student" ? (<><span>משימה מסטודנט</span></>):(<span>משימה מחברה</span>)}
                       </p>
                       <h3 className="text-lg font-semibold text-gray-800">
                         {mission.title}
