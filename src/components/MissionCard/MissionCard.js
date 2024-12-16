@@ -136,26 +136,26 @@ const MissionCard = ({ missions, user }) => {
   };
 
   useEffect(() => {
-    if (missions?.id) {
+    const getApplications = async (missionId) => {
       const applicationsRef = collection(db, "Applications");
-      const q = query(applicationsRef, where("missionId", "==", missions.id));
-
+      const q = query(applicationsRef, where("missionId", "==", missionId));
+  
       const unsubscribe = onSnapshot(q, async (querySnapshot) => {
         const applicationsData = await Promise.all(
           querySnapshot.docs.map(async (docA) => {
             const applicationData = docA.data();
-
-            // Fetch user details for each application
-            const userDoc = await getDoc(
+  
+           const userDoc = await getDoc(
               doc(db, "Users", applicationData.userId)
             );
+  
             const userName = userDoc.exists()
               ? userDoc.data().userName
               : "Unknown User";
             const userProfilePicture = userDoc.exists()
               ? userDoc.data().profilePicture
               : "defaultProfilePictureURL";
-
+  
             return {
               id: docA.id,
               ...applicationData,
@@ -164,13 +164,19 @@ const MissionCard = ({ missions, user }) => {
             };
           })
         );
-
-        setApplications(applicationsData); // Met à jour l'état avec toutes les candidatures
+  
+        setApplications(applicationsData); 
       });
-
-      return () => unsubscribe(); // Nettoyage à la fin
+      return () => unsubscribe();
+    };
+  
+    if (missions.id) {
+      getApplications(missions.id);
+      console.log(missions.title)
+      console.log(applications)
     }
   }, [missions?.id]);
+  
   if (loading) {
     return <div>Loading...</div>;
   }
