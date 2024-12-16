@@ -52,7 +52,7 @@ const CommentButton = ({ posts }) => {
           const commentData = docC.data();
           const userDoc = await getDoc(doc(db, "Users", commentData.userId));
           const userName = userDoc.exists()
-            ? `${userDoc.data().firstName} ${userDoc.data().lastName}`
+            ? `${userDoc.data().userName}`
             : "Unknown User";
           const userProfilePicture = userDoc.exists()
             ? userDoc.data().profilePicture

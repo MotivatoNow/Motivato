@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
   query,
   where,
 } from "firebase/firestore";
@@ -25,6 +26,7 @@ const MissionCard = ({ missions, user }) => {
   const [loading, setLoading] = useState(true);
   const [activeChatUser, setActiveChatUser] = useState(null);
   const [apply, setApply] = useState(false);
+  const [applications, setApplications] = useState([]);
   const [selectFile, setSelectedFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -99,7 +101,7 @@ const MissionCard = ({ missions, user }) => {
         console.error("No file selected.");
         return;
       }
-  
+
       console.log("Starting file upload...");
       // Upload the file to Firebase Storage
       const fileRef = ref(
@@ -108,66 +110,67 @@ const MissionCard = ({ missions, user }) => {
       );
       await uploadBytes(fileRef, selectFile);
       const fileUrl = await getDownloadURL(fileRef);
-  
+
       if (!fileUrl) {
         throw new Error("Failed to retrieve the file URL after upload.");
       }
-  
-      console.log("File uploaded successfully. URL:", fileUrl);
-  
-      // Save the application in Firestore
-      console.log("Saving application...");
+
       await addDoc(collection(db, "Applications"), {
         missionId: missions.id,
         userId: currentUser.uid,
         fileUrl: fileUrl,
         timeStamp: getCurrentTimeStamp("LLL"),
       });
-      console.log("Application saved successfully.");
-  
-      // Check for an existing conversation or create a new one
-      const participants = [currentUser.uid, missions.user.uid];
-      console.log("Checking for an existing conversation...");
-      let conversationId = await getExistingConversation(participants);
-  
-      if (!conversationId) {
-        console.log("No existing conversation found. Creating a new one...");
-        conversationId = await createConversation(participants);
-        console.log("New conversation created with ID:", conversationId);
-      } else {
-        console.log("Existing conversation found with ID:", conversationId);
-      }
-  
-      // Send the automatic message
-      const messageContent = `Hello, you have a new application for the mission "${missions.title}". 
-      Here is the link to the mission: https://localhost:3000/mission/${missions.id}. 
-      The application file is available here: ${fileUrl}.
-      Automatic message`;
-  
-      console.log("Sending automatic message...");
-      await addDoc(collection(db, `Conversations/${conversationId}/messages`), {
-        senderId: currentUser.uid,
-        content: messageContent,
-        type: "document", // Ensure this is a valid string
-        timeStamp: getCurrentTimeStamp("LLL"),
-      });
-  
-      console.log("Message sent successfully.");
-  
+
       // Reset application state
       setApply(false);
       setSelectedFile(null);
-      console.log("Application process completed successfully.");
     } catch (error) {
       console.error("Error during the application process:", error);
     }
   };
-   
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
   };
 
+  useEffect(() => {
+    if (missions?.id) {
+      const applicationsRef = collection(db, "Applications");
+      const q = query(applicationsRef, where("missionId", "==", missions.id));
+
+      const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+        const applicationsData = await Promise.all(
+          querySnapshot.docs.map(async (docA) => {
+            const applicationData = docA.data();
+
+            // Fetch user details for each application
+            const userDoc = await getDoc(
+              doc(db, "Users", applicationData.userId)
+            );
+            const userName = userDoc.exists()
+              ? userDoc.data().userName
+              : "Unknown User";
+            const userProfilePicture = userDoc.exists()
+              ? userDoc.data().profilePicture
+              : "defaultProfilePictureURL";
+
+            return {
+              id: docA.id,
+              ...applicationData,
+              userName,
+              userProfilePicture,
+            };
+          })
+        );
+
+        setApplications(applicationsData); // Met à jour l'état avec toutes les candidatures
+      });
+
+      return () => unsubscribe(); // Nettoyage à la fin
+    }
+  }, [missions?.id]);
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -246,6 +249,27 @@ const MissionCard = ({ missions, user }) => {
               <button onClick={() => setApply(false)} className="cancel-button">
                 Cancel
               </button>
+            </div>
+          </>
+        )}
+        {currentUser.uid === userData.uid && (
+          <>
+            <div>
+              <p>Applications ({applications.length})</p>
+              <ul>
+                {applications.map((application) => {
+                  <>
+                    <div key={application.id}>
+                      <img src={application.userProfilePicture} />
+                      <span>{application.userName}</span>
+                      <a href={application.fileUrl} target="_blank">
+                        {application.fileName}
+                      </a>
+                      <i>{application.timeStamp}</i>
+                    </div>
+                  </>;
+                })}
+              </ul>
             </div>
           </>
         )}
