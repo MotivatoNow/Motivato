@@ -60,7 +60,7 @@ const PostCard = ({ posts }) => {
   }
 
   return (
-    <div className="bg-white  overflow-hidden shadow-sm rounded-lg p-6 mb-6 max-w-[25rem] md:max-w-2xl mx-auto mt-3">
+    <div className="bg-white  overflow-hidden shadow-sm rounded-lg p-6 mb-6 max-w-[25rem] md:max-w-5xl mx-auto mt-3">
     {/* User Information */}
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
       <div className="flex items-center">

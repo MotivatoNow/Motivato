@@ -30,7 +30,7 @@ import {
 import { loadData, loadFollowers } from "../../../hooks/useLoadUsers";
 import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
-import ModalEditSkills, { handleDeleteSkillFromStudent } from "../../Modal/ModalEditProfile/ModalEditSkills/ModalEditSkills";
+import ModalEditSkills from "../../Modal/ModalEditProfile/ModalEditSkills/ModalEditSkills";
 import { message } from "antd";
 
 const StudentProfile = ({ user, id, currentUser }) => {
@@ -313,7 +313,7 @@ const handleDeleteSkillFromStudent = async (skill) => {
     skills.map((skill, index) => (
       <li
         key={index}
-        className=" text-gray-700 font-semibold flex items-center justify-evenly  px-4 py-4 rounded-md bg-[#15CDCA13] shadow-sm"
+        className=" text-gray-700 font-semibold flex items-center justify-evenly text-center px-4 py-4 rounded-md bg-[#15CDCA13] shadow-sm"
       >
         {skill}
         {/* אייקון מחיקה */}

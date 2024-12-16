@@ -58,7 +58,7 @@ const MyPost = () => {
     return url; // return url image
   };
   return (
-    <div className="bg-white shadow-sm rounded-lg p-4 mb-6 max-w-2xl mx-auto mt-5">
+    <div className="bg-white shadow-sm rounded-lg p-4 mb-6  max-w-[25rem] md:max-w-5xl mx-auto mt-5">
       <div className="flex items-center space-x-4">
         <img
           src={currentUser.profilePicture || "defaultProfilePictureURL"}
