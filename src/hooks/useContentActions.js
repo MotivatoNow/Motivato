@@ -84,11 +84,11 @@ export const editComment = async (commentDoc, updatedFields) => {
   ) => {
     try {
       let imageURL = commentImage;
-  
+     
       if (editedCommentImage) {
         if(commentImage){
           await deleteObject(ref(storage,commentImage))
-          imageURL=""
+          
         }
         const storageRef = ref(
           storage,
@@ -96,10 +96,13 @@ export const editComment = async (commentDoc, updatedFields) => {
         );
         await uploadBytes(storageRef, editedCommentImage);
         imageURL = await getDownloadURL(storageRef);
+        const commentDoc = doc(db, "Comments", commentId);
+        await editComment(commentDoc, { commentImage: imageURL });
+    
       }
   
       const commentDoc = doc(db, "Comments", commentId);
-      await editComment(commentDoc, { comment: editedComment, commentImage: imageURL });
+      await editComment(commentDoc, { comment: editComment });
   
       setEditingCommentId(null);
       setEditedComment("");

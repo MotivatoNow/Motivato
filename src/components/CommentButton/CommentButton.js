@@ -106,7 +106,7 @@ const CommentButton = ({ posts }) => {
   };
   //function to add comments.
   const addComment = async () => {
-    if (comment !== "" || commentImage !== null) {
+    if (commentImage !== null) {
       let imageURL = "";
       if (commentImage) {
         try {
@@ -243,7 +243,7 @@ const CommentButton = ({ posts }) => {
               </div>
             )}
   {/* כפתור שליחת תגובה */}
-  {comment && (
+  {comment|| commentImage && (
     <button
       className="absolute bottom-2 left-2 bg-[#3E54D3] text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
       onClick={addComment}
