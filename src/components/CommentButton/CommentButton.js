@@ -73,7 +73,7 @@ const CommentButton = ({ posts }) => {
   };
 
   // Adding to firebase.
-  const postComment = (
+  const postComment = async (
     postId,
     comment,
     commentImage,
@@ -90,7 +90,7 @@ const CommentButton = ({ posts }) => {
         userId: userId,
         commentUserName: commentUserName,
       };
-      addDoc(commentsRef, object);
+      await addDoc(commentsRef, object);
       if (posts.user.uid !== currentUser.uid) {
         const commentName = `${currentUser.userName} `;
         commentNotifications(
@@ -106,30 +106,28 @@ const CommentButton = ({ posts }) => {
   };
   //function to add comments.
   const addComment = async () => {
-    if (commentImage !== null) {
-      let imageURL = "";
-      if (commentImage) {
-        try {
-          imageURL = await uploadCommentImage(commentImage);
-        } catch (error) {
-          console.error("Error uploading image:", error);
-          return;
-        }
-      }
+    let imageURL = "";
+    if (commentImage) {
       try {
-        postComment(
-          posts.id,
-          comment,
-          imageURL,
-          getCurrentTimeStamp("LLL"),
-          currentUser?.uid,
-          currentUser?.userName
-        );
-        setComment("");
-        setCommentImage(null);
+        imageURL = await uploadCommentImage(commentImage);
       } catch (error) {
-        console.log(error);
+        console.error("Error uploading image:", error);
+        return;
       }
+    }
+    try {
+      postComment(
+        posts.id,
+        comment,
+        imageURL,
+        getCurrentTimeStamp("LLL"),
+        currentUser?.uid,
+        currentUser?.userName
+      );
+      setComment("");
+      setCommentImage(null);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -197,63 +195,83 @@ const CommentButton = ({ posts }) => {
   return (
     <>
       <div className="mt-4 p-4 rounded-lg ">
-      <div className="relative rounded-lg border p-2 shadow-sm bg-white">
-  <textarea
-    placeholder="הוסף תגובה..."
-    className="w-full focus:outline-none resize-none overflow-hidden px-10 py-2 text-sm"
-    style={{ height: comment ? '80px' : '40px' }} // גובה דינמי
-    onChange={(e) => {
-      setComment(e.target.value);
-      if (!e.target.value) {
-        e.target.style.height = "40px"; // חזרה לגובה המקורי
-      } else {
-        e.target.style.height = "auto"; // איפוס הגובה
-        e.target.style.height = `${e.target.scrollHeight}px`; // התאמת הגובה לתוכן
-      }
-    }}
-    value={comment}
-  />
-  
-  {/* אייקון המצלמה */}
-  <label
-    htmlFor="file-upload"
-    className="absolute top-2 left-2 cursor-pointer text-gray-500 hover:text-blue-600"
-  >
-    <CiCamera size={24} />
-  </label>
-  <input
-    id="file-upload"
-    type="file"
-    accept="image/*"
-    className="hidden"
-    onChange={(e) => setCommentImage(e.target.files[0])}
-  />
-   {commentImage && (
-              <div className="relative flex items-center justify-center text-gray-500 bg-gray-100 py-2 px-4 rounded-[5px] border-none shadow-sm cursor-pointer">
-                <img
-                  src={URL.createObjectURL(commentImage)}
-                  alt="Preview"
-                  className="h-10 w-10 object-cover rounded-lg"
-                />
-                <MdDeleteOutline
-                  className="absolute top-1 right-1 cursor-pointer"
-                  size={20}
-                  onClick={deleteImage}
-                />
-              </div>
-            )}
-  {/* כפתור שליחת תגובה */}
-  {comment|| commentImage && (
-    <button
-      className="absolute bottom-2 left-2 bg-[#3E54D3] text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
-      onClick={addComment}
-    >
-      שלח
-    </button>
-  )}
-</div>
+        <div className="relative rounded-lg border p-2 shadow-sm bg-white">
+          {/*New Comment */}
+          <textarea
+            placeholder="הוסף תגובה..."
+            className="w-full focus:outline-none resize-none overflow-hidden px-10 py-2 text-sm"
+            style={{ height: comment ? "80px" : "40px" }} // גובה דינמי
+            onChange={(e) => {
+              setComment(e.target.value);
+              if (!e.target.value) {
+                e.target.style.height = "40px"; // חזרה לגובה המקורי
+              } else {
+                e.target.style.height = "auto"; // איפוס הגובה
+                e.target.style.height = `${e.target.scrollHeight}px`; // התאמת הגובה לתוכן
+              }
+            }}
+            value={comment}
+          />
 
-
+          {/* אייקון המצלמה */}
+          <label
+            htmlFor="file-upload"
+            className="absolute top-2 left-2 cursor-pointer text-gray-500 hover:text-blue-600"
+          >
+            <CiCamera size={24} />
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => setCommentImage(e.target.files[0])}
+          />
+          {/*Comment Image */}
+          {commentImage && (
+            <div className="relative flex items-center justify-center text-gray-500 bg-gray-100 py-2 px-4 rounded-[5px] border-none shadow-sm cursor-pointer">
+              <img
+                src={URL.createObjectURL(commentImage)}
+                alt="Preview"
+                className="h-10 w-10 object-cover rounded-lg"
+              />
+              <MdDeleteOutline
+                className="absolute top-1 right-1 cursor-pointer"
+                size={20}
+                onClick={deleteImage}
+              />
+            </div>
+          )}
+          {/* כפתור שליחת תגובה */}
+          {commentImage ? (
+            <>
+              {comment && (
+                <>
+                {/*Comment Image and Comment */}
+                  <button
+                    className="absolute bottom-2 left-2 bg-[#3E54D3] text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
+                    onClick={addComment}
+                  >
+                    שלח
+                  </button>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              {comment && (
+                <>{/*Comment and no Comment Image */}
+                  <button
+                    className="absolute bottom-2 left-2 bg-[#3E54D3] text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
+                    onClick={addComment}
+                  >
+                    שלח
+                  </button>
+                </>
+              )}
+            </>
+          )}
+        </div>
 
         {/*All comments */}
         <div className="mt-4 p-4 bg-white rounded-lg shadow-inner">
@@ -297,35 +315,34 @@ const CommentButton = ({ posts }) => {
                           className="cursor-pointer inline-block bg-[#3E54D3] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-[5px] border-none shadow-sm transition"
                         >
                           <CiCamera size={24} />
+                          <input
+                            id="edit-file-upload"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              setEditedCommentImage(e.target.files[0])
+                            }
+                          />
                         </label>
-                        <input
-                          id="edit-file-upload"
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            setEditedCommentImage(e.target.files[0])
-                          }
-                        />
                         {comment.commentImage && (
-                          <>
+                          
+                          <div className="relative mt-2">
+                            
                             <img
                               src={comment.commentImage}
-                              alt="Comment media"
-                              className="mt-2 max-h-60 object-cover rounded-lg"
+                              alt="Comment content"
+                              className="max-h-60 object-cover rounded-lg"
                             />
                             <MdDeleteOutline
                               onClick={() =>
-                                deleteOldImage(
-                                  commentImage,
-                                  setEditedCommentImage
-                                )
+                                deleteOldImage(comment.id, comment.commentImage)
                               }
-                              size={20}
-                              className="absolute top-1 right-0"
+                              size={24}
+                              className="absolute top-2 right-2 cursor-pointer "
                             />
-                          </>
-                        )}
+                          </div>
+                        ) }
 
                         <div className="flex space-x-2">
                           <button
