@@ -45,11 +45,20 @@ const Dashboard = () => {
   if (loading) {
     return <div>Loading...</div>;
   }
+  if (currentUser.userType !== "Admin") {
+    return (
+      <div className="not-found-container">
+        <div className="not-found-content">
+          <h1>Page Not Found</h1>
+          <p>Sorry, this page does not exist.</p>
+          <Link to={-1} className="go-back-link">Go Back</Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {currentUser.userType === "Admin" ? (
-        <>
           <h1>Admin Dashboard</h1>
 
           {users.map((user) => (
@@ -126,17 +135,7 @@ const Dashboard = () => {
           ))}
 
           <AddCategory />
-        </>
-      ) : (
-        <>
-          <div className="not-found-container">
-            <div className="not-found-content">
-              <h1>User Not Found</h1>
-              <p>Sorry, we couldn’t find the user you’re looking for.</p>
-            </div>
-          </div>
-        </>
-      )}
+      
     </div>
   );
 };
