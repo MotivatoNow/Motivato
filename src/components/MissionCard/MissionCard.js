@@ -228,6 +228,15 @@ const MissionCard = ({ missions, user }) => {
               )}
             </div>
           )}
+          {currentUser.userType==="Admin" && (
+            <div className="flex gap-3">
+              <MdDeleteOutline
+                onClick={() => deleteMissions(missions.id)}
+                size={20}
+                className="text-500 cursor-pointer"
+              />
+            </div>
+          )}
         </div>
 
         <div className="mt-4">

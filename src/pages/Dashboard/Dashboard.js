@@ -10,8 +10,10 @@ import {
 } from "firebase/firestore";
 import AddCategory from "../../features/AddCategory/AddCategory";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Dashboard = () => {
+  const { currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,81 +48,95 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h1>Admin Dashboard</h1>
-      
-      {users.map((user) => (
+      {currentUser.userType === "Admin" ? (
         <>
-          {user.userType === "Student" ? (
-            <>
-              <h1>Student:</h1>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>College</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <td>
-                    <img
-                      src={user.studentCard}
-                      alt="Student Card"
-                      style={{ width: "100px", height: "100px" }}
-                    />
-                  </td>
-                  <td>
-                    {user.firstName} {user.lastName}
-                  </td>
-                  <td>{user.email}</td>
-                  <td>{user.studentCollege}</td>
-                  <td>
-                    <button onClick={() => handleApprove(user.id)}>
-                      Approve
-                    </button>
-                    <button onClick={() => handleReject(user.id)}>
-                      Reject
-                    </button>
-                  </td>
-                </tbody>
-              </table>
-            </>
-          ) : (
-            <>
-              <h1>Company:</h1>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Company Name</th>
-                    <th>WebSite</th>
-                    <th>Email</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <td>{user.companyName}</td>
-                  <td>
-                    <Link href={user.companyWebsite} /> {user.companyWebsite}
-                  </td>
-                  <td>{user.email}</td>
-                  <td>
-                    <button onClick={() => handleApprove(user.id)}>
-                      Approve
-                    </button>
-                    <button onClick={() => handleReject(user.id)}>
-                      Reject
-                    </button>
-                  </td>
-                </tbody>
-              </table>
-            </>
-          )}
-        </>
-      ))}
+          <h1>Admin Dashboard</h1>
 
-      <AddCategory />
+          {users.map((user) => (
+            <>
+              {user.userType === "Student" ? (
+                <>
+                  <h1>Student:</h1>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>College</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>
+                        <img
+                          src={user.studentCard}
+                          alt="Student Card"
+                          style={{ width: "100px", height: "100px" }}
+                        />
+                      </td>
+                      <td>
+                        {user.firstName} {user.lastName}
+                      </td>
+                      <td>{user.email}</td>
+                      <td>{user.studentCollege}</td>
+                      <td>
+                        <button onClick={() => handleApprove(user.id)}>
+                          Approve
+                        </button>
+                        <button onClick={() => handleReject(user.id)}>
+                          Reject
+                        </button>
+                      </td>
+                    </tbody>
+                  </table>
+                </>
+              ) : (
+                <>
+                  <h1>Company:</h1>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Company Name</th>
+                        <th>WebSite</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td>{user.companyName}</td>
+                      <td>
+                        <Link href={user.companyWebsite} />{" "}
+                        {user.companyWebsite}
+                      </td>
+                      <td>{user.email}</td>
+                      <td>
+                        <button onClick={() => handleApprove(user.id)}>
+                          Approve
+                        </button>
+                        <button onClick={() => handleReject(user.id)}>
+                          Reject
+                        </button>
+                      </td>
+                    </tbody>
+                  </table>
+                </>
+              )}
+            </>
+          ))}
+
+          <AddCategory />
+        </>
+      ) : (
+        <>
+          <div className="not-found-container">
+            <div className="not-found-content">
+              <h1>User Not Found</h1>
+              <p>Sorry, we couldn’t find the user you’re looking for.</p>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

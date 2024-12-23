@@ -428,6 +428,16 @@ const CommentButton = ({ posts }) => {
                       />
                     </div>
                   )}
+                  {currentUser.userType==="Admin" && (
+                    <div className="flex space-x-2">
+                      <MdDeleteOutline
+                        className="cursor-pointer"
+                        onClick={() => deleteComment(comment.id)}
+                        size={20}
+                      />
+                      
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
