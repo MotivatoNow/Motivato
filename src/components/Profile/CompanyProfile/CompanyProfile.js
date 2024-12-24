@@ -30,15 +30,14 @@ import {
 import { loadData, loadFollowers } from "../../../hooks/useLoadUsers";
 import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
-import ModalEditSkills from "../../Modal/ModalEditProfile/ModalEditSkills/ModalEditSkills";
 import { message } from "antd";
 import { CgWebsite } from "react-icons/cg";
 import { FaGithubSquare, FaLinkedinIn } from "react-icons/fa";
 import { FaEarthEurope } from "react-icons/fa6";
 import ModalEditBio from "../../Modal/ModalEditProfile/ModalEditBio/ModalEditBio";
+import { IoIosContact } from "react-icons/io";
 const CompanyProfile = ({user, currentUser}) => {
   const [userData, setUserData] = useState(user);
-  const [skills, setSkills] = useState([]); // מיומנויות
   const [modalOpenEditProfile, setModalOpenEditProfile] = useState(false);
   const [modalOpenEditWebsites, setModalEditWebsites] = useState(false);
   const [modalOpenEditSkills, setModalOpenEditSkills] = useState(false);
@@ -132,22 +131,6 @@ const CompanyProfile = ({user, currentUser}) => {
   }, [user.uid,userData]);
 
 
-  const handleDeleteSkillFromStudent = async (skill) => {
-    try {
-      const userRef = doc(db, "Users", user.uid);
-      await updateDoc(userRef, {
-        skills: arrayRemove(skill),
-      });
-
-      // עדכון הסטייט המקומי
-      setSkills((prev) => prev.filter((s) => s !== skill));
-      message.success("מיומנות נמחקה בהצלחה");
-    } catch (error) {
-      console.error("Error removing skill: ", error);
-      message.error("שגיאה בעת מחיקת מיומנות");
-    }
-  };
-
   return (
     <>
     <div className="w-full min-h-[10vh] grid md:grid-rows-[1fr_2fr]">
@@ -190,15 +173,15 @@ const CompanyProfile = ({user, currentUser}) => {
          )
        )} */}
 
-       {/* Location */}
-       {userData.location ? (
+       {/* Contact */}
+       {userData.userName && userData.lastName ? (
          <div className="mt-2 flex items-center">
-           <CiLocationOn className="ml-2" color="#3E54D3" />
-           {userData.location}
+           <IoIosContact className="ml-2" color="#3E54D3" />
+            {userData.firstName} {userData.lastName}
          </div>
        ) : (
          currentUser.uid === userData.uid && (
-           <p className="text-gray-500">לא הוספת מיקום</p>
+           <p className="text-gray-500">לא עידכנת  איש קשר</p>
          )
        )}
 
@@ -241,7 +224,7 @@ const CompanyProfile = ({user, currentUser}) => {
 
  {/* ROW 2 */}
  <div className="bg-[#C7DAFF15] flex flex-col px-5 py-8">
-   <div className="grid grid-cols-1 gap-10 md:grid-cols-[0.5fr_2fr_1fr]">
+   <div className="grid grid-cols-1 gap-10 md:grid-cols-[1fr_1fr]">
      {/* Links */}
      <div className="flex flex-col">
        <h3 className="font-semibold text-gray-800 flex items-center">
@@ -296,40 +279,6 @@ const CompanyProfile = ({user, currentUser}) => {
          <p className="text-gray-500">לא עדכנת את האודות עדיין</p>
        ) : (
          <p className="text-gray-500">המשתמש לא עדכן את האודות עדיין</p>
-       )}
-     </div>
-
-     {/* Skills */}
-     <div>
-       <h3 className="font-semibold flex items-center">
-         מיומנויות וכישורים
-         {currentUser.uid === userData.uid && (
-           <button onClick={() => setModalOpenEditSkills(true)} className="ml-2">
-             <CiEdit size={20} />
-           </button>
-         )}
-       </h3>
-       {skills.length > 0 ? (
-         <ul className="flex flex-wrap gap-4 mt-4">
-           {skills.map((skill, index) => (
-             <li
-               key={index}
-               className="text-gray-700 font-semibold flex items-center cursor-pointer hover:bg-[#4F80E213] justify-evenly min-w-[20%] px-10 py-2 rounded-md bg-[#15CDCA13] shadow-sm relative group"
-             >
-               {skill}
-               <span
-                 onClick={() => handleDeleteSkillFromStudent(skill)}
-                 className="text-red-500 hover:text-red-700 absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-100"
-               >
-                 <AiOutlineClose className="font-bold" size={20} />
-               </span>
-             </li>
-           ))}
-         </ul>
-       ) : currentUser.uid === userData.uid ? (
-         <p className="text-gray-500">לא עדכנת מיומנויות עדיין</p>
-       ) : (
-         <p className="text-gray-500">המשתמש לא הוסיף מיומנויות עדיין</p>
        )}
      </div>
    </div>
@@ -418,12 +367,6 @@ const CompanyProfile = ({user, currentUser}) => {
        <ModalEditWebsites
          modalOpenEditWebsites={modalOpenEditWebsites}
          setModalEditWebsites={setModalEditWebsites}
-         setUser={setUserData}
-         user={currentUser}
-       />
-       <ModalEditSkills
-         modalOpenEditSkills={modalOpenEditSkills}
-         setModalOpenEditSkills={setModalOpenEditSkills}
          setUser={setUserData}
          user={currentUser}
        />

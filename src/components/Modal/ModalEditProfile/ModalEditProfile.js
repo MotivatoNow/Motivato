@@ -14,19 +14,20 @@ const ModalEditProfileComponent = ({
   const [lastName, setLastName] = useState(user.lastName);
   const [location, setLocation] = useState(user.location);
   const [profilePicture, setProfilePicture] = useState(user.profilePicture);
-  const [originalProfilePicture,setOriginalProfilePicture]=useState(user.profilePicture) 
-  const [newProfilePicture,setNewProfilePicture]=useState(null)
+  const [originalProfilePicture, setOriginalProfilePicture] = useState(
+    user.profilePicture
+  );
+  const [newProfilePicture, setNewProfilePicture] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [categories, setCategories] = useState([]);
-  
-const handleCancel=async()=>{
-  
-  setFirstName(user.firstName);
+
+  const handleCancel = async () => {
+    setFirstName(user.firstName);
     setLastName(user.lastName);
     setLocation(user.location);
-    setProfilePicture(originalProfilePicture); 
+    setProfilePicture(originalProfilePicture);
     setModalOpenEditProfile(false);
-}
+  };
 
   const handleSave = async () => {
     try {
@@ -38,20 +39,20 @@ const handleCancel=async()=>{
         userName: `${firstName} ${lastName}` || "",
       });
 
-      if(newProfilePicture){
-        let storageRef="";
-        if(user.userType==="Student"){
-           storageRef=ref(storage,`StudentImages/${user.uid}/studentProfile/${newProfilePicture.name}`);
+      if (newProfilePicture) {
+        let storageRef = "";
+        if (user.userType === "Student") {
+          storageRef = ref(
+            storage,
+            `StudentImages/${user.uid}/studentProfile/${newProfilePicture.name}`
+          );
+        } else {
         }
-        else{
+        await uploadBytes(storageRef, newProfilePicture);
+        const downloadURL = await getDownloadURL(storageRef);
+        await updateDoc(userRef, { profilePicture: downloadURL });
 
-        }
-        await uploadBytes(storageRef,newProfilePicture);
-        const downloadURL=await getDownloadURL(storageRef)
-        await updateDoc(userRef,{profilePicture:downloadURL})
-
-        setProfilePicture(downloadURL)
-        
+        setProfilePicture(downloadURL);
       }
 
       // עדכון ה-state המקומי
@@ -75,14 +76,12 @@ const handleCancel=async()=>{
     if (!file) return;
 
     try {
-            
-      const reader=new FileReader()
-      reader.onloadend=()=>{
-        setProfilePicture(reader.result)
-        setNewProfilePicture(file)
-      }
-      reader.readAsDataURL(file)
-
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result);
+        setNewProfilePicture(file);
+      };
+      reader.readAsDataURL(file);
     } catch (error) {
       message.error("העלאת תמונה חדשה נכשלה.");
     } finally {
@@ -96,9 +95,9 @@ const handleCancel=async()=>{
       );
     });
   });
-  useMemo(()=>{
-    setOriginalProfilePicture(user.profilePicture)
-  },[modalOpenEditProfile])
+  useMemo(() => {
+    setOriginalProfilePicture(user.profilePicture);
+  }, [modalOpenEditProfile]);
 
   return (
     <>
@@ -142,7 +141,11 @@ const handleCancel=async()=>{
             </label>
           </div>
           <Divider />
-
+          {user.userType === "Company" && (
+            <>
+              <h3>פרטי איש קשר</h3>
+            </>
+          )}
           <Row gutter={16}>
             <Col span={12}>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -167,19 +170,23 @@ const handleCancel=async()=>{
               />
             </Col>
           </Row>
-          <Divider />
+          {user.userType === "Student" && (
+            <>
+              <Divider />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              מיקום:
-            </label>
-            <Input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  מיקום:
+                </label>
+                <Input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </>
+          )}
           <Divider />
         </div>
       </Modal>
