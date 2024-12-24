@@ -1,16 +1,10 @@
-// src/pages/AdminDashboard/AdminDashboard.js
 import React, { useEffect, useState } from "react";
 import { db } from "../../config/firebase";
-import {
-  collection,
-  getDocs,
-  updateDoc,
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import AddCategory from "../../features/AddCategory/AddCategory";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import AddUniversity from "../../features/AddUniversity/AddUniversity";
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
@@ -43,99 +37,128 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="flex justify-center items-center h-screen">טוען...</div>;
   }
+
   if (currentUser.userType !== "Admin") {
     return (
-      <div className="not-found-container">
-        <div className="not-found-content">
-          <h1>Page Not Found</h1>
-          <p>Sorry, this page does not exist.</p>
-          <Link to={-1} className="go-back-link">Go Back</Link>
+      <div className="not-found-container flex justify-center items-center h-screen">
+        <div className="text-center">
+          <h1 className="text-3xl font-semibold mb-4">Page Not Found</h1>
+          <p className="text-gray-600 mb-4">Sorry, this page does not exist.</p>
+          <Link to={-1} className="text-blue-600 underline">
+            Go Back
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div>
-          <h1>Admin Dashboard</h1>
+    <div className="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg">
+      <h1 className="text-2xl font-semibold text-gray-800 mb-6">Admin Dashboard</h1>
 
-          {users.map((user) => (
+      {users.map((user) => (
+        <div key={user.id} className="mb-8">
+          {user.userType === "Student" ? (
             <>
-              {user.userType === "Student" ? (
-                <>
-                  <h1>Student:</h1>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>College</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <td>
-                        <img
-                          src={user.studentCard}
-                          alt="Student Card"
-                          style={{ width: "100px", height: "100px" }}
-                        />
-                      </td>
-                      <td>
-                        {user.firstName} {user.lastName}
-                      </td>
-                      <td>{user.email}</td>
-                      <td>{user.studentCollege}</td>
-                      <td>
-                        <button onClick={() => handleApprove(user.id)}>
-                          Approve
-                        </button>
-                        <button onClick={() => handleReject(user.id)}>
-                          Reject
-                        </button>
-                      </td>
-                    </tbody>
-                  </table>
-                </>
-              ) : (
-                <>
-                  <h1>Company:</h1>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Company Name</th>
-                        <th>WebSite</th>
-                        <th>Email</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <td>{user.companyName}</td>
-                      <td>
-                        <Link href={user.companyWebsite} />{" "}
-                        {user.companyWebsite}
-                      </td>
-                      <td>{user.email}</td>
-                      <td>
-                        <button onClick={() => handleApprove(user.id)}>
-                          Approve
-                        </button>
-                        <button onClick={() => handleReject(user.id)}>
-                          Reject
-                        </button>
-                      </td>
-                    </tbody>
-                  </table>
-                </>
-              )}
+              <h2 className="text-lg font-medium text-gray-700 mb-4">Student</h2>
+              <table className="w-full border border-gray-200 rounded-lg">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-2 text-left">Image</th>
+                    <th className="p-2 text-left">Name</th>
+                    <th className="p-2 text-left">Email</th>
+                    <th className="p-2 text-left">College</th>
+                    <th className="p-2 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-t">
+                    <td className="p-2">
+                      <img
+                        src={user.studentCard}
+                        alt="Student Card"
+                        className="w-20 h-20 rounded-md"
+                      />
+                    </td>
+                    <td className="p-2">
+                      {user.firstName} {user.lastName}
+                    </td>
+                    <td className="p-2">{user.email}</td>
+                    <td className="p-2">{user.studentCollege}</td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => handleApprove(user.id)}
+                        className="bg-green-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-green-600"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(user.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </>
-          ))}
+          ) : (
+            <>
+              <h2 className="text-lg font-medium text-gray-700 mb-4">Company</h2>
+              <table className="w-full border border-gray-200 rounded-lg">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-2 text-left">Company Name</th>
+                    <th className="p-2 text-left">Website</th>
+                    <th className="p-2 text-left">Email</th>
+                    <th className="p-2 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-t">
+                    <td className="p-2">{user.companyName}</td>
+                    <td className="p-2">
+                      <a
+                        href={user.companyWebsite}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                      >
+                        {user.companyWebsite}
+                      </a>
+                    </td>
+                    <td className="p-2">{user.email}</td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => handleApprove(user.id)}
+                        className="bg-green-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-green-600"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(user.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </>
+          )}
+        </div>
+      ))}
 
-          <AddCategory />
-      
+      <div className="mt-8">
+        <AddCategory />
+      </div>
+      <div className="mt-8">
+        <AddUniversity />
+      </div>
     </div>
   );
 };
