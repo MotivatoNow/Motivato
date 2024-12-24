@@ -18,6 +18,7 @@ const ModalEditProfileComponent = ({
     user.profilePicture
   );
   const [newProfilePicture, setNewProfilePicture] = useState(null);
+  const [email, setEmail] = useState(user.email)
   const [uploading, setUploading] = useState(false);
   const [categories, setCategories] = useState([]);
 
@@ -25,6 +26,7 @@ const ModalEditProfileComponent = ({
     setFirstName(user.firstName);
     setLastName(user.lastName);
     setLocation(user.location);
+    setEmail(user.email)
     setProfilePicture(originalProfilePicture);
     setModalOpenEditProfile(false);
   };
@@ -37,6 +39,7 @@ const ModalEditProfileComponent = ({
         firstName: firstName || "",
         lastName: lastName || "",
         userName: `${firstName} ${lastName}` || "",
+        email : email || "",
       });
 
       if (newProfilePicture) {
@@ -62,6 +65,7 @@ const ModalEditProfileComponent = ({
         lastName: lastName,
         location: location,
         profilePicture: profilePicture,
+        email:email,
       }));
       setModalOpenEditProfile(false); // סגירת המודל אחרי שמירה
       message.success("נתונים נשמרו בהצלחה");
@@ -170,6 +174,7 @@ const ModalEditProfileComponent = ({
               />
             </Col>
           </Row>
+          <Row>
           {user.userType === "Student" && (
             <>
               <Divider />
@@ -186,8 +191,21 @@ const ModalEditProfileComponent = ({
                 />
               </div>
             </>
-          )}
+          )}</Row>
           <Divider />
+          <Row>
+          <Col span={12}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                דואר אלקטרוני
+              </label>
+              <Input
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </Col>
+          </Row>
         </div>
       </Modal>
     </>

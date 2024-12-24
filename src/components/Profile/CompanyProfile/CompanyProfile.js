@@ -160,7 +160,10 @@ const CompanyProfile = ({user, currentUser}) => {
 
      {/* Profile Info */}
      <div className="flex flex-col px-3">
-       <h1 className="text-2xl font-semibold">{userData.userName}</h1>
+        <h2 className="text-2xl font-semibold">{userData.userName}</h2>
+        <h4 className=" text-gray-400">{userData.companyName}</h4>
+
+       
 
        {/* Student Education
        {userData.studentEducation && userData.studentCollege ? (
