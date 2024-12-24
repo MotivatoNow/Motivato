@@ -108,16 +108,6 @@ const PostCard = ({ posts }) => {
           )}
         </div>
       )}
-    
-    {currentUser.userType==="Admin" && (
-        <div className="flex gap-3 mt-3 sm:mt-0">
-          <MdDeleteOutline
-            className="cursor-pointer"
-            onClick={() => deletePost(posts.id)}
-            size={20}
-          />
-        </div>
-      )}
     </div>
   
     {/* Post Content */}
