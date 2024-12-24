@@ -103,7 +103,7 @@ const Register = () => {
     })
   })
   useMemo(()=>{
-    onSnapshot(collection(db,"Univeristies"),(response)=>{
+    onSnapshot(collection(db,"Universities"),(response)=>{
       setUniversities(
         response.docs.map((doc) => ({ id: doc.id, ...doc.data() })
       ))
