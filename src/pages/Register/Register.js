@@ -24,6 +24,7 @@ const Register = () => {
   const [location, setLocation] = useState("");
   const [error, setError] = useState("");
   const [categories, setCategories]=useState([])
+  const[universities,setUniversities]=useState([])
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -101,7 +102,13 @@ const Register = () => {
       ))
     })
   })
-  
+  useMemo(()=>{
+    onSnapshot(collection(db,"Univeristies"),(response)=>{
+      setUniversities(
+        response.docs.map((doc) => ({ id: doc.id, ...doc.data() })
+      ))
+    })
+  })
 
   return (
     <>
@@ -191,14 +198,19 @@ const Register = () => {
                   </div>
                   <div className="form-group">
                     <label htmlFor="inputCollege">אוניברסיטה/מכללה</label>
-                    <input
-                      id="inputCollege"
-                      type="text"
-                      value={studentCollege}
-                      onChange={(e) => setStudentCollege(e.target.value)}
-                      placeholder="אוניברסיטה/מכללה"
-                      required
-                    />
+                    <select
+                    name="college"
+                    id="inputCollege"
+                    onChange={(e) => setStudentCollege(e.target.value)}
+                    required
+                  >
+                    <option value=""></option>
+                    {
+                      universities.map((university)=>{
+                        return <option value={university.nameUniversity} key={university.id}>{university.nameUniversity}</option>
+                      })
+                    }
+                  </select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="inputEducation">תחום לימודי</label>
