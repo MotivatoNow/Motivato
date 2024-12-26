@@ -7,6 +7,27 @@ const shuffleArray = (array) => {
   return array.sort(() => Math.random() - 0.5);
 };
 
+export const loadUser=async(id,setUserData)=>{
+  try{
+    const userDoc=await getDoc(doc(db,"Users",id))
+    if(userDoc.exists()){
+      const userData={id:userDoc.id,...userDoc.data()};
+      setUserData(userData);
+      return userData;
+    }
+    else{
+      setUserData(null)
+      return null;
+    }
+  }
+  catch(error){
+    console.error(error)
+    setUserData(null)
+  }
+}
+
+
+
 // loading the the all data from the currentUser
 export const loadData = async (
   id,
@@ -17,12 +38,11 @@ export const loadData = async (
   setFollowers
 ) => {
   try {
-    const userDoc = await getDoc(doc(db, "Users", id));
-    if (userDoc.exists()) {
-      setUserData({ id: userDoc.id, ...userDoc.data() });
+    const user = await loadUser(id,setUserData)
+    if (user) {
       setUserNotFound(false);
-      if (userDoc.data().followers) {
-        loadFollowers(userDoc.data().followers, setFollowers);
+      if (user.followers) {
+        loadFollowers(user.followers, setFollowers);
       }
     } else {
       setUserNotFound(true);
@@ -55,12 +75,11 @@ export const loadFollowers = async (followersId, setFollowers) => {
 export const loadUsers = async (currentUser,setSuggestedFriends) => {
     try {
       // שליפת החברים של המשתמש הנוכחי
-      const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
-      const followersId = userDoc.exists() ? userDoc.data().followers || [] : [];
+      const currentUserData = await loadUser(currentUser.uid,()=>{})
+      const followersId = currentUserData?.followers || [];
 
       // שליפת כל המשתמשים
-      const usersCollection = collection(db, "Users");
-      const userDocs = await getDocs(usersCollection);
+      const userDocs = await getDocs(collection(db, "Users"));
       
       // סינון החברים והמשתמש הנוכחי וערבוב הרשימה
       const allUsers = userDocs.docs
@@ -71,7 +90,6 @@ export const loadUsers = async (currentUser,setSuggestedFriends) => {
         .filter((user) => user.id !== currentUser.uid && !followersId.includes(user.id)) // הסרת החברים והמשתמש הנוכחי
         
       const randomUsers = shuffleArray(allUsers).slice(0, 6); // ערבוב וחיתוך ל-5–6 משתמשים רנדומליים
-
       setSuggestedFriends(randomUsers);
     } catch (error) {
       console.error("Error loading users:", error);

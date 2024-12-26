@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { Link } from "react-router-dom";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
-import { db } from "../../../config/firebase";
 import FriendButton from "../../FriendButton/FriendButton";
-import { loadFollowers, loadUsers } from "../../../hooks/useLoadUsers";
+import { loadFollowers, loadUser, loadUsers } from "../../../hooks/useLoadUsers";
 
 const RightSide = () => {
   const { currentUser } = useAuth();
-  const [suggestedFriends, setSuggestedFriends] = useState([]);
+  const [suggestedFollowers, setSuggestedFollowers] = useState([]);
   const [followers,setFollowers] = useState([]);
   
   // טעינת משתמשים להצעות חברים
   useEffect(() => {
-    //parameters: currentUser,shuffleArray,set suggested Friends
-    if (currentUser && currentUser.followers) {
-      loadUsers(currentUser,setSuggestedFriends)
-      loadFollowers(currentUser.followers, setFollowers);
-    }
-  }, [currentUser.uid]);
+    const fetchUserData=async()=>{    if (currentUser) {
+      const userData=await loadUser(currentUser.uid,()=>{})
+      if(userData?.followers){
+        loadFollowers(currentUser.followers, setFollowers);  
+      }
+      
+      loadUsers(currentUser,setSuggestedFollowers)
+      
+    }}
+    fetchUserData();
+  }, [currentUser]);
 
   return (
     <div className="rounded-lg p-2 mt-5 mr-4">
@@ -54,7 +57,7 @@ const RightSide = () => {
         </h2>
         
         {/* הצגת הצעות חברים */}
-        {suggestedFriends.map((user) => (
+        {suggestedFollowers.map((user) => (
           <div key={user.id} className="px-2 flex gap-2 items-center">
             <Link to={`/profile/${user.id}`} className="flex gap-2 items-center">
               <img
