@@ -34,7 +34,7 @@ const MissionCard = ({ missions, user }) => {
   // Conversation creation logic
   const createConversation = async (participants) => {
     const conversationRef = await addDoc(collection(db, "Conversations"), {
-      participants: participants,
+      participants: [participants[0],participants[1]],
       lastMessage: "",
       lastMessageTimestamp: new Date(),
       isGroup: false,
@@ -44,29 +44,26 @@ const MissionCard = ({ missions, user }) => {
   };
 
   const getExistingConversation = async (participants) => {
-    let user1 = participants[0];
-
-    if (user1 !== currentUser.uid) {
-      user1 = participants[1];
-    }
     const q = query(
       collection(db, "Conversations"),
-      where("participants", "array-contains", user1)
+      where("participants", "array-contains", currentUser.uid)
     );
-
     const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      return querySnapshot.docs[0].id;
-    }
-
-    return null;
+    const conversation = querySnapshot.docs.find((doc) => {
+      const conversationParticipants = doc.data().participants;
+      return (
+        conversationParticipants.includes(participants[0]) &&
+        conversationParticipants.includes(participants[1])
+      );
+    });
+    return conversation ? conversation.id : null;
   };
 
   const handleChatButtonClick = async () => {
-    const participants = [currentUser.uid, user.uid];
+    const participants = [currentUser.uid, missions.user.uid];
 
     const existingConversationId = await getExistingConversation(participants);
-
+    console.log(existingConversationId)
     if (existingConversationId) {
       setActiveChatUser(existingConversationId);
     } else {
@@ -115,13 +112,13 @@ const MissionCard = ({ missions, user }) => {
       if (!fileUrl) {
         throw new Error("Failed to retrieve the file URL after upload.");
       }
-      console.log(selectFile.name)
+      console.log(selectFile.name);
 
       await addDoc(collection(db, "Applications"), {
         missionId: missions.id,
         userId: currentUser.uid,
         fileUrl: fileUrl,
-        fileName:selectFile.name,
+        fileName: selectFile.name,
         timeStamp: getCurrentTimeStamp("LLL"),
       });
 
@@ -228,7 +225,7 @@ const MissionCard = ({ missions, user }) => {
               )}
             </div>
           )}
-          {currentUser.userType==="Admin" && (
+          {currentUser.userType === "Admin" && (
             <div className="flex gap-3">
               <MdDeleteOutline
                 onClick={() => deleteMissions(missions.id)}
@@ -247,19 +244,21 @@ const MissionCard = ({ missions, user }) => {
         <hr className="my-4" />
 
         <div className="flex gap-4">
-          <button
-            onClick={() => handleChatButtonClick(user.uid)}
-            className="px-4 py-2 rounded"
-          >
-            Send a message
-          </button>
           {currentUser.uid !== missions.user.uid && (
-            <button
-              onClick={() => setApply(true)}
-              className="px-4 py-2 rounded"
-            >
-              Apply
-            </button>
+            <>
+              <button
+                onClick={() => handleChatButtonClick(missions.user.uid)}
+                className="px-4 py-2 rounded"
+              >
+                Send a message
+              </button>
+              <button
+                onClick={() => setApply(true)}
+                className="px-4 py-2 rounded"
+              >
+                Apply
+              </button>
+            </>
           )}
         </div>
 
