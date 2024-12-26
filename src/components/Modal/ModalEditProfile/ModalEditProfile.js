@@ -4,6 +4,12 @@ import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // ייבוא של הפונקציות מ-Firebase Storage
 import { db, storage } from "../../../config/firebase";
 import "./ModalEditProfile.css";
+import {
+  getAuth,
+  reauthenticateWithCredential,
+  updatePassword,
+} from "firebase/auth";
+import { EmailAuthProvider } from "firebase/auth/cordova";
 const ModalEditProfileComponent = ({
   modalOpenEditProfile,
   setModalOpenEditProfile,
@@ -18,20 +24,64 @@ const ModalEditProfileComponent = ({
     user.profilePicture
   );
   const [newProfilePicture, setNewProfilePicture] = useState(null);
-  const [email, setEmail] = useState(user.email)
+  const [email, setEmail] = useState(user.email);
   const [uploading, setUploading] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
+  const handleChangePassword = async (currentPassword, newPassword) => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+  
+    try {
+      
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credential);
+  
+      await updatePassword(user, newPassword);
+      return true
+    } catch (error) {
+      console.error( error);
+  
+      switch (error.code) {
+        case "auth/wrong-password":
+          message.error("הסיסמה הנוכחית שגויה");
+          break;
+        case "auth/weak-password":
+          message.error("הסיסמה החדשה חלשה מדי");
+          break;
+
+          case "auth/invalid-credential":
+            message.error(`שגיאה`);
+            break;
+        default:
+          message.error(`שגיאה`);
+      }
+      return false
+    }
+  };
+  
   const handleCancel = async () => {
     setFirstName(user.firstName);
     setLastName(user.lastName);
     setLocation(user.location);
-    setEmail(user.email)
+    setEmail(user.email);
     setProfilePicture(originalProfilePicture);
     setModalOpenEditProfile(false);
   };
 
   const handleSave = async () => {
+    if(newPassword&&newPassword!==confirmPassword){
+      message.error("הסיסמאות החדשות לא תואמות");
+      return;
+    }
+
+    if(newPassword){
+      const passwordChangeSuccessful = await handleChangePassword(currentPassword, newPassword);
+    if (!passwordChangeSuccessful) {return;}
+    }
     try {
       // עדכון המסמך ב-Firestore עם הערכים החדשים
       const userRef = doc(db, "Users", user.uid);
@@ -39,7 +89,7 @@ const ModalEditProfileComponent = ({
         firstName: firstName || "",
         lastName: lastName || "",
         userName: `${firstName} ${lastName}` || "",
-        email : email || "",
+        email: email || "",
       });
 
       if (newProfilePicture) {
@@ -65,7 +115,7 @@ const ModalEditProfileComponent = ({
         lastName: lastName,
         location: location,
         profilePicture: profilePicture,
-        email:email,
+        email: email,
       }));
       setModalOpenEditProfile(false); // סגירת המודל אחרי שמירה
       message.success("נתונים נשמרו בהצלחה");
@@ -175,26 +225,27 @@ const ModalEditProfileComponent = ({
             </Col>
           </Row>
           <Row>
-          {user.userType === "Student" && (
-            <>
-              <Divider />
+            {user.userType === "Student" && (
+              <>
+                <Divider />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  מיקום:
-                </label>
-                <Input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </>
-          )}</Row>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    מיקום:
+                  </label>
+                  <Input
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </>
+            )}
+          </Row>
           <Divider />
           <Row>
-          <Col span={12}>
+            <Col span={12}>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 דואר אלקטרוני
               </label>
@@ -202,6 +253,43 @@ const ModalEditProfileComponent = ({
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                סיסמה נוכחית:
+              </label>
+              <Input.Password
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="סיסמה נוכחית"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                סיסמה חדשה:
+              </label>
+              <Input.Password
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="סיסמה חדשה"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </Col>
+            <Col span={12}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                אישור סיסמה חדשה:
+              </label>
+              <Input.Password
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="אישור סיסמה חדשה"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </Col>
