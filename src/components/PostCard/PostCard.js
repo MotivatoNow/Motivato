@@ -128,7 +128,7 @@ const PostCard = ({ posts }) => {
     <div className="flex flex-wrap items-center justify-between border-t border-gray-200 pt-4">
       <LikeButton posts={posts} />
       <button
-        className="flex items-center space-x-2 text-[#3E54D3] hover:text-blue-600 py-2 px-3 rounded-[10px] bg-gray-100 mt-2 md:mt-0"
+        className="flex py-2 px-3 md:px-10 rounded-[10px] bg-gray-100 items-center space-x-2 text-[#3E54D3]"
         onClick={() => setShowCommentBox(!showCommentBox)}
       >
         <FaRegComment className="ml-1" size={20} />
