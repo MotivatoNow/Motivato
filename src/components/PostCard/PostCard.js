@@ -20,6 +20,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { deletePost, editPost } from "../../hooks/useContentActions";
 import ModalEditPost from "../Modal/ModalEditPost/ModalEditPost";
 import CommentButton from "../CommentButton/CommentButton";
+import { loadUser } from "../../hooks/useLoadUsers";
 
 const PostCard = ({ posts }) => {
   const { currentUser } = useAuth();
@@ -35,12 +36,8 @@ const PostCard = ({ posts }) => {
     if (posts && posts.user.uid) {
       const fetchUserData = async () => {
         try {
-          const userDoc = await getDoc(doc(db, "Users", posts.user.uid));
-          if (userDoc.exists()) {
-            setUserData(userDoc.data());
-          } else {
-            console.log("No such user!");
-          }
+          const user=await loadUser(posts.user.uid,setUserData);
+          
         } catch (error) {
           console.error("Error fetching user data:", error);
         } finally {
