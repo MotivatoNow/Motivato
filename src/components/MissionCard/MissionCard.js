@@ -19,6 +19,7 @@ import ModalEditMission from "../Modal/ModalEditMission/ModalEditMission";
 import { storage } from "../../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
+import { loadUser } from "../../hooks/useLoadUsers";
 
 const MissionCard = ({ missions, user }) => {
   const { currentUser } = useAuth();
@@ -77,12 +78,8 @@ const MissionCard = ({ missions, user }) => {
     if (missions && missions.user.uid) {
       const fetchUserData = async () => {
         try {
-          const userDoc = await getDoc(doc(db, "Users", missions.user.uid));
-          if (userDoc.exists()) {
-            setUserData(userDoc.data());
-          } else {
-            console.log("No such user!");
-          }
+          const user=await loadUser(missions.user.uid,setUserData)
+          
         } catch (error) {
           console.error("Error fetching user data:", error);
         } finally {
