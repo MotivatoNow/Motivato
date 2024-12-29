@@ -27,7 +27,7 @@ import {
   CiMail,
   CiSettings,
 } from "react-icons/ci";
-import { loadData, loadFollowers } from "../../../hooks/useLoadUsers";
+import { loadData, loadFollowers, loadUser } from "../../../hooks/useLoadUsers";
 import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
 import ModalEditSkills from "../../Modal/ModalEditProfile/ModalEditSkills/ModalEditSkills";
@@ -37,7 +37,7 @@ import { FaGithubSquare, FaLinkedinIn } from "react-icons/fa";
 import { FaEarthEurope } from "react-icons/fa6";
 import ModalEditBio from "../../Modal/ModalEditProfile/ModalEditBio/ModalEditBio";
 
-const StudentProfile = ({ user, id, currentUser }) => {
+const StudentProfile = ({ user, currentUser }) => {
   const [userData, setUserData] = useState(user);
   const [skills, setSkills] = useState([]); // מיומנויות
   const [modalOpenEditProfile, setModalOpenEditProfile] = useState(false);
@@ -122,21 +122,17 @@ const StudentProfile = ({ user, id, currentUser }) => {
   }, user.uid);
 
   useEffect(() => {
-    const userRef = doc(db, "Users", id);
-    const unsubscribe = onSnapshot(userRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setUserData(snapshot.data());
-        setSkills(snapshot.data().skills || []); // עדכון המיומנויות
-        if (snapshot.data()?.followers) {
-          loadFollowers(snapshot.data().followers, setFollowers); // טעינת עוקבים
-        }
-      } else {
-        console.warn("Document does not exist!");
+    const fetchData=async()=>{
+      const user=await loadUser(user.uid,()=>{})
+      setUserData(user)
+      setSkills(user?.skills||[])
+      if (user?.followers){
+        await loadFollowers(user.followers,setFollowers)
       }
-    });
+    }
 
-    return () => unsubscribe(); // ניקוי המאזין
-  }, [id]);
+    fetchData()
+  }, [user.uid]);
 
   const handleDeleteSkillFromStudent = async (skill) => {
     try {

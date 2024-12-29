@@ -27,7 +27,7 @@ import {
   CiMail,
   CiSettings,
 } from "react-icons/ci";
-import { loadData, loadFollowers } from "../../../hooks/useLoadUsers";
+import { loadData, loadFollowers, loadUser } from "../../../hooks/useLoadUsers";
 import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
 import { message } from "antd";
