@@ -29,7 +29,6 @@ function App() {
                         <Route path="/" element={<HomePage/>}/>
                         <Route path="/login" element={<LoginPage/>}/>
                         <Route path="/register" element={<RegisterPage/>}/>
-                        <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
                         <Route path="/profile/:id" element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
                         <Route path="/admin-dashboard" element={<Dashboard/>}/>
                         <Route path="/reset" element={<ForgetPassword/>}/>
