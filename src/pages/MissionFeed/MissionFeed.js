@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import MyMission from "../../components/MyMission/MyMission";
-import { getMissions } from "../../context/Firestore";
 import MissionCard from "../../components/MissionCard/MissionCard";
 import { useAuth } from "../../context/AuthContext";
+import { loadMissions } from "../../hooks/useLoadMissions";
 
 const MissionFeed = () => {
   const { currentUser } = useAuth();
   const [allMissions, setAllMissions] = useState([]);
 
   useEffect(() => {
-    getMissions(setAllMissions);
+    loadMissions(setAllMissions);
   }, []);
 
   return (

@@ -3,6 +3,7 @@ import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'fireb
 import { db } from '../../config/firebase';
 import ConversationView from '../../components/ConversationView/ConversationView';
 import { useAuth } from "../../context/AuthContext";
+import { loadUser } from '../../hooks/useLoadUsers';
 
 const ChatOverview = () => {
     const [conversations, setConversations] = useState([]);
@@ -24,7 +25,7 @@ const ChatOverview = () => {
             for (let docSnapshot of querySnapshot.docs) {
                 const convoData = docSnapshot.data();
                 const otherUserId = convoData.participants.find(id => id !== currentUser.uid);
-                const otherUser = await getUserData(otherUserId);
+                const otherUser = await loadUser(otherUserId,()=>{})
 
                 const hasUnreadMessages = await checkUnreadMessages(docSnapshot.id);
 
@@ -43,10 +44,10 @@ const ChatOverview = () => {
     }, [currentUser]);
 
     const getUserData = async (userId) => {
-        const userRef = doc(db, 'Users', userId);
-        const userSnapshot = await getDoc(userRef);
-        return userSnapshot.exists() ? userSnapshot.data() : null;
+        const userData = await loadUser(userId, () => {});
+        return userData;
     };
+    
 
     const checkUnreadMessages = async (conversationId) => {
         const messageRef = collection(db, `Conversations/${conversationId}/messages`);

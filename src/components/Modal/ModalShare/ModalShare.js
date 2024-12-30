@@ -14,6 +14,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../../config/firebase";
+import { loadFollowers, loadUser } from "../../../hooks/useLoadUsers";
 
 const ModalShare = ({ modalOpen, setModalOpen, postsId }) => {
   const { currentUser } = useAuth();
@@ -25,15 +26,9 @@ const ModalShare = ({ modalOpen, setModalOpen, postsId }) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
-        if (userDoc.exists()) {
-          const followerIds = userDoc.data().followers || [];
-          const followersPromises = followerIds.map((followerId) =>
-            getDoc(doc(db, "Users", followerId))
-          );
-          const followerDocs = await Promise.all(followersPromises);
-
-          setFollowers(followerDocs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        const user= await loadUser(currentUser.uid,()=>{});
+        if (user&&user.followers) {
+          await loadFollowers(user.followers,setFollowers)
         }
       } catch (error) {
         console.error("Error loading friends:", error);

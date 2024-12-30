@@ -21,12 +21,7 @@ const Profile = () => {
   const [userNotFound, setUserNotFound] = useState(false);
   const { currentUser } = useAuth();
   const [followers, setFollowers] = useState([]);
-  const [photos, setPhotos] = useState([]);
-  const [activeChatUser, setActiveChatUser] = useState(null);
-
-
-
-
+  
   useEffect(() => {
     if (!id && currentUser) {
       navigate(`/profile/${currentUser.uid}`);
@@ -59,7 +54,7 @@ const Profile = () => {
         {userData && (
           <>
         {userData.userType === "Student" ?(
-            <StudentProfile user={userData} id={id} currentUser={currentUser} />
+            <StudentProfile user={userData}  currentUser={currentUser} />
         ):
         (
           <CompanyProfile user={userData} currentUser={currentUser}/>

@@ -20,6 +20,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { deletePost, editPost } from "../../hooks/useContentActions";
 import ModalEditPost from "../Modal/ModalEditPost/ModalEditPost";
 import CommentButton from "../CommentButton/CommentButton";
+import { loadUser } from "../../hooks/useLoadUsers";
 
 const PostCard = ({ posts }) => {
   const { currentUser } = useAuth();
@@ -35,12 +36,8 @@ const PostCard = ({ posts }) => {
     if (posts && posts.user.uid) {
       const fetchUserData = async () => {
         try {
-          const userDoc = await getDoc(doc(db, "Users", posts.user.uid));
-          if (userDoc.exists()) {
-            setUserData(userDoc.data());
-          } else {
-            console.log("No such user!");
-          }
+          const userData=await loadUser(posts.user.uid,setUserData);
+          
         } catch (error) {
           console.error("Error fetching user data:", error);
         } finally {
@@ -131,7 +128,7 @@ const PostCard = ({ posts }) => {
     <div className="flex flex-wrap items-center justify-between border-t border-gray-200 pt-4">
       <LikeButton posts={posts} />
       <button
-        className="flex items-center space-x-2 text-[#3E54D3] hover:text-blue-600 py-2 px-3 rounded-[10px] bg-gray-100 mt-2 md:mt-0"
+        className="flex py-2 px-3 md:px-10 rounded-[10px] bg-gray-100 items-center space-x-2 text-[#3E54D3]"
         onClick={() => setShowCommentBox(!showCommentBox)}
       >
         <FaRegComment className="ml-1" size={20} />

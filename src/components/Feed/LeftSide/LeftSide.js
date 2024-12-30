@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import { getMissions } from "../../../context/Firestore";
 import { Link } from "react-router-dom";
+import { loadMissions } from "../../../hooks/useLoadMissions";
 
 const LeftSide = () => {
   const { currentUser } = useAuth();
   const [allMissions, setAllMissions] = useState([]);
 
   useEffect(() => {
-    getMissions(setAllMissions);
+    loadMissions(setAllMissions);
   }, []);
 
   return (

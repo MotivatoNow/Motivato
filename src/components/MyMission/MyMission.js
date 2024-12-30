@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from "react";
-import {missionsStatus} from "../../context/Firestore";
+import React, {useState} from "react";
 import ModalMission from "../Modal/ModalMission/ModalMission";
 import {useAuth} from "../../context/AuthContext";
 import {getCurrentTimeStamp} from "../../features/useMoment/useMoment";
-import {addDoc, collection, doc, getDoc} from "firebase/firestore";
+import {addDoc, collection} from "firebase/firestore";
 import {db} from "../../config/firebase";
+import { createMission } from "../../hooks/useLoadMissions";
 
 const MyMission = () => {
 
@@ -32,7 +32,7 @@ const MyMission = () => {
         };
     
         try {
-            const missionRef= await missionsStatus(collection(db, "Missions"), object);
+            const missionRef= await createMission(object);
             setModalOpen(false);
             setPost("");
             setTitle("");
