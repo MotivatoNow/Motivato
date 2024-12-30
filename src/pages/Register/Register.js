@@ -58,7 +58,16 @@ const Register = () => {
       const profileURL = await getDownloadURL(storageProfile);
   
       // יצירת Slug ייחודי
-      let baseSlug = userType === "Company" ? companyName : `${firstName} ${lastName}`;
+      let baseSlug;
+
+      if (userType === "Company") {
+        baseSlug = companyName; // עבור חברות, השתמש בשם החברה כבסיס ל-slug
+      } else if (userType === "Student") {
+        baseSlug = userName; // עבור סטודנטים, השתמש בשם הפרטי ושם המשפחה כבסיס ל-slug
+      } else {
+        throw new Error("Invalid user type"); // טיפול במקרה של שגיאה
+      }
+      
       const slug = await generateSlug(baseSlug);
   
       // שמירת נתוני המשתמש

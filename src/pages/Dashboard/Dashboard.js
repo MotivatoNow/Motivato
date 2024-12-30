@@ -40,7 +40,7 @@ const Dashboard = () => {
     return <div className="flex justify-center items-center h-screen">טוען...</div>;
   }
 
-  if (currentUser.userType !== "Admin") {
+ /* if (currentUser.userType !== "Admin") {
     return (
       <div className="not-found-container flex justify-center items-center h-screen">
         <div className="text-center">
@@ -52,7 +52,7 @@ const Dashboard = () => {
         </div>
       </div>
     );
-  }
+  }*/
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg">
