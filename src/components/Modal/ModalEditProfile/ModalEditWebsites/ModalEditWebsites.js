@@ -101,24 +101,26 @@ const ModalEditWebsites = ({
        </Col>
           </Row>
           <Divider />
-        <Row gutter={16}>
-       <Col span={12}>
-       <label>כתובת גיטהאב:</label>
-        <Input
-            type="text"
-            value={userGitHub}
-            onChange={(e) => setUserGitHub(e.target.value)}
-          />
-       </Col>
-       <Col span={12}>
-       <label>שם גיטהאב</label>
-          <Input
-            type="text"
-            value={nameUserGithub}
-            onChange={(e) => setNameUserGithub(e.target.value)}
-          />
-       </Col>
-          </Row>
+{user.userType !== "Company" &&(
+          <Row gutter={16}>
+          <Col span={12}>
+          <label>כתובת גיטהאב:</label>
+           <Input
+               type="text"
+               value={userGitHub}
+               onChange={(e) => setUserGitHub(e.target.value)}
+             />
+          </Col>
+          <Col span={12}>
+          <label>שם גיטהאב</label>
+             <Input
+               type="text"
+               value={nameUserGithub}
+               onChange={(e) => setNameUserGithub(e.target.value)}
+             />
+          </Col>
+             </Row>
+)}
 
         
       </Modal>

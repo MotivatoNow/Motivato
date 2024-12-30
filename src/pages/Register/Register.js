@@ -7,6 +7,7 @@ import profilePic from "../../assets/images/profilepicture.png";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
 
+import { query, where, getDocs } from "firebase/firestore";
 const Register = () => {
   const [userType, setUserType] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -16,7 +17,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userGender, setUserGender] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [companyWebsite, setCompanyWebsite] = useState("");
+  const [userWebsite, setUserWebsite] = useState("");
   const [studentCollege, setStudentCollege] = useState("");
   const [studentEducation, setStudentEducation] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -40,35 +41,39 @@ const Register = () => {
         password
       );
       const user = userCredential.user;
-
+  
       // העלאת תמונת כרטיס סטודנט
       let cardURL = "";
       if (studentCard) {
-        const storageCard = ref(storage,
-          `StudentsImages/${user.uid}/studentCard/${studentCard.name}`);
+        const storageCard = ref(storage, `StudentsImages/${user.uid}/studentCard/${studentCard.name}`);
         await uploadBytes(storageCard, studentCard);
         cardURL = await getDownloadURL(storageCard);
       }
-
+  
       // העלאת תמונת פרופיל ברירת מחדל
       const response = await fetch(profilePic);
       const profileBlob = await response.blob();
-      const storageProfile = ref(storage,
-        `StudentsImages/${user.uid}/studentProfile/defaultProfilePicture.png`);
+      const storageProfile = ref(storage, `StudentsImages/${user.uid}/studentProfile/defaultProfilePicture.png`);
       await uploadBytes(storageProfile, profileBlob);
       const profileURL = await getDownloadURL(storageProfile);
-
+  
+      // יצירת Slug ייחודי
+      let baseSlug = userType === "Company" ? companyName : `${firstName} ${lastName}`;
+      const slug = await generateSlug(baseSlug);
+  
+      // שמירת נתוני המשתמש
       const userData = {
         uid: user.uid,
         email: email,
         userType: userType,
         profilePicture: profileURL,
+        slug: slug, // הוספת ה-Slug
         bio: "",
       };
-
+  
       if (userType === "Company") {
         userData.companyName = companyName;
-        userData.companyWebsite = companyWebsite;
+        userData.userWebsite = userWebsite;
         userData.userName = companyName;
         userData.userNameLower = ((userData.companyName || '')).toLowerCase();
       } else if (userType === "Student") {
@@ -79,15 +84,13 @@ const Register = () => {
         userData.studentCard = cardURL;
         userData.studentCollege = studentCollege;
         userData.studentEducation = studentEducation;
-        // userData.isVerify = isVerify;
         userData.location = location;
         userData.userName =(firstName + ' ' + lastName);
         userData.userNameLower = ((userData.firstName || '') + ' ' + (userData.lastName || '')).toLowerCase();
-        
       }
-
+  
       await setDoc(doc(db, "Users", user.uid), userData);
-
+  
       console.log("User registered with ID: ", user.uid);
       navigate("/login");
     } catch (error) {
@@ -95,6 +98,7 @@ const Register = () => {
       setError(error.message);
     }
   };
+  
   useMemo(()=>{
     onSnapshot(collection(db,"Categories"),(response)=>{
       setCategories(
@@ -109,6 +113,33 @@ const Register = () => {
       ))
     })
   })
+
+  // פונקציה ליצירת Slug ייחודי
+const generateSlug = async (baseSlug) => {
+  const normalized = baseSlug
+    .toLowerCase()
+    .trim()
+    .replace(/[\s]+/g, "-") // החלפת רווחים במקף
+    .replace(/[^a-z0-9-]/g, ""); // הסרת תווים לא חוקיים
+
+  let slug = normalized;
+  let isUnique = false;
+  let counter = 1;
+
+  while (!isUnique) {
+    const q = query(collection(db, "Users"), where("slug", "==", slug));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      isUnique = true;
+    } else {
+      slug = `${normalized}-${counter}`;
+      counter++;
+    }
+  }
+
+  return slug;
+};
 
   return (
     <>
@@ -258,8 +289,8 @@ const Register = () => {
                     <input
                       type="text"
                       id="inputWebsiteCompany"
-                      value={companyWebsite}
-                      onChange={(e) => setCompanyWebsite(e.target.value)}
+                      value={userWebsite}
+                      onChange={(e) => setUserWebsite(e.target.value)}
                       placeholder="אתר החברה"
                       required
                     />

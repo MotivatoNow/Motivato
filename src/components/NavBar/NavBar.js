@@ -587,7 +587,7 @@ const NavBar = () => {
               {isDropdownOpenProfile && (
                 <div className="absolute flex flex-col items-center justify-center left-0 top-10 mt-2 bg-white shadow-lg rounded-md py-2 w-48">
                   <Link
-                    to={`/profile/${currentUser.uid}`}
+                    to={`/profile/${currentUser.slug}`}
                     className=" px-4 py-2 text-sm text-[#3E54D3] font-medium"
                   >
                     כניסה לפרופיל

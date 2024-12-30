@@ -31,7 +31,6 @@ import { loadData, loadFollowers, loadUser } from "../../../hooks/useLoadUsers";
 import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
 import { message } from "antd";
-import { CgWebsite } from "react-icons/cg";
 import { FaGithubSquare, FaLinkedinIn } from "react-icons/fa";
 import { FaEarthEurope } from "react-icons/fa6";
 import ModalEditBio from "../../Modal/ModalEditProfile/ModalEditBio/ModalEditBio";
@@ -41,7 +40,7 @@ const CompanyProfile = ({user, currentUser}) => {
   const [userData, setUserData] = useState(user);
   const [modalOpenEditProfile, setModalOpenEditProfile] = useState(false);
   const [modalOpenEditWebsites, setModalEditWebsites] = useState(false);
-  const [modalOpenEditSkills, setModalOpenEditSkills] = useState(false);
+
   const [modalOpenEditBio, setModalOpenEditBio] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
@@ -227,26 +226,33 @@ const CompanyProfile = ({user, currentUser}) => {
            </button>
          )}
        </h3>
-       {userData.userLinkedin || userData.userGitHub || userData.userWebsite ? (
+       {userData.userLinkedin  || userData.userWebsite ? (
          <ul className="mt-2">
            {userData.userLinkedin && (
              <li className="flex items-center mb-2 text-gray-800">
                <FaLinkedinIn className="ml-2 text-[#4F80E270] hover:text-[#4F80E2]" size={20} />
-               <a href={userData.userLinkedin}>{userData.nameUserLinkedin}</a>
-             </li>
-           )}
-           {userData.userGitHub && (
-             <li className="flex items-center mb-2 text-gray-800">
-               <FaGithubSquare className="ml-2 text-[#4F80E270] hover:text-[#4F80E2]" size={20} />
-               <a href={userData.userGitHub}>{userData.nameUserGithub}</a>
+               <a 
+      href={userData.userLinkedin.startsWith('http') ? userData.userLinkedin : `http://${userData.userLinkedin}`} 
+      target="_blank" 
+      rel="companyLinkedin"
+    >
+      {userData.nameUserLinkedin}
+    </a>
              </li>
            )}
            {userData.userWebsite && (
-             <li className="flex items-center mb-2 text-gray-800">
-               <FaEarthEurope className="ml-2 text-[#4F80E270] hover:text-[#4F80E2]" size={20} />
-               <a href={userData.userWebsite}>{userData.nameUserWebsite}</a>
-             </li>
-           )}
+  <li className="flex items-center mb-2 text-gray-800">
+    <FaEarthEurope className="ml-2 text-[#4F80E270] hover:text-[#4F80E2]" size={20} />
+    <a 
+      href={userData.userWebsite.startsWith('http') ? userData.userWebsite : `http://${userData.userWebsite}`} 
+      target="_blank" 
+      rel="companyWebsite"
+    >
+      {userData.nameUserWebsite}
+    </a>
+  </li>
+)}
+
          </ul>
        ) : currentUser.uid === userData.uid ? (
          <p className="text-gray-500">לא הוספת קישורים עדיין</p>

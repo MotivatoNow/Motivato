@@ -37,7 +37,7 @@ const RightSide = () => {
           className="w-16 h-16 rounded-full object-cover ml-1 border border-[#3E54D3]"
         />
         <div>
-          <Link to={`/profile/${currentUser.uid}`}>
+          <Link to={`/profile/${currentUser.slug}`}>
             <h3 className="text-lg font-semibold text-gray-800">
               {currentUser.userName}
             </h3>
@@ -52,7 +52,7 @@ const RightSide = () => {
         <hr className="w-full border-t border-gray-200 my-2" />
         <Link
           className="text-[#3E54D3] font-semibold"
-          to={`/profile/${currentUser.uid}`}
+          to={`/profile/${currentUser.slug}`}
         >
           הפרופיל שלי
         </Link>
@@ -68,7 +68,7 @@ const RightSide = () => {
             {user.userType !== "Admin" && (
               <div key={user.id} className="px-2 flex gap-2 items-center">
                 <Link
-                  to={`/profile/${user.id}`}
+                  to={`/profile/${user.slug}`}
                   className="flex gap-2 items-center"
                 >
                   <img
