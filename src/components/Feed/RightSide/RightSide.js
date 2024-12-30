@@ -64,23 +64,27 @@ const RightSide = () => {
 
         {/* הצגת הצעות חברים */}
         {suggestedFollowers.map((user) => (
-          <div key={user.id} className="px-2 flex gap-2 items-center">
-            <Link
-              to={`/profile/${user.id}`}
-              className="flex gap-2 items-center"
-            >
-              <img
-                src={user.profilePicture || "defaultProfilePictureURL"}
-                alt="Profile"
-                className="w-8 h-8 rounded-full object-cover ml-1 border border-[#3E54D3]"
-              />
-              <h3 className="text-lg font-semibold text-gray-800">
-                {user.userType === "Student" && <>{user.userName}</>}
-                {user.userType === "Company" && <>{user.companyName}</>}
-              </h3>
-            </Link>
-            <FriendButton user={user} />
-          </div>
+          <>
+            {user.userType !== "Admin" && (
+              <div key={user.id} className="px-2 flex gap-2 items-center">
+                <Link
+                  to={`/profile/${user.id}`}
+                  className="flex gap-2 items-center"
+                >
+                  <img
+                    src={user.profilePicture || "defaultProfilePictureURL"}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover ml-1 border border-[#3E54D3]"
+                  />
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {user.userType === "Student" && <>{user.userName}</>}
+                    {user.userType === "Company" && <>{user.companyName}</>}
+                  </h3>
+                </Link>
+                <FriendButton user={user} />
+              </div>
+            )}
+          </>
         ))}
       </div>
     </div>

@@ -1,13 +1,13 @@
 import React, {useMemo, useState} from "react";
 import PostCard from "../../components/PostCard/PostCard";
 import {useParams} from "react-router-dom";
-import {getPosts} from "../../context/Firestore";
+import {loadPosts} from "../../hooks/useLoadPosts";
 
 const Post = () => {
     const { id } = useParams();
     const [allPosts, setAllPosts] = useState([])
     useMemo(() => {
-        getPosts(setAllPosts);
+        loadPosts(setAllPosts);
     }, []);
 
     const filteredPost = allPosts.find((post) => post.id === id);

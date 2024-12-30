@@ -13,6 +13,8 @@ const MyMission = () => {
     const [post, setPost] = useState ("");
     const [title,setTitle]=useState("");
     const [place,setPlace]=useState("")
+    const [educations, setEducations] = useState([])//array
+    const [education, setEducation]=useState("")
     const [type,setType]=useState("")
 
     const sendMission = async () => {
@@ -29,6 +31,8 @@ const MyMission = () => {
             title: title,
             place: place,
             type: type,
+            education:education,
+            
         };
     
         try {
@@ -38,6 +42,7 @@ const MyMission = () => {
             setTitle("");
             setPlace("");
             setType("");
+            setEducation("")
             
             const notification={
                 type: "new Mission",
@@ -61,7 +66,7 @@ const MyMission = () => {
             <div className="post-status">
                 <button className="open-post-modal" onClick={() => setModalOpen (true)}>
                     {" "}
-                    Start a Mission
+                    כתיבת משימה חדשה
                 </button>
             </div>
             <ModalMission
@@ -77,6 +82,10 @@ const MyMission = () => {
                 type={type}
                 setType={setType}
                 userType={currentUser.userType}
+                educations={educations}
+                education={education}
+                setEducation={setEducation}
+                setEducations={setEducations}
             />
         </div>
     );

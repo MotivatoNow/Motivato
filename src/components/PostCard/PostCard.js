@@ -1,18 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+import React, { useEffect,useState } from "react";
 import { FaRegComment } from "react-icons/fa";
-import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
 import LikeButton from "../LikeButton/LikeButton";
-import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { Link } from "react-router-dom";
 import ShareButton from "../ShareButton/ShareButton";
 import { CiEdit } from "react-icons/ci";
