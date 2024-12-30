@@ -21,9 +21,6 @@ const Profile = () => {
   const { currentUser } = useAuth();
   const [followers, setFollowers] = useState([]);
   
-
-
-
   useEffect(() => {
     if (!id && currentUser) {
       navigate(`/profile/${currentUser.uid}`);
