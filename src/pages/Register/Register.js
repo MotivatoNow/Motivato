@@ -57,34 +57,33 @@ const Register = () => {
       await uploadBytes(storageProfile, profileBlob);
       const profileURL = await getDownloadURL(storageProfile);
   
-      // יצירת Slug ייחודי
       let baseSlug;
 
       if (userType === "Company") {
-        baseSlug = companyName; // עבור חברות, השתמש בשם החברה כבסיס ל-slug
+        baseSlug = companyName;
       } else if (userType === "Student") {
-        baseSlug = userName; // עבור סטודנטים, השתמש בשם הפרטי ושם המשפחה כבסיס ל-slug
+        baseSlug = `${firstName} ${lastName}`;
       } else {
-        throw new Error("Invalid user type"); // טיפול במקרה של שגיאה
+        throw new Error("Invalid user type");
       }
       
+      // יצירת Slug ייחודי
       const slug = await generateSlug(baseSlug);
-  
-      // שמירת נתוני המשתמש
+      
+      // שמירת הנתונים במסד הנתונים
       const userData = {
         uid: user.uid,
         email: email,
+        slug: slug, // שמירת ה-Slug
         userType: userType,
         profilePicture: profileURL,
-        slug: slug, // הוספת ה-Slug
         bio: "",
       };
-  
+      
       if (userType === "Company") {
         userData.companyName = companyName;
         userData.userWebsite = userWebsite;
         userData.userName = companyName;
-        userData.userNameLower = ((userData.companyName || '')).toLowerCase();
       } else if (userType === "Student") {
         userData.firstName = firstName;
         userData.lastName = lastName;
@@ -94,10 +93,9 @@ const Register = () => {
         userData.studentCollege = studentCollege;
         userData.studentEducation = studentEducation;
         userData.location = location;
-        userData.userName =(firstName + ' ' + lastName);
-        userData.userNameLower = ((userData.firstName || '') + ' ' + (userData.lastName || '')).toLowerCase();
+        userData.userName = `${firstName} ${lastName}`;
       }
-  
+      
       await setDoc(doc(db, "Users", user.uid), userData);
   
       console.log("User registered with ID: ", user.uid);
