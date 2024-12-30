@@ -7,6 +7,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
+
 //Post functions
 export const deletePost = (postId) => {
   if (window.confirm("האם אתה בטוח שברצונך למחוק את הפוסט הזה?")) {
@@ -18,7 +19,6 @@ const handleDeletePost = async (postId) => {
   const postRef = doc(db, "Posts", postId);
   try {
     await deleteDoc(postRef);
-
     message.success("הפוסט נמחק בהצלחה!");
   } catch (error) {
     console.error("שגיאה בעת מחיקת הפוסט:", error);

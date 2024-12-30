@@ -36,6 +36,7 @@ import { FaGithubSquare, FaLinkedinIn } from "react-icons/fa";
 import { FaEarthEurope } from "react-icons/fa6";
 import ModalEditBio from "../../Modal/ModalEditProfile/ModalEditBio/ModalEditBio";
 import { IoIosContact } from "react-icons/io";
+import { loadPostByID } from "../../../hooks/useLoadPosts";
 const CompanyProfile = ({user, currentUser}) => {
   const [userData, setUserData] = useState(user);
   const [modalOpenEditProfile, setModalOpenEditProfile] = useState(false);
@@ -95,41 +96,29 @@ const CompanyProfile = ({user, currentUser}) => {
     }
   };
 
-  
-  // Posts
-
-  const fetchUserPosts = async () => {
-    const q = query(collection(db, "Posts"), where("user.uid", "==", user.uid));
-    const querySnapshot = await getDocs(q);
-    const postsData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setAllPosts(postsData);
-    const photos = postsData.filter((post) => post.postImage);
-    setPhotos(photos);
-  };
-
-  useMemo(() => {
-    fetchUserPosts();
-  }, [user.uid]);
-
 // useEffect
-  useEffect(()=> {
-    fetchUserPosts();   
-  },[user.uid])
-//refresh data
-  useEffect(() => {
-    const userRef = doc(db, "Users", user.uid);
-    const unsubscribe = onSnapshot(userRef, (snapshot) => {
-      setUserData(snapshot.data());
-    });
-    if (userData && userData.followers) {
-      loadFollowers(userData.followers, setFollowers);
-    }
-    return () => unsubscribe(); 
-  }, [user.uid,userData]);
-
+   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await loadUser(user.uid, setUserData);
+        if (userData?.followers) {
+          await loadFollowers(userData.followers, setFollowers);
+        }
+        const unsubscribe = loadPostByID(user.uid, (posts) => {
+          setAllPosts(posts);
+          setPhotos(posts.filter((post) => post.postImage));
+        });
+        return unsubscribe;
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    let unsubscribe;
+    fetchData().then((cleanup) => (unsubscribe = cleanup));
+    return () => {
+      unsubscribe?.();
+    };
+  }, [user.uid]);
 
   return (
     <>
