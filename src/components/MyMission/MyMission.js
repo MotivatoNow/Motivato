@@ -21,6 +21,8 @@ const MyMission = () => {
                 uid: currentUser?.uid || "No UID",
                 userName:currentUser?.userName||"Anonymous",
                 userType:currentUser?.userType||"Anonymous",
+                profilePicture:currentUser?.profilePicture || "",
+                
             },
             post: post,
             timeStamp: getCurrentTimeStamp("LLL"),
