@@ -11,6 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 import StudentProfile from "../../components/Profile/StudentProfile/StudentProfile";
 import CompanyProfile from "../../components/Profile/CompanyProfile/CompanyProfile";
 import { loadData, loadFollowers } from "../../hooks/useLoadUsers";
+import { Loading } from "../../components/Loading/Loading";
 
 const Profile = () => {
   const { id } = useParams();
@@ -38,7 +39,7 @@ const Profile = () => {
   }, [id, currentUser, navigate]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return Loading;
   }
 
   if (userNotFound) {
