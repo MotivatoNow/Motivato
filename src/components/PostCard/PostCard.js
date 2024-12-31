@@ -25,7 +25,7 @@ const PostCard = ({ posts }) => {
     if (posts && posts.user.uid) {
       const fetchUserData = async () => {
         try {
-          const userData=await loadUser(posts.user.uid,setUserData);
+           loadUser(posts.user.uid,setUserData);
           
         } catch (error) {
           console.error("Error fetching user data:", error);

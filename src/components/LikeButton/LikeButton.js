@@ -5,6 +5,7 @@ import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import ModalLikes from "../../components/Modal/ModalLikes/ModalLikes";
 import { IoIosHeart } from "react-icons/io";
 import { FaThumbsUp, FaRegThumbsUp } from "react-icons/fa";
+import { createNotification } from "../../hooks/useLoadNotifications";
 
 const LikeButton = ({ posts }) => {
   const [liked, setLiked] = useState(false);
@@ -67,9 +68,14 @@ const LikeButton = ({ posts }) => {
         { merge: true }
       );
       if (!liked && posts.user.uid !== currentUser.uid) {
-        console.log("Like!!")
-        const likeName = `${currentUser.userName} `;
-        likeNotifications(posts.id, currentUser.uid, likeName, posts.user.uid);
+        const notification = {
+          type: "like",
+          postId: posts.id,
+          likeId: currentUser.uid,
+          postUser: posts.user.uid,
+          likeName: currentUser.userName,
+        };
+        await createNotification(notification)
       }
 
       setLiked(!liked);
@@ -77,25 +83,6 @@ const LikeButton = ({ posts }) => {
     } catch (error) {
       console.error(error);
     }
-  };
-  const likeNotifications = async (postId, likeId, likeName, postOwnerId) => {
-    const notification = {
-      postId: postId,
-      likeId: likeId,
-      type: "like",
-      postUser: postOwnerId,
-      likeName: likeName,
-    };
-    const notificationsRef = addDoc(
-      collection(db, "Notifications"),
-      notification
-    )
-      .then((res) => {
-        console.log("Document has been added succesfully");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
   return (
     <>

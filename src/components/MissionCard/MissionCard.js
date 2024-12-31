@@ -20,6 +20,7 @@ import { storage } from "../../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { loadUser } from "../../hooks/useLoadUsers";
+import { createNotification } from "../../hooks/useLoadNotifications";
 
 const MissionCard = ({ missions, user }) => {
   const { currentUser } = useAuth();
@@ -35,7 +36,7 @@ const MissionCard = ({ missions, user }) => {
   // Conversation creation logic
   const createConversation = async (participants) => {
     const conversationRef = await addDoc(collection(db, "Conversations"), {
-      participants: [participants[0],participants[1]],
+      participants: [participants[0], participants[1]],
       lastMessage: "",
       lastMessageTimestamp: new Date(),
       isGroup: false,
@@ -64,7 +65,7 @@ const MissionCard = ({ missions, user }) => {
     const participants = [currentUser.uid, missions.user.uid];
 
     const existingConversationId = await getExistingConversation(participants);
-    console.log(existingConversationId)
+    console.log(existingConversationId);
     if (existingConversationId) {
       setActiveChatUser(existingConversationId);
     } else {
@@ -78,8 +79,7 @@ const MissionCard = ({ missions, user }) => {
     if (missions && missions.user.uid) {
       const fetchUserData = async () => {
         try {
-          const user=await loadUser(missions.user.uid,setUserData)
-          
+          const user = await loadUser(missions.user.uid, setUserData);
         } catch (error) {
           console.error("Error fetching user data:", error);
         } finally {
@@ -118,7 +118,15 @@ const MissionCard = ({ missions, user }) => {
         fileName: selectFile.name,
         timeStamp: getCurrentTimeStamp("LLL"),
       });
-
+      const notification = {
+        type: "Application",
+        user: currentUser.uid,
+        missionTitle: missions.title,
+        missionId: missions.id,
+        postUser: missions.postUser,
+        postUserName: missions.postUserName,
+      };
+      await createNotification(notification);
       // Reset application state
       setApply(false);
       setSelectedFile(null);

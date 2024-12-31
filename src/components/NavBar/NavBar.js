@@ -24,12 +24,13 @@ import logo from "../../assets/images/Icon.png";
 import mobileLogo from "../../assets/images/Logo_PNG.png";
 import Search from "../Search/Search";
 import "../../App.css";
+import { createNotification } from "../../hooks/useLoadNotifications";
 
 const NavBar = () => {
   const navigate = useNavigate();
   const [isVerified, setIsVerified] = useState(false);
   const [followerRequests, setFollowerRequests] = useState([]);
-  const [notfications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const { currentUser } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false); // Managing the dropdown state
   const [dropdownOpen2, setDropdownOpen2] = useState(false); // Managing the dropdown state
@@ -99,22 +100,10 @@ const NavBar = () => {
       postUser: newFriendId,
       newFollowerId: acceptedUser.uid,
       newFollowerName: acceptedUser.userName,
-      // acceptedUser.type === "student"
-      //   ? `${acceptedUser.userName}` //to student name
-      //   : `${acceptedUser.companyName}`, // to company name
       type: "new follower",
       newFollowerProfilePicture: acceptedUser.profilePicture,
     };
-    const notificationsRef = addDoc(
-      collection(db, "Notifications"),
-      notification
-    )
-      .then((res) => {
-        console.log("Document has been added succesfully");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    await createNotification(notification)
   };
 
   // Reject friend request
@@ -129,7 +118,7 @@ const NavBar = () => {
 
   // Toggle dropdown
   const toggleDropdown = () => {
-    if(toggleDropdown) clearNotifications()
+    if (toggleDropdown) clearNotifications();
     setDropdownOpen(!dropdownOpen);
     if (dropdownOpen2) setDropdownOpen2(!dropdownOpen2);
   };
@@ -157,7 +146,7 @@ const NavBar = () => {
 
     if (unreadCount > 0) {
       //update from unread to reade
-      notfications.forEach(async (notification) => {
+      notifications.forEach(async (notification) => {
         if (!notification.read) {
           const notificationRef = doc(db, "Notifications", notification.id);
           await updateDoc(notificationRef, { read: true });
@@ -333,7 +322,7 @@ const NavBar = () => {
       <nav className="grid grid-cols-3 items-center px-5 py-2 bg-white">
         {/* Logo and Search */}
         <div className="flex items-center gap-1">
-          <Link to={currentUser && isVerified ? `/feed` : `/`}>
+          <Link to={currentUser && currentUser.isVerified ? `/feed` : `/`}>
             <img
               className="w-32 cursor-pointer md:flex hidden"
               src={logo}
@@ -399,8 +388,8 @@ const NavBar = () => {
                   )}
                   {dropdownOpen2 && (
                     <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 top-12 w-64 bg-white border rounded-lg shadow-lg z-10">
-                      {notfications.length > 0 ? (
-                        notfications.map((notification, index) => (
+                      {notifications.length > 0 ? (
+                        notifications.map((notification, index) => (
                           <div
                             key={index}
                             className="px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -459,7 +448,7 @@ const NavBar = () => {
                                       notification.newFollowerProfilePicture ||
                                       "defaultProfilePictureURL"
                                     } // הצגת תמונת המשתמש הנכונה מהתגובה
-                                    alt={`${notfications.newFollowerName}`}
+                                    alt={`${notifications.newFollowerName}`}
                                   />
                                   {notification.newFollowerName} אישר/ה את בקשת
                                   החברות שלך
@@ -590,9 +579,9 @@ const NavBar = () => {
                   >
                     כניסה לפרופיל
                   </Link>
-                  <hr className="w-44 border-t border-gray-200 my-2"/>
+                  <hr className="w-44 border-t border-gray-200 my-2" />
                   <button
-                   onClick={handleLogout}
+                    onClick={handleLogout}
                     className="px-4 py-2 font-semibold text-sm text-gray-700"
                   >
                     התנתקות

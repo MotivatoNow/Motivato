@@ -23,6 +23,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { CiCamera, CiEdit } from "react-icons/ci";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
+import { createNotification } from "../../hooks/useLoadNotifications";
 
 const CommentButton = ({ posts }) => {
   const { currentUser } = useAuth();
@@ -92,13 +93,15 @@ const CommentButton = ({ posts }) => {
       };
       await addDoc(commentsRef, object);
       if (posts.user.uid !== currentUser.uid) {
-        const commentName = `${currentUser.userName} `;
-        commentNotifications(
-          posts.id,
-          currentUser.uid,
-          commentName,
-          posts.user.uid
-        );
+        
+        const notification = {
+          postId: postId,
+          commentId: currentUser.uid,
+          type: "comment",
+          postUser: posts.user.uid,
+          commentName: currentUser.userName,
+        };
+        await createNotification(notification)
       }
     } catch (error) {
       console.error(error);
@@ -142,33 +145,6 @@ const CommentButton = ({ posts }) => {
     await uploadBytes(storageRef, file);
     const url = await getDownloadURL(storageRef);
     return url;
-  };
-
-  //Notification
-  const commentNotifications = async (
-    postId,
-    commentId,
-    commentName,
-    postOwnerId
-  ) => {
-    console.log(commentId);
-    const notification = {
-      postId: postId,
-      commentId: commentId,
-      type: "comment",
-      postUser: postOwnerId,
-      commentName: commentName,
-    };
-    const notificationsRef = addDoc(
-      collection(db, "Notifications"),
-      notification
-    )
-      .then((res) => {
-        console.log("Document has been added succesfully");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   useMemo(() => {
