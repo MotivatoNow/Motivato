@@ -30,7 +30,7 @@ export const loadUser=async(id,setUserData)=>{
 
 // loading the the all data from the currentUser
 export const loadData = async (
-  slug,
+  uid,
   setUserData,
   setUserNotFound,
   loadFollowers,
@@ -38,7 +38,7 @@ export const loadData = async (
   setFollowers
 ) => {
   try {
-    const user = await loadUser(slug,setUserData)
+    const user = await loadUser(uid,setUserData)
     if (user) {
       setUserNotFound(false);
       if (user.followers) {

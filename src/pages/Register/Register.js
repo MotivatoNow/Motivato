@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { auth, db, storage } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
@@ -7,7 +7,6 @@ import profilePic from "../../assets/images/profilepicture.png";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
 
-import { query, where, getDocs } from "firebase/firestore";
 const Register = () => {
   const [userType, setUserType] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -15,7 +14,6 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [userGender, setUserGender] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [userWebsite, setUserWebsite] = useState("");
   const [studentCollege, setStudentCollege] = useState("");
@@ -57,24 +55,10 @@ const Register = () => {
       await uploadBytes(storageProfile, profileBlob);
       const profileURL = await getDownloadURL(storageProfile);
   
-      let baseSlug;
-
-      if (userType === "Company") {
-        baseSlug = companyName;
-      } else if (userType === "Student") {
-        baseSlug = `${firstName} ${lastName}`;
-      } else {
-        throw new Error("Invalid user type");
-      }
-      
-      // יצירת Slug ייחודי
-      const slug = await generateSlug(baseSlug);
-      
       // שמירת הנתונים במסד הנתונים
       const userData = {
         uid: user.uid,
         email: email,
-        slug: slug, // שמירת ה-Slug
         userType: userType,
         profilePicture: profileURL,
         bio: "",
@@ -88,7 +72,6 @@ const Register = () => {
         userData.firstName = firstName;
         userData.lastName = lastName;
         userData.dateOfBirth = dateOfBirth;
-        userData.userGender = userGender;
         userData.studentCard = cardURL;
         userData.studentCollege = studentCollege;
         userData.studentEducation = studentEducation;
@@ -106,47 +89,19 @@ const Register = () => {
     }
   };
   
-  useMemo(()=>{
+  useEffect(()=>{
     onSnapshot(collection(db,"Categories"),(response)=>{
       setCategories(
         response.docs.map((doc) => ({ id: doc.id, ...doc.data() })
       ))
     })
-  })
-  useMemo(()=>{
+ 
     onSnapshot(collection(db,"Universities"),(response)=>{
       setUniversities(
         response.docs.map((doc) => ({ id: doc.id, ...doc.data() })
       ))
     })
   })
-
-  // פונקציה ליצירת Slug ייחודי
-const generateSlug = async (baseSlug) => {
-  const normalized = baseSlug
-    .toLowerCase()
-    .trim()
-    .replace(/[\s]+/g, "-") // החלפת רווחים במקף
-    .replace(/[^a-z0-9-]/g, ""); // הסרת תווים לא חוקיים
-
-  let slug = normalized;
-  let isUnique = false;
-  let counter = 1;
-
-  while (!isUnique) {
-    const q = query(collection(db, "Users"), where("slug", "==", slug));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      isUnique = true;
-    } else {
-      slug = `${normalized}-${counter}`;
-      counter++;
-    }
-  }
-
-  return slug;
-};
 
   return (
     <>

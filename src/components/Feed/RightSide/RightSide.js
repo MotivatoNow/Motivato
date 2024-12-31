@@ -18,10 +18,9 @@ const RightSide = () => {
     const fetchUserData = async () => {
       if (currentUser) {
         const userData = await loadUser(currentUser.uid, () => {});
-        if (userData?.followers) {
-          loadFollowers(currentUser.followers, setFollowers);
+        if (userData?.followers?.length > 0) {
+          await loadFollowers(userData.followers, setFollowers);
         }
-
         loadUsers(currentUser, setSuggestedFollowers);
       }
     };
@@ -37,7 +36,7 @@ const RightSide = () => {
           className="w-16 h-16 rounded-full object-cover ml-1 border border-[#3E54D3]"
         />
         <div>
-          <Link to={`/profile/${currentUser.slug}`}>
+          <Link to={`/profile/${currentUser.uid}`}>
             <h3 className="text-lg font-semibold text-gray-800">
               {currentUser.userName}
             </h3>
@@ -52,7 +51,7 @@ const RightSide = () => {
         <hr className="w-full border-t border-gray-200 my-2" />
         <Link
           className="text-[#3E54D3] font-semibold"
-          to={`/profile/${currentUser.slug}`}
+          to={`/profile/${currentUser.uid}`}
         >
           הפרופיל שלי
         </Link>
@@ -63,12 +62,12 @@ const RightSide = () => {
         <h2 className="text-gray-800 font-semibold px-2">הצעות חברות חדשות</h2>
 
         {/* הצגת הצעות חברים */}
-        {suggestedFollowers.map((user) => (
-          <>
-            {user.userType !== "Admin" && (
-              <div key={user.id} className="px-2 flex gap-2 items-center">
+        {suggestedFollowers.map(
+          (user) =>
+            user.userType !== "Admin" && (
+              <div key={user.uid} className="px-2 flex gap-2 items-center">
                 <Link
-                  to={`/profile/${user.slug}`}
+                  to={`/profile/${user.uid}`}
                   className="flex gap-2 items-center"
                 >
                   <img
@@ -83,9 +82,8 @@ const RightSide = () => {
                 </Link>
                 <FriendButton user={user} />
               </div>
-            )}
-          </>
-        ))}
+            )
+        )}
       </div>
     </div>
   );

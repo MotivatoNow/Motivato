@@ -17,7 +17,6 @@ import {
 import { signOut } from "firebase/auth";
 import { FaBarsStaggered } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
-import { GrLogout } from "react-icons/gr";
 import { BsBell, BsChatDots } from "react-icons/bs";
 import { LiaUserFriendsSolid } from "react-icons/lia";
 import { GrHomeRounded } from "react-icons/gr";
@@ -130,8 +129,7 @@ const NavBar = () => {
 
   // Toggle dropdown
   const toggleDropdown = () => {
-    console.log("is toggle");
-
+    if(toggleDropdown) clearNotifications()
     setDropdownOpen(!dropdownOpen);
     if (dropdownOpen2) setDropdownOpen2(!dropdownOpen2);
   };
@@ -587,7 +585,7 @@ const NavBar = () => {
               {isDropdownOpenProfile && (
                 <div className="absolute flex flex-col items-center justify-center left-0 top-10 mt-2 bg-white shadow-lg rounded-md py-2 w-48">
                   <Link
-                    to={`/profile/${currentUser.slug}`}
+                    to={`/profile/${currentUser.uid}`}
                     className=" px-4 py-2 text-sm text-[#3E54D3] font-medium"
                   >
                     כניסה לפרופיל

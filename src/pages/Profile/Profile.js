@@ -1,56 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore"; // הוספת query ו-where לשליפת מידע לפי slug
 import "./Profile.css";
-import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
 import StudentProfile from "../../components/Profile/StudentProfile/StudentProfile";
 import CompanyProfile from "../../components/Profile/CompanyProfile/CompanyProfile";
 import { Loading } from "../../components/Loading/Loading";
+import { loadData, loadFollowers } from "../../hooks/useLoadUsers";
 
 const Profile = () => {
-  const { slug } = useParams(); // שימוש ב-slug במקום id
+  const { id } = useParams(); 
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userNotFound, setUserNotFound] = useState(false);
+  const [followers, setFollowers] = useState([]);
   const { currentUser } = useAuth();
 
   useEffect(() => {
-    const fetchUserBySlug = async () => {
-      try {
-        setLoading(true);
-
-        // יצירת שאילתה לשליפת משתמש לפי slug
-        const q = query(
-          collection(db, "Users"),
-          where("slug", "==", slug)
-        );
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
-          setUserNotFound(true);
-        } else {
-          const userDoc = querySnapshot.docs[0];
-          setUserData({ id: userDoc.id, ...userDoc.data() });
-        }
-      } catch (error) {
-        console.error("Error fetching user by slug:", error);
-        setUserNotFound(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchUserBySlug();
+    if (!id && currentUser) {
+      navigate(`/profile/${currentUser.uid}`);
+      return;
     }
-  }, [slug]);
+    if (id) {
+      loadData(id,setUserData,setUserNotFound,loadFollowers,setLoading,setFollowers);
+    }
+
+  }, [id, currentUser, navigate]);
 
   if (loading) {
     return <Loading />;
