@@ -58,7 +58,7 @@ const ModalPost = ({
         <textarea
           value={post}
           className="w-48 h-72 md:w-full md:h-96 p-3 mb-4 border-none focus:outline-none rounded-lg resize-none"
-          placeholder={`היי ${currentUser.firstName} מה תרצה לשתף?`}
+          placeholder={`היי ${currentUser.userName} מה תרצה לשתף?`}
           onChange={(e) => setPost(e.target.value)}
           
         />
