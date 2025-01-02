@@ -24,8 +24,7 @@ import logo from "../../assets/images/Icon.png";
 import mobileLogo from "../../assets/images/Logo_PNG.png";
 import Search from "../Search/Search";
 import "../../App.css";
-import { createNotification, loadNotifications } from "../../hooks/useLoadNotifications";
-import { loadUser } from "../../hooks/useLoadUsers";
+import { createNotification } from "../../hooks/useLoadNotifications";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -199,7 +198,27 @@ const NavBar = () => {
   //useEffect 3 for Notification
   useEffect(() => {
     if (currentUser) {
-      loadNotifications(currentUser,setNotifications,setUnreadCount)
+      const q = query(
+        collection(db, "Notifications"),
+        where("postUser", "==", currentUser.uid)
+      );
+
+      const unsubscribe = onSnapshot(q, (docSnapshot) => {
+        const allNotifications = docSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setNotifications(allNotifications);
+
+        // עדכון מספר ההתראות שלא נקראו (לדוגמה: אם כל התראות חדשות)
+        const unread = allNotifications.filter(
+          (notification) => !notification.read
+        ).length;
+
+        setUnreadCount(unread);
+      });
+
+      return () => unsubscribe();
     }
   }, [currentUser]);
 
@@ -257,7 +276,6 @@ const NavBar = () => {
         for (const docN of response.docs) {
           const notificationData = docN.data();
           let userDoc;
-          
           if (
             notificationData.type === "comment" &&
             notificationData.postUser === currentUser.uid
@@ -265,7 +283,6 @@ const NavBar = () => {
             userDoc = await getDoc(
               doc(db, "Users", notificationData.commentId)
             );
-           
           } else if (
             notificationData.type === "like" &&
             notificationData.postUser === currentUser.uid
