@@ -64,7 +64,7 @@ const RightSide = () => {
         {/* הצגת הצעות חברים */}
         {suggestedFollowers.map(
           (user) =>
-            user.userType !== "Admin" && (
+            user.userType !== "Admin"  && (
               <div key={user.uid} className="px-2 flex gap-2 items-center">
                 <Link
                   to={`/profile/${user.uid}`}

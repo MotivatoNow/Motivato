@@ -25,6 +25,7 @@ import mobileLogo from "../../assets/images/Logo_PNG.png";
 import Search from "../Search/Search";
 import "../../App.css";
 import { createNotification } from "../../hooks/useLoadNotifications";
+import { handleAccept, loadFollowerRequest } from "../../hooks/useLoadFollowerRequest";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -60,51 +61,6 @@ const NavBar = () => {
       .catch((error) => console.log("Error Sign Out"));
   };
 
-  // Accept friend request
-  const handleAccept = async (request) => {
-    try {
-      const requestDocRef = doc(db, "followerRequests", request.id);
-
-      // Update the status in Firebase to "accepted"
-      await updateDoc(requestDocRef, { status: "accepted" });
-
-      // Update the friends list for both users
-      await updateDoc(doc(db, "Users", currentUser.uid), {
-        followers: arrayUnion(request.senderId),
-      });
-      await updateDoc(doc(db, "Users", request.senderId), {
-        followers: arrayUnion(currentUser.uid),
-      });
-
-      // Send a notification to the user who sent the friend request
-      const receiverUserDocRef = doc(db, "Users", request.senderId);
-      try {
-        const docSnap = await getDoc(receiverUserDocRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          // const receiverName = `${data.userName}`;
-          console.log(data); //natan    currentUser=elianor
-          await newFriendNotification(data.uid, currentUser);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    } catch (error) {
-      console.error("Error accepting follower request:", error);
-    }
-  };
-
-  // notification for new friend and adding it to firebase
-  const newFriendNotification = async (newFriendId, acceptedUser) => {
-    const notification = {
-      postUser: newFriendId,
-      newFollowerId: acceptedUser.uid,
-      newFollowerName: acceptedUser.userName,
-      type: "new follower",
-      newFollowerProfilePicture: acceptedUser.profilePicture,
-    };
-    await createNotification(notification)
-  };
 
   // Reject friend request
   const handleReject = async (request) => {
@@ -177,21 +133,7 @@ const NavBar = () => {
   //**useEffect 2 for friend Request
   useEffect(() => {
     if (currentUser) {
-      const q = query(
-        collection(db, "followerRequests"),
-        where("receiverId", "==", currentUser.uid),
-        where("status", "==", "pending")
-      );
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const requests = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setFollowerRequests(requests);
-      });
-
-      return () => unsubscribe();
+      loadFollowerRequest(currentUser,setFollowerRequests)
     }
   }, [currentUser]);
 
