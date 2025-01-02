@@ -44,6 +44,15 @@ import { db } from "../config/firebase";
     }
   };
 
+   // Reject friend request
+   export const handleReject = async (request) => {
+    try {
+      const requestDocRef = doc(db, "followerRequests", request.id);
+      await updateDoc(requestDocRef, { status: "rejected" });
+    } catch (error) {
+      console.error("Error rejecting follower request:", error);
+    }
+  };
     // notification for new friend and adding it to firebase
   export const newFriendNotification = async (newFriendId, acceptedUser) => {
       const notification = {

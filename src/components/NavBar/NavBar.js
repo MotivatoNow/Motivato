@@ -25,7 +25,7 @@ import mobileLogo from "../../assets/images/Logo_PNG.png";
 import Search from "../Search/Search";
 import "../../App.css";
 import { createNotification } from "../../hooks/useLoadNotifications";
-import { handleAccept, loadFollowerRequest } from "../../hooks/useLoadFollowerRequest";
+import { handleAccept, handleReject, loadFollowerRequest } from "../../hooks/useLoadFollowerRequest";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -62,16 +62,7 @@ const NavBar = () => {
   };
 
 
-  // Reject friend request
-  const handleReject = async (request) => {
-    try {
-      const requestDocRef = doc(db, "followerRequests", request.id);
-      await updateDoc(requestDocRef, { status: "rejected" });
-    } catch (error) {
-      console.error("Error rejecting follower request:", error);
-    }
-  };
-
+  
   // Toggle dropdown
   const toggleDropdown = () => {
     if (toggleDropdown) clearNotifications();

@@ -7,26 +7,22 @@ const shuffleArray = (array) => {
   return array.sort(() => Math.random() - 0.5);
 };
 
-export const loadUser=async(id,setUserData)=>{
-  try{
-    const userDoc=await getDoc(doc(db,"Users",id))
-    if(userDoc.exists()){
-      const userData={id:userDoc.id,...userDoc.data()};
+export const loadUser = async (id, setUserData) => {
+  try {
+    const userDoc = await getDoc(doc(db, "Users", id));
+    if (userDoc.exists()) {
+      const userData = { id: userDoc.id, ...userDoc.data() };
       setUserData(userData);
       return userData;
-    }
-    else{
-      setUserData(null)
+    } else {
+      setUserData(null);
       return null;
     }
+  } catch (error) {
+    console.error(error);
+    setUserData(null);
   }
-  catch(error){
-    console.error(error)
-    setUserData(null)
-  }
-}
-
-
+};
 
 // loading the the all data from the currentUser
 export const loadData = async (
@@ -38,7 +34,7 @@ export const loadData = async (
   setFollowers
 ) => {
   try {
-    const user = await loadUser(uid,setUserData)
+    const user = await loadUser(uid, setUserData);
     if (user) {
       setUserNotFound(false);
       if (user.followers) {
@@ -52,7 +48,6 @@ export const loadData = async (
   }
   setLoading(false);
 };
-
 
 //Loading all the friends' data
 export const loadFollowers = async (followersId, setFollowers) => {
@@ -72,27 +67,38 @@ export const loadFollowers = async (followersId, setFollowers) => {
   }
 };
 
-export const loadUsers = async (currentUser,setSuggestedFriends) => {
-    try {
-      // שליפת החברים של המשתמש הנוכחי
-      const currentUserData = await loadUser(currentUser.uid,()=>{})
-      const followersId = currentUserData?.followers || [];
+export const loadUsers = async (currentUser, setSuggestedFriends) => {
+  try {
+    // שליפת החברים של המשתמש הנוכחי
+    const currentUserData = await loadUser(currentUser.uid, () => {});
+    const followersId = currentUserData?.followers || [];
 
-      // שליפת כל המשתמשים
-      const userDocs = await getDocs(collection(db, "Users"));
-      
-      // סינון החברים והמשתמש הנוכחי וערבוב הרשימה
-      const allUsers = userDocs.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter((user) => user.id !== currentUser.uid && !followersId.includes(user.id)) // הסרת החברים והמשתמש הנוכחי
-        
-      const randomUsers = shuffleArray(allUsers).slice(0, 6); // ערבוב וחיתוך ל-5–6 משתמשים רנדומליים
-      setSuggestedFriends(randomUsers);
-    } catch (error) {
-      console.error("Error loading users:", error);
+    // שליפת כל המשתמשים
+    const userDocs = await getDocs(collection(db, "Users"));
+
+    // סינון החברים והמשתמש הנוכחי וערבוב הרשימה
+    const allUsers = userDocs.docs
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      .filter(
+        (user) => user.id !== currentUser.uid && !followersId.includes(user.id)
+      ); // הסרת החברים והמשתמש הנוכחי
+
+    const randomUsers = shuffleArray(allUsers).slice(0, 6); // ערבוב וחיתוך ל-5–6 משתמשים רנדומליים
+    setSuggestedFriends(randomUsers);
+  } catch (error) {
+    console.error("Error loading users:", error);
+  }
+};
+
+export const checkVerification = async (currentUser, setIsVerified) => {
+  if (currentUser) {
+    const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      setIsVerified(userData.isVerified);
     }
-  };
-
+  }
+};

@@ -2,6 +2,8 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
+  getDocs,
   onSnapshot,
   query,
   updateDoc,
@@ -20,7 +22,7 @@ export const createNotification = async (notification) => {
   }
 };
 
-export const loadNotifications = async (
+export const loadNotifications = (
   currentUser,
   setNotifications,
   setUnreadCount
@@ -29,48 +31,57 @@ export const loadNotifications = async (
     notificationCollect,
     where("postUser", "==", currentUser.uid)
   );
-  const unsubscribe = onSnapshot(q, (docSnapshot) => {
-    const allNotifications = docSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setNotifications(allNotifications);
 
-    // עדכון מספר ההתראות שלא נקראו (לדוגמה: אם כל התראות חדשות)
-    const unread = allNotifications.filter(
-      (notification) => !notification.read
-    ).length;
+  return onSnapshot(q, async (snapshot) => {
+    const notifications = await Promise.all(
+      snapshot.docs.map(async (docSnap) => {
+        const data = docSnap.data();
+        const userDoc = await getDoc(doc(db, "Users", data.user || data.commentId || data.likeId || data.newFollowerId));
+        
+        return {
+          id: docSnap.id,
+          ...data,
+          userName: userDoc.exists() ? userDoc.data().userName : "Unknown User",
+          userProfilePicture: userDoc.exists() ? userDoc.data().profilePicture : "defaultProfilePictureURL",
+        };
+      })
+    );
 
-    setUnreadCount(unread);
+    setNotifications(notifications);
+    setUnreadCount(notifications.filter((notif) => !notif.read).length);
   });
-  return unsubscribe;
 };
-export const clearNotifications = async (currentUser,setNotifications) => {
-    try {
-      const q = query(
-        notificationCollect,
-        where("postUser", "==", currentUser.uid)
-      );
 
-      setNotifications([]); //Clear the notification in the local state
-      
-    } catch (error) {
-      console.error("Error clearing notifications:", error);
-    }
-  };
-export const handleNotificationClick = (notifications,setUnreadCount,toggleDropdown2,unreadCount) => {
-    toggleDropdown2(); // close or open the dropdown
+export const clearNotifications = async (currentUser, setNotifications) => {
+  try {
+    const q = query(
+      notificationCollect,
+      where("postUser", "==", currentUser.uid)
+    );
 
-    if (unreadCount > 0) {
-      //update from unread to reade
-      notifications.forEach(async (notification) => {
-        if (!notification.read) {
-          const notificationRef = doc(db, "Notifications", notification.id);
-          await updateDoc(notificationRef, { read: true });
-        }
-      });
+    setNotifications([]); //Clear the notification in the local state
+  } catch (error) {
+    console.error("Error clearing notifications:", error);
+  }
+};
+export const handleNotificationClick = (
+  notifications,
+  setUnreadCount,
+  toggleDropdown2,
+  unreadCount
+) => {
+  toggleDropdown2(); // close or open the dropdown
 
-      // reset the count for 0
-      setUnreadCount(0);
-    }
-  };
+  if (unreadCount > 0) {
+    //update from unread to reade
+    notifications.forEach(async (notification) => {
+      if (!notification.read) {
+        const notificationRef = doc(db, "Notifications", notification.id);
+        await updateDoc(notificationRef, { read: true });
+      }
+    });
+
+    // reset the count for 0
+    setUnreadCount(0);
+  }
+};
