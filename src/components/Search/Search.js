@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { db } from "../../config/firebase";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 
 const Search = () => {
@@ -10,6 +11,7 @@ const Search = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [recentSearches, setRecentSearches] = useState([]);
   const [inputFocused, setInputFocused] = useState(false);
+  const {currentUser } = useAuth()
   const navigate = useNavigate();
 
   const handleSearch = async () => {
@@ -17,54 +19,52 @@ const Search = () => {
       setSearchResults([]);
       return;
     }
-
+  
     try {
       const lowerCaseSearchTerm = searchTerm.toLowerCase(); // המרת המונח לאותיות קטנות
-
+  
       const userNameQuery = query(
         collection(db, "Users"),
         where("userNameLower", ">=", lowerCaseSearchTerm),
         where("userNameLower", "<=", lowerCaseSearchTerm + "\uf8ff")
       );
-
+  
       const firstNameQuery = query(
         collection(db, "Users"),
         where("firstName", ">=", searchTerm),
         where("firstName", "<=", searchTerm + "\uf8ff")
       );
-
+  
       const lastNameQuery = query(
         collection(db, "Users"),
         where("lastName", ">=", searchTerm),
         where("lastName", "<=", searchTerm + "\uf8ff")
       );
-
+  
       const firstNameSnapshot = await getDocs(firstNameQuery);
       const lastNameSnapshot = await getDocs(lastNameQuery);
-
-      const results = [];
-      firstNameSnapshot.forEach((doc) => {
-        results.push(doc.data());
-      });
-      lastNameSnapshot.forEach((doc) => {
-        results.push(doc.data());
-      });
-
       const userNameSnapshot = await getDocs(userNameQuery);
-
-      userNameSnapshot.forEach((doc) => {
-        results.push(doc.data());
-      });
-
+  
+      const results = [];
+      firstNameSnapshot.forEach((doc) => results.push(doc.data()));
+      lastNameSnapshot.forEach((doc) => results.push(doc.data()));
+      userNameSnapshot.forEach((doc) => results.push(doc.data()));
+  
+      // סינון משתמשים מסוג Admin והמשתמש הנוכחי
+      const filteredResults = results.filter(
+        (user) => user.userType !== "Admin" && user.uid !== currentUser?.uid
+      );
+  
       const uniqueResults = Array.from(
-        new Set(results.map((user) => user.uid))
-      ).map((uid) => results.find((user) => user.uid === uid));
-
+        new Set(filteredResults.map((user) => user.uid))
+      ).map((uid) => filteredResults.find((user) => user.uid === uid));
+  
       setSearchResults(uniqueResults.slice(0, 7)); // Limit to 7 results
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
   };
+  
   const saveRecentSearch = (user) => {
     setRecentSearches((prev) => {
       const updatedRecents = [
