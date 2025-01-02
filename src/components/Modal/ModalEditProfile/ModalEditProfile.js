@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Button, Modal, Input, message, Divider, Row, Col } from "antd";
 import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // ייבוא של הפונקציות מ-Firebase Storage
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../../config/firebase";
 import "./ModalEditProfile.css";
 import {
@@ -10,6 +10,7 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { EmailAuthProvider } from "firebase/auth/cordova";
+import { MdDeleteOutline } from "react-icons/md";
 const ModalEditProfileComponent = ({
   modalOpenEditProfile,
   setModalOpenEditProfile,
@@ -100,6 +101,10 @@ const ModalEditProfileComponent = ({
             `StudentImages/${user.uid}/studentProfile/${newProfilePicture.name}`
           );
         } else {
+          storageRef = ref(
+            storage,
+            `CompanyImages/${user.uid}/companyProfile/${newProfilePicture.name}`
+          );
         }
         await uploadBytes(storageRef, newProfilePicture);
         const downloadURL = await getDownloadURL(storageRef);
@@ -153,6 +158,10 @@ const ModalEditProfileComponent = ({
     setOriginalProfilePicture(user.profilePicture);
   }, [modalOpenEditProfile]);
 
+   const deleteImage = () => {
+      setNewProfilePicture(null);
+    };
+
   return (
     <>
       <Modal
@@ -180,20 +189,36 @@ const ModalEditProfileComponent = ({
         ]}
       >
         <div className="modal-content space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              תמונת פרופיל:
-            </label>
-            <label className="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md cursor-pointer hover:bg-blue-600">
-              העלאת תמונה
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileUpload(e.target.files[0])}
-                className="hidden"
-              />
-            </label>
-          </div>
+        <div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    תמונת פרופיל:
+  </label>
+  <label className="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md cursor-pointer hover:bg-blue-600">
+    העלאת תמונה
+    <input
+      type="file"
+      accept="image/*"
+      onChange={(e) => handleFileUpload(e.target.files[0])}
+      className="hidden"
+    />
+  </label>
+  
+  {newProfilePicture && (
+    <div className="relative flex items-center justify-center text-gray-500 bg-gray-100 py-2 px-4 rounded-[5px] border-none shadow-sm cursor-pointer">
+      <img
+        src={newProfilePicture instanceof File ? URL.createObjectURL(newProfilePicture) : ""}
+        alt="Preview"
+        className="h-10 w-10 object-cover rounded-lg"
+      />
+      <MdDeleteOutline
+        className="absolute top-1 right-1 cursor-pointer"
+        size={20}
+        onClick={deleteImage}
+      />
+    </div>
+  )}
+</div>
+
           <Divider />
           {user.userType === "Company" && (
             <>

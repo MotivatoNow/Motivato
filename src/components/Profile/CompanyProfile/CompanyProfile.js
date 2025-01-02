@@ -148,8 +148,8 @@ const CompanyProfile = ({user, currentUser}) => {
 
      {/* Profile Info */}
      <div className="flex flex-col px-3">
-        <h2 className="text-2xl font-semibold">{userData.userName}</h2>
-        <h4 className=" text-gray-400">{userData.companyName}</h4>
+        <h2 className="text-2xl font-semibold">{userData.companyName}</h2>
+        <h4 className=" text-gray-400">{userData.userName}</h4>
 
        
 
@@ -263,22 +263,23 @@ const CompanyProfile = ({user, currentUser}) => {
 
      {/* About */}
      <div className="break-words max-w-full text-gray-800">
-       <h3 className="font-semibold flex items-center">
-         אודות
-         {currentUser.uid === userData.uid && (
-           <button onClick={() => setModalOpenEditBio(true)} className="ml-2">
-             <CiEdit size={24} />
-           </button>
-         )}
-       </h3>
-       {userData.bio ? (
-         <p>{userData.bio}</p>
-       ) : currentUser.uid === userData.uid ? (
-         <p className="text-gray-500">לא עדכנת את האודות עדיין</p>
-       ) : (
-         <p className="text-gray-500">המשתמש לא עדכן את האודות עדיין</p>
-       )}
-     </div>
+  <h3 className="font-semibold flex items-center">
+    אודות
+    {currentUser.uid === userData.uid && (
+      <button onClick={() => setModalOpenEditBio(true)} className="ml-2">
+        <CiEdit size={24} />
+      </button>
+    )}
+  </h3>
+  {userData.bio ? (
+    <p dangerouslySetInnerHTML={{ __html: userData.bio.replace(/\n/g, '<br>') }} />
+  ) : currentUser.uid === userData.uid ? (
+    <p className="text-gray-500">לא עדכנת את האודות עדיין</p>
+  ) : (
+    <p className="text-gray-500">המשתמש לא עדכן את האודות עדיין</p>
+  )}
+</div>
+
    </div>
  </div>
 </div>

@@ -294,25 +294,23 @@ const StudentProfile = ({ user, currentUser }) => {
 
             {/* About */}
             <div className="break-words max-w-full text-gray-800">
-              <h3 className="font-semibold flex items-center">
-                אודות
-                {currentUser.uid === userData.uid && (
-                  <button
-                    onClick={() => setModalOpenEditBio(true)}
-                    className="ml-2"
-                  >
-                    <CiEdit size={24} />
-                  </button>
-                )}
-              </h3>
-              {userData.bio ? (
-                <p>{userData.bio}</p>
-              ) : currentUser.uid === userData.uid ? (
-                <p className="text-gray-500">לא עדכנת את האודות עדיין</p>
-              ) : (
-                <p className="text-gray-500">המשתמש לא עדכן את האודות עדיין</p>
-              )}
-            </div>
+  <h3 className="font-semibold flex items-center">
+    אודות
+    {currentUser.uid === userData.uid && (
+      <button onClick={() => setModalOpenEditBio(true)} className="ml-2">
+        <CiEdit size={24} />
+      </button>
+    )}
+  </h3>
+  {userData.bio ? (
+    <p dangerouslySetInnerHTML={{ __html: userData.bio.replace(/\n/g, '<br>') }} />
+  ) : currentUser.uid === userData.uid ? (
+    <p className="text-gray-500">לא עדכנת את האודות עדיין</p>
+  ) : (
+    <p className="text-gray-500">המשתמש לא עדכן את האודות עדיין</p>
+  )}
+</div>
+
 
             {/* Skills */}
             <div>

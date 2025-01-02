@@ -137,6 +137,8 @@ const CommentButton = ({ posts }) => {
   const deleteImage = () => {
     setCommentImage(null);
   };
+
+  
   const uploadCommentImage = async (file) => {
     const storageRef = ref(
       storage,
