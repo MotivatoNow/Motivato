@@ -24,8 +24,9 @@ import logo from "../../assets/images/Icon.png";
 import mobileLogo from "../../assets/images/Logo_PNG.png";
 import Search from "../Search/Search";
 import "../../App.css";
-import { createNotification } from "../../hooks/useLoadNotifications";
+import { clearNotifications, createNotification, loadNotifications } from "../../hooks/useLoadNotifications";
 import { handleAccept, handleReject, loadFollowerRequest } from "../../hooks/useLoadFollowerRequest";
+import { checkVerification } from "../../hooks/useLoadUsers";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ const NavBar = () => {
   
   // Toggle dropdown
   const toggleDropdown = () => {
-    if (toggleDropdown) clearNotifications();
+    if (toggleDropdown) clearNotifications(currentUser,setNotifications);
     setDropdownOpen(!dropdownOpen);
     if (dropdownOpen2) setDropdownOpen2(!dropdownOpen2);
   };
@@ -73,19 +74,6 @@ const NavBar = () => {
   const toggleDropdown2 = () => {
     setDropdownOpen2(!dropdownOpen2);
     if (dropdownOpen) setDropdownOpen(!dropdownOpen);
-  };
-  const clearNotifications = async () => {
-    try {
-      const q = query(
-        collection(db, "Notifications"),
-        where("postUser", "==", currentUser.uid)
-      );
-
-      setNotifications([]); //Clear the notification in the local state
-      console.log("Notifications cleared!");
-    } catch (error) {
-      console.error("Error clearing notifications:", error);
-    }
   };
 
   const handleNotificationClick = () => {
@@ -108,51 +96,9 @@ const NavBar = () => {
   //useEffect
   //**useEffect 1 for check verification if the user have an access and got verified.
   useEffect(() => {
-    const checkVerification = async () => {
-      if (currentUser) {
-        const userDoc = await getDoc(doc(db, "Users", currentUser.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setIsVerified(userData.isVerified);
-        }
-      }
-    };
-
-    checkVerification();
-  }, [currentUser]);
-
-  //**useEffect 2 for friend Request
-  useEffect(() => {
-    if (currentUser) {
-      loadFollowerRequest(currentUser,setFollowerRequests)
-    }
-  }, [currentUser]);
-
-  //useEffect 3 for Notification
-  useEffect(() => {
-    if (currentUser) {
-      const q = query(
-        collection(db, "Notifications"),
-        where("postUser", "==", currentUser.uid)
-      );
-
-      const unsubscribe = onSnapshot(q, (docSnapshot) => {
-        const allNotifications = docSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setNotifications(allNotifications);
-
-        // עדכון מספר ההתראות שלא נקראו (לדוגמה: אם כל התראות חדשות)
-        const unread = allNotifications.filter(
-          (notification) => !notification.read
-        ).length;
-
-        setUnreadCount(unread);
-      });
-
-      return () => unsubscribe();
-    }
+    checkVerification(currentUser,setIsVerified);
+    loadNotifications(currentUser,setNotifications,setUnreadCount)
+    loadFollowerRequest(currentUser,setFollowerRequests)
   }, [currentUser]);
 
   //useEffect 4 for conversations
@@ -196,57 +142,6 @@ const NavBar = () => {
     fetchUnreadMessage();
   }, [currentUser]);
 
-  //*useEffect 5 for User
-  useEffect(() => {
-    if (currentUser) {
-      const singleQuery = query(
-        collection(db, "Notifications"),
-        where("postUser", "==", currentUser.uid)
-      );
-
-      const unsubscribe = onSnapshot(singleQuery, async (response) => {
-        const notificationsData = [];
-        for (const docN of response.docs) {
-          const notificationData = docN.data();
-          let userDoc;
-          if (
-            notificationData.type === "comment" &&
-            notificationData.postUser === currentUser.uid
-          ) {
-            userDoc = await getDoc(
-              doc(db, "Users", notificationData.commentId)
-            );
-          } else if (
-            notificationData.type === "like" &&
-            notificationData.postUser === currentUser.uid
-          ) {
-            userDoc = await getDoc(doc(db, "Users", notificationData.likeId));
-          } else if (notificationData.type === "new follower") {
-            userDoc = await getDoc(
-              doc(db, "Users", notificationData.newFollowerId)
-            );
-          } else {
-            userDoc = await getDoc(doc(db, "Users", notificationData.user));
-          }
-          const userName = userDoc.exists()
-            ? `${userDoc.data().firstName} ${userDoc.data().lastName}`
-            : "Unknown User";
-          const userProfilePicture = userDoc.exists()
-            ? userDoc.data().profilePicture
-            : "defaultProfilePictureURL";
-
-          notificationsData.push({
-            id: docN.id,
-            ...notificationData,
-            userName,
-            userProfilePicture,
-          });
-        }
-        setNotifications(notificationsData);
-      });
-      return () => unsubscribe();
-    }
-  }, [currentUser]);
 
   //End of useEffect
 

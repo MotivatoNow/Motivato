@@ -27,31 +27,61 @@ export const loadNotifications = (
   setNotifications,
   setUnreadCount
 ) => {
-  const q = query(
-    notificationCollect,
-    where("postUser", "==", currentUser.uid)
-  );
+    if (currentUser) {
+      const singleQuery = query(
+        collection(db, "Notifications"),
+        where("postUser", "==", currentUser.uid)
+      );
 
-  return onSnapshot(q, async (snapshot) => {
-    const notifications = await Promise.all(
-      snapshot.docs.map(async (docSnap) => {
-        const data = docSnap.data();
-        const userDoc = await getDoc(doc(db, "Users", data.user || data.commentId || data.likeId || data.newFollowerId));
-        
-        return {
-          id: docSnap.id,
-          ...data,
-          userName: userDoc.exists() ? userDoc.data().userName : "Unknown User",
-          userProfilePicture: userDoc.exists() ? userDoc.data().profilePicture : "defaultProfilePictureURL",
-        };
-      })
-    );
+      const unsubscribe = onSnapshot(singleQuery, async (response) => {
+        const notificationsData = [];
+        for (const docN of response.docs) {
+          const notificationData = docN.data();
+          let userDoc;
 
-    setNotifications(notifications);
-    setUnreadCount(notifications.filter((notif) => !notif.read).length);
-  });
+          // Traite les différents types de notifications
+          if (
+            notificationData.type === "comment" &&
+            notificationData.postUser === currentUser.uid
+          ) {
+            userDoc = await getDoc(
+              doc(db, "Users", notificationData.commentId)
+            );
+          } else if (
+            notificationData.type === "like" &&
+            notificationData.postUser === currentUser.uid
+          ) {
+            userDoc = await getDoc(doc(db, "Users", notificationData.likeId));
+          } else if (notificationData.type === "new follower") {
+            userDoc = await getDoc(
+              doc(db, "Users", notificationData.newFollowerId)
+            );
+          } else {
+            userDoc = await getDoc(doc(db, "Users", notificationData.user));
+          }
+
+          const userName = userDoc.exists()
+            ? `${userDoc.data().firstName} ${userDoc.data().lastName}`
+            : "Unknown User";
+          const userProfilePicture = userDoc.exists()
+            ? userDoc.data().profilePicture
+            : "defaultProfilePictureURL";
+
+          notificationsData.push({
+            id: docN.id,
+            ...notificationData,
+            userName,
+            userProfilePicture,
+          });
+        }
+
+        setNotifications(notificationsData);
+        setUnreadCount(notificationsData.filter((notif) => !notif.read).length);
+      });
+
+      return () => unsubscribe();
+    }
 };
-
 export const clearNotifications = async (currentUser, setNotifications) => {
   try {
     const q = query(
@@ -62,26 +92,5 @@ export const clearNotifications = async (currentUser, setNotifications) => {
     setNotifications([]); //Clear the notification in the local state
   } catch (error) {
     console.error("Error clearing notifications:", error);
-  }
-};
-export const handleNotificationClick = (
-  notifications,
-  setUnreadCount,
-  toggleDropdown2,
-  unreadCount
-) => {
-  toggleDropdown2(); // close or open the dropdown
-
-  if (unreadCount > 0) {
-    //update from unread to reade
-    notifications.forEach(async (notification) => {
-      if (!notification.read) {
-        const notificationRef = doc(db, "Notifications", notification.id);
-        await updateDoc(notificationRef, { read: true });
-      }
-    });
-
-    // reset the count for 0
-    setUnreadCount(0);
   }
 };
