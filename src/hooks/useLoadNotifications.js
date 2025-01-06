@@ -89,7 +89,7 @@ export const clearNotifications = async (currentUser, setNotifications) => {
       where("postUser", "==", currentUser.uid)
     );
 
-    setNotifications([]); //Clear the notification in the local state
+    
   } catch (error) {
     console.error("Error clearing notifications:", error);
   }

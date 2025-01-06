@@ -355,10 +355,10 @@ const StudentProfile = ({ user, currentUser }) => {
       <div className="min-h-screen w-full grid gap-2 grid-rows-[auto_1fr] md:grid-cols-[1fr_2fr] p-3">
         <div className="mt-5 max-h-[50vh] overflow-hidden w-full grid gap-2 grid-rows-[auto,auto]">
           {/* Followers/Friends Section */}
-          <section className="bg-white p-3 rounded-[5px] max-h-[30vh] overflow-hidden">
+          <section className="bg-white p-3 rounded-[5px] max-h-[40vh] overflow-hidden">
             <h3 className="font-semibold mb-3">עוקבים/חברים</h3>
             <div className="grid grid-cols-3 gap-1">
-              {followers.slice(0, 9).map((follower) => (
+              {followers.slice(0, 6).map((follower) => (
                 <Link to={`/profile/${follower.uid}`} key={follower.uid}>
                   <div
                     key={follower.id}
@@ -376,10 +376,12 @@ const StudentProfile = ({ user, currentUser }) => {
                 </Link>
               ))}
             </div>
-            {followers.length > 9 && (
+            {followers.length > 5 && (
+              <Link to={`/followers/${userData.uid}`}>
               <button className="mt-4 text-blue-600 hover:underline text-sm font-medium">
                 הצג עוד חברים
               </button>
+              </Link>
             )}
           </section>
           <section className="bg-white p-3 rounded-[5px] max-h-[50vh] overflow-hidden">

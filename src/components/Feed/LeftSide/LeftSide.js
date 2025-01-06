@@ -10,7 +10,7 @@ const LeftSide = () => {
   useEffect(() => {
     loadMissions(setAllMissions);
   }, []);
-const arrayMissions=shuffleArray(allMissions).slice(0,7)
+const arrayMissions=shuffleArray(allMissions).slice(0,5)
   return (
     <div className="rounded-lg p-2 mt-5 ml-4">
       <div className="rounded-lg bg-white p-2 flex justify-center flex-col gap-4 space-x-4">
@@ -53,7 +53,7 @@ const arrayMissions=shuffleArray(allMissions).slice(0,7)
                     )
                 )}
               </>
-            ) : (<p>Not Found a Mission.</p>)}
+            ) : (<p>אין משימות כרגע.</p>)}
           
             {allMissions.filter(
               (mission) => mission.user.uid !== currentUser.uid
