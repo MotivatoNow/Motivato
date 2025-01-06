@@ -3,7 +3,7 @@ import { storage, db } from "../../config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import { v4 as uid } from "uuid";
-const AddCategory = () => {
+const AddCategory = ({setCategories} ) => {
   const [nameCategory, setNameCategory] = useState("");
   const [descriptionCategory, setDescriptionCategory] = useState("");
   const [imageCategory, setImageCategory] = useState(null);
@@ -27,7 +27,7 @@ const AddCategory = () => {
 
       const categoryDocRef = doc(db, "Categories", nameCategory);
 
-      const categoryData = {
+      const newCategories = {
         categoryId: uid(),
         nameCategory: nameCategory,
         descriptionCategory: descriptionCategory,
@@ -35,8 +35,12 @@ const AddCategory = () => {
         count: 0,
       };
 
-      await setDoc(categoryDocRef, categoryData);
+      await setDoc(categoryDocRef, newCategories);
+      setCategories((prev) => [...prev, { ...newCategories, id: newCategories.categoryId }]);
       setSuccess("Category added successfully");
+      setNameCategory("");
+      setImageCategory("");
+      setDescriptionCategory("");
     } catch (error) {
       setError(error.message);
     }

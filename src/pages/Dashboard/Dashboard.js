@@ -5,6 +5,8 @@ import AddCategory from "../../features/AddCategory/AddCategory";
 import AddUniversity from "../../features/AddUniversity/AddUniversity";
 import { useAuth } from "../../context/AuthContext";
 import ModalCategories from "../../components/Modal/ModalAdminDashboard/ModalCategories/ModalCategories";
+import ModalUniversity from "../../components/Modal/ModalAdminDashboard/ModalUniversity/Modaluniversity";
+
 const Dashboard = () => {
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState("newRegistrations");
@@ -15,6 +17,9 @@ const Dashboard = () => {
   const [isOpenCategory, setIsOpenCategory] = useState(false);
   const [onCloseCategory, setOnCloseCategory] = useState(false);
   const [category,setCategory]=useState(null)
+  const [isOpenUniversity, setIsOpenUniversity] = useState(false);
+  const [onCloseUniversity, setOnCloseUniversity] = useState(false);
+  const [university,setUniversity]=useState(null)
   
   
   useEffect(() => {
@@ -56,6 +61,20 @@ const Dashboard = () => {
     setIsOpenCategory(true)
     setCategory(category)
   }
+  const handleDeleteCategory = async (id) => {
+    const categoryDoc = doc(db, "Categories", id);
+    await deleteDoc(categoryDoc);
+    setCategories(categories.filter((category) => category.id !== id));
+  };
+  const handleEditUniversity=async(university)=>{
+    setIsOpenUniversity(true)
+    setUniversity(university)
+  }
+  const handleDeleteUniversity = async (id) => {
+    const universityDoc = doc(db, "Universities", id);
+    await deleteDoc(universityDoc);
+    setUniversities(universities.filter((university) => university.id !== id));
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">טוען...</div>;
@@ -196,36 +215,55 @@ const Dashboard = () => {
         {activeTab === "addCategory" && (
           <div>
             <h2 className="text-lg font-medium mb-4">הוספת קטגוריות</h2>
-            <AddCategory />
+            <AddCategory setCategories={setCategories} />
             <h3 className="text-md font-medium mt-6 mb-2">קטגוריות קיימות:</h3>
             <ul className="list-disc pl-6">
             {categories.map((category) => (
-  <li key={category.id} className="flex justify-between items-center">
+  <li key={category.id} className="flex justify-between items-center mt-3">
     <span>{category.nameCategory}</span>
-    <button
+   <div className="flex gap-1">
+   <button
       onClick={() => handleEditCategory(category)}
       className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
     >
       Edit
     </button>
+    <button  className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600" onClick={()=> handleDeleteCategory(category.id)}>מחיקת קטגוריה</button>
+   </div>
   </li>
 ))}
             </ul>
           </div>
         )}
 
-        {activeTab === "addUniversity" && (
-          <div>
-            <h2 className="text-lg font-medium mb-4">הוספת אוניברסיטאות</h2>
-            <AddUniversity />
-            <h3 className="text-md font-medium mt-6 mb-2">אוניברסיטאות קיימות:</h3>
-            <ul className="list-disc pl-6">
-              {universities.map((university) => (
-                <li key={university.id}>{university.nameUniversity}</li>
-              ))}
-            </ul>
+{activeTab === "addUniversity" && (
+  <div>
+    <h2 className="text-lg font-medium mb-4">הוספת אוניברסיטאות</h2>
+    <AddUniversity setUniversities={setUniversities} />
+    <h3 className="text-md font-medium mt-6 mb-2">אוניברסיטאות קיימות:</h3>
+    <ul className="list-disc pl-6">
+      {universities.map((university) => (
+        <li key={university.id} className="flex justify-between items-center mt-3">
+          <span>{university.nameUniversity}</span>
+          <div className="flex gap-1">
+            <button
+              onClick={() => handleEditUniversity(university)}
+              className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDeleteUniversity(university.id)}
+              className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+            >
+              מחיקת מוסד לימודי
+            </button>
           </div>
-        )}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
 
         {activeTab === "statistics" && (
           <div>
@@ -246,6 +284,12 @@ const Dashboard = () => {
   onClose={() => setIsOpenCategory(false)}
   setCategories={setCategories}
   categories={category}
+/>
+<ModalUniversity
+  isOpen={isOpenUniversity}
+  onClose={() => setIsOpenUniversity(false)}
+  setUniversity={setUniversities}
+  universities={university}
 />
     </div>
   );
