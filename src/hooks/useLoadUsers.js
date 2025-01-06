@@ -2,7 +2,7 @@ import { getDoc, doc, getDocs, collection } from "firebase/firestore";
 import React from "react";
 import { db } from "../firebase";
 
-// פונקציה לערבוב מערך
+// Function to shuffle array
 export const shuffleArray = (array) => {
   return array.sort(() => Math.random() - 0.5);
 };

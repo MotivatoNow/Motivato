@@ -17,6 +17,7 @@ import ChatOverview  from "./pages/ChatOverview/ChatOverview"
 import Post from "./pages/Post/Post";
 import  MissionFeed from "./pages/MissionFeed/MissionFeed";
 import Mission from "./pages/Mission/Mission"
+import FollowersView from './pages/FollowersView/FollowersView';
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
                         <Route path="/chats" element={<ChatOverview />}/>
                         <Route path="/missions" element={<ProtectedRoute><MissionFeed/></ProtectedRoute>}/>
                         <Route path="/mission/:id" element={<Mission/>}/>
+                        <Route path="/followers/:id" element={<FollowersView/>}/>
                     </Routes>
                 </Router>
             </AuthProvider>

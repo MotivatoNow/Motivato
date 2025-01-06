@@ -20,9 +20,7 @@ import {
 import { db } from "../../../firebase";
 import { AiOutlineClose } from "react-icons/ai";
 import {
-  CiCircleQuestion,
   CiEdit,
-  CiLinkedin,
   CiLocationOn,
   CiMail,
   CiSettings,
@@ -32,7 +30,6 @@ import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
 import ModalEditSkills from "../../Modal/ModalEditProfile/ModalEditSkills/ModalEditSkills";
 import { message } from "antd";
-import { CgWebsite } from "react-icons/cg";
 import { FaGithubSquare, FaLinkedinIn } from "react-icons/fa";
 import { FaEarthEurope } from "react-icons/fa6";
 import ModalEditBio from "../../Modal/ModalEditProfile/ModalEditBio/ModalEditBio";
