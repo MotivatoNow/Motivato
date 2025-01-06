@@ -98,7 +98,7 @@ const NavBar = () => {
   useEffect(() => {
     checkVerification(currentUser,setIsVerified);
     loadNotifications(currentUser,setNotifications,setUnreadCount)
-    loadFollowerRequest(currentUser,setFollowerRequests)
+    if (currentUser) loadFollowerRequest(currentUser,setFollowerRequests)
   }, [currentUser]);
 
   //useEffect 4 for conversations

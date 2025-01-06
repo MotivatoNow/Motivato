@@ -3,7 +3,7 @@ import React from "react";
 import { db } from "../firebase";
 
 // פונקציה לערבוב מערך
-const shuffleArray = (array) => {
+export const shuffleArray = (array) => {
   return array.sort(() => Math.random() - 0.5);
 };
 

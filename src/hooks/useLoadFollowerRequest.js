@@ -73,7 +73,7 @@ export const newFriendNotification = async (newFriendId, acceptedUser) => {
   await createNotification(notification);
 };
 
-export const loadFollowerRequest = async (currentUser, setFollowerRequests) => {
+export const loadFollowerRequest = async (currentUser, setFollowerRequests) =>{
   const q = query(
     collection(db, "followerRequests"),
     where("receiverId", "==", currentUser.uid),
@@ -89,4 +89,4 @@ export const loadFollowerRequest = async (currentUser, setFollowerRequests) => {
   });
 
   return () => unsubscribe();
-};
+}
