@@ -6,7 +6,6 @@ import { message } from 'antd';
 import ModalMission from '../ModalMission/ModalMission';
 
 const ModalEditMission = ({isOpen,onClose,missions,user}) => {
-    console.log(user.uid)
     const [place,setPlace]=useState(missions.place)
     const[title,setTitle]=useState(missions.title)
     const [post, setPost] = useState(missions.post);
