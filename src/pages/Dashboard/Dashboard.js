@@ -6,12 +6,17 @@ import {
   updateDoc,
   doc,
   deleteDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import AddCategory from "../../features/AddCategory/AddCategory";
 import AddUniversity from "../../features/AddUniversity/AddUniversity";
 import { useAuth } from "../../context/AuthContext";
 import ModalCategories from "../../components/Modal/ModalAdminDashboard/ModalCategories/ModalCategories";
 import ModalUniversity from "../../components/Modal/ModalAdminDashboard/ModalUniversity/Modaluniversity";
+import { deleteComment } from "../../hooks/useContentActions";
+import { Link } from "react-router-dom";
+
+
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
@@ -21,30 +26,71 @@ const Dashboard = () => {
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isOpenCategory, setIsOpenCategory] = useState(false);
-  const [onCloseCategory, setOnCloseCategory] = useState(false);
   const [category, setCategory] = useState(null);
   const [isOpenUniversity, setIsOpenUniversity] = useState(false);
-  const [onCloseUniversity, setOnCloseUniversity] = useState(false);
   const [university, setUniversity] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [stats, setStats] = useState({
+    users: 0,
+    posts: 0,
+    likes: 0,
+    comments: 0,
+    missions: 0,
+    applications: 0,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
-      const usersSnapshot = await getDocs(collection(db, "Users"));
-      const categoriesSnapshot = await getDocs(collection(db, "Categories"));
-      const universitiesSnapshot = await getDocs(
-        collection(db, "Universities")
-      );
+      try {
+        const usersSnapshot = await getDocs(collection(db, "Users"));
+        const categoriesSnapshot = await getDocs(collection(db, "Categories"));
+        const universitiesSnapshot = await getDocs(
+          collection(db, "Universities")
+        );
+        const postsSnapshot = await getDocs(collection(db, "Posts"));
+        const likesSnapshot = await getDocs(collection(db, "Likes"));
+        const commentsSnapshot = await getDocs(collection(db, "Comments"));
+        const missionsSnapshot = await getDocs(collection(db, "Missions"));
+        const applicationsSnapshot = await getDocs(
+          collection(db, "Applications")
+        );
 
-      setUsers(
-        usersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      );
-      setCategories(
-        categoriesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      );
-      setUniversities(
-        universitiesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      );
-      setLoading(false);
+        setUsers(
+          usersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+        setCategories(
+          categoriesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+        setUniversities(
+          universitiesSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+        );
+        const unsubscribe = onSnapshot(collection(db, "Comments"), (snapshot) => {
+          const updatedComments = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setComments(updatedComments);
+        });
+    
+
+        setStats({
+          users: usersSnapshot.size,
+          posts: postsSnapshot.size,
+          likes: likesSnapshot.size,
+          comments: commentsSnapshot.size,
+          missions: missionsSnapshot.size,
+          applications: applicationsSnapshot.size,
+        });
+
+        setLoading(false);
+        return ()=>unsubscribe
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données :", error);
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -306,16 +352,72 @@ const Dashboard = () => {
         {activeTab === "statistics" && (
           <div>
             <h2 className="text-lg font-medium mb-4">סטטיסטיקות</h2>
-            <p>כאן יוצגו נתונים סטטיסטיים.</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-blue-100 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold">Utilisateurs</h3>
+                <p>{stats.users}</p>
+              </div>
+              <div className="bg-green-100 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold">Publications</h3>
+                <p>{stats.posts}</p>
+              </div>
+              <div className="bg-red-100 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold">Likes</h3>
+                <p>{stats.likes}</p>
+              </div>
+              <div className="bg-yellow-100 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold">Commentaires</h3>
+                <p>{stats.comments}</p>
+              </div>
+              <div className="bg-purple-100 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold">Missions</h3>
+                <p>{stats.missions}</p>
+              </div>
+              <div className="bg-teal-100 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold">Candidatures</h3>
+                <p>{stats.applications}</p>
+              </div>
+            </div>
           </div>
         )}
 
-        {activeTab === "deleteComments" && (
-          <div>
-            <h2 className="text-lg font-medium mb-4">מחיקת תגובות</h2>
-            <p>כאן תוכל למחוק תגובות.</p>
-          </div>
-        )}
+{activeTab === "deleteComments" && (
+  <div>
+    <h2 className="text-lg font-medium mb-4">מחיקת תגובות</h2>
+    <table className="w-full border border-gray-200 rounded-lg">
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="p-2 text-left">Auteur</th>
+          <th className="p-2 text-left">Commentaire</th>
+          <th className="p-2 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {comments.map((comment) => (
+          <tr key={comment.id} className="border-t">
+            <Link to={`/post/${comment.postId}`} className="hover:text-blue-600"><td className="p-2">{comment.commentUserName}</td>
+            <td className="p-2">{comment.comment}</td>
+            <td className="p-2">
+              {comment.commentImage && (
+                <img src={comment.commentImage} alt="Commentaire" className="w-20 h-20 object-cover rounded-md" />
+              )}
+            </td>
+            </Link>
+            <td className="p-2">
+              <button
+                onClick={() => deleteComment(comment.id)}
+                className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+              >
+                מחק
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
       </div>
       <ModalCategories
         isOpen={isOpenCategory}

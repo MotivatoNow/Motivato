@@ -93,7 +93,6 @@ const CommentButton = ({ posts }) => {
       };
       await addDoc(commentsRef, object);
       if (posts.user.uid !== currentUser.uid) {
-        
         const notification = {
           postId: postId,
           commentId: currentUser.uid,
@@ -101,7 +100,7 @@ const CommentButton = ({ posts }) => {
           postUser: posts.user.uid,
           commentName: currentUser.userName,
         };
-        await createNotification(notification)
+        await createNotification(notification);
       }
     } catch (error) {
       console.error(error);
@@ -138,7 +137,6 @@ const CommentButton = ({ posts }) => {
     setCommentImage(null);
   };
 
-  
   const uploadCommentImage = async (file) => {
     const storageRef = ref(
       storage,
@@ -221,34 +219,18 @@ const CommentButton = ({ posts }) => {
             </div>
           )}
           {/* כפתור שליחת תגובה */}
-          {commentImage ? (
+
+          {commentImage || comment ? (
             <>
-              {comment && (
-                <>
-                {/*Comment Image and Comment */}
-                  <button
-                    className="absolute bottom-2 left-2 bg-[#3E54D3] text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
-                    onClick={addComment}
-                  >
-                    שלח
-                  </button>
-                </>
-              )}
+              {/* Afficher le bouton si une image ou un texte est présent */}
+              <button
+                className="absolute bottom-2 left-2 bg-[#3E54D3] text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
+                onClick={addComment}
+              >
+                שלח
+              </button>
             </>
-          ) : (
-            <>
-              {comment && (
-                <>{/*Comment and no Comment Image */}
-                  <button
-                    className="absolute bottom-2 left-2 bg-[#3E54D3] text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
-                    onClick={addComment}
-                  >
-                    שלח
-                  </button>
-                </>
-              )}
-            </>
-          )}
+          ) : null}
         </div>
 
         {/*All comments */}
@@ -304,9 +286,7 @@ const CommentButton = ({ posts }) => {
                           />
                         </label>
                         {comment.commentImage && (
-                          
                           <div className="relative mt-2">
-                            
                             <img
                               src={comment.commentImage}
                               alt="Comment content"
@@ -320,7 +300,7 @@ const CommentButton = ({ posts }) => {
                               className="absolute top-2 right-2 cursor-pointer "
                             />
                           </div>
-                        ) }
+                        )}
 
                         <div className="flex space-x-2">
                           <button
@@ -406,24 +386,22 @@ const CommentButton = ({ posts }) => {
                       />
                     </div>
                   )}
-                  {currentUser.userType==="Admin" && (
+                  {currentUser.userType === "Admin" && (
                     <div className="flex space-x-2">
                       <MdDeleteOutline
                         className="cursor-pointer"
                         onClick={() => deleteComment(comment.id)}
                         size={20}
                       />
-                      
                     </div>
                   )}
-                  {currentUser.uid===posts.user.uid && (
+                  {currentUser.uid === posts.user.uid && (
                     <div className="flex space-x-2">
                       <MdDeleteOutline
                         className="cursor-pointer"
                         onClick={() => deleteComment(comment.id)}
                         size={20}
                       />
-                      
                     </div>
                   )}
                 </div>
