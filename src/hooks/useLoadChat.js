@@ -64,9 +64,12 @@ export const loadConversations = async (
   conversationId,
   setMessages,
   markMessagesAsRead,
-  currentUser
+  currentUser,
+  setParticipants
 ) => {
   if (!conversationId) return;
+
+  const conversationRef = doc(db, "Conversations", conversationId);
 
   const messagesRef = collection(
     db,
@@ -79,6 +82,7 @@ export const loadConversations = async (
       id: doc.id,
       ...doc.data(),
     }));
+
     setMessages(fetchedMessages);
     markMessagesAsRead(fetchedMessages,conversationId,currentUser);
   });
@@ -120,19 +124,44 @@ export const sendMessage = async (conversationId,newMessage,currentUser,setNewMe
         setNewMessage('');
     };
 
-export const fetchConversationData=async(conversationId,unsubscribe,setMessages,currentUser,setParticipantsData)=>{
-    if (!conversationId) return;
-          unsubscribe=await loadConversations(conversationId, setMessages, markMessagesAsRead,currentUser);
-          const conversationDoc = await getDoc(doc(db, "Conversations", conversationId));
-          const participants = conversationDoc.data().participants;
-    
-          const usersData = {};
-          for (const participantId of participants) {
-            const userRef = doc(db, "Users", participantId);
-            const userSnapshot = await getDoc(userRef);
-            if (userSnapshot.exists()) {
-              usersData[participantId] = userSnapshot.data();
-            }
-          }
-          setParticipantsData(usersData)
-}
+export const fetchConversationData = async (
+  conversationId,
+  unsubscribe,
+  setMessages,
+  currentUser,
+  setParticipants
+) => {
+  if (!conversationId) return;
+
+  try {
+    unsubscribe = await loadConversations(
+      conversationId,
+      setMessages,
+      markMessagesAsRead,
+      currentUser
+    );
+
+    const conversationDoc = await getDoc(doc(db, "Conversations", conversationId));
+    if (!conversationDoc.exists()) {
+      console.error("Conversation not found.");
+      setParticipants([]); 
+      return;
+    }
+
+    const participants = conversationDoc.data().participants;
+
+    const usersData = [];
+    for (const participantId of participants) {
+      const userRef = doc(db, "Users", participantId);
+      const userSnapshot = await getDoc(userRef);
+      if (userSnapshot.exists()) {
+        usersData.push({ id: participantId, ...userSnapshot.data() });
+      }
+    }
+
+    setParticipants(usersData);
+  } catch (error) {
+    console.error("Error fetching conversation data: ", error);
+    setParticipants([]);
+  }
+};
