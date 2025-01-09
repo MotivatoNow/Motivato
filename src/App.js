@@ -30,15 +30,19 @@ function App() {
                         <Route path="/" element={<HomePage/>}/>
                         <Route path="/login" element={<LoginPage/>}/>
                         <Route path="/register" element={<RegisterPage/>}/>
-                        <Route path="/profile/:id" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
-                        <Route path="/admin-dashboard" element={<Dashboard/>}/>
                         <Route path="/reset" element={<ForgetPassword/>}/>
+                        {/*******/}
+                        <Route path="/admin-dashboard" element={<Dashboard/>}/>
+                        {/*******/}
                         <Route path="/feed" element={<ProtectedRoute><Feed/></ProtectedRoute>}/>
-                        <Route path="/post/:id" element={<Post/>}/>
                         <Route path="/chats" element={<ChatOverview />}/>
                         <Route path="/missions" element={<ProtectedRoute><MissionFeed/></ProtectedRoute>}/>
+                        {/*******/}
+                        <Route path="/profile/:id" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
+                        <Route path="/post/:id" element={<Post/>}/>
                         <Route path="/mission/:id" element={<Mission/>}/>
                         <Route path="/followers/:id" element={<FollowersView/>}/>
+                        
                     </Routes>
                 </Router>
             </AuthProvider>

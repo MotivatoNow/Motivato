@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { auth, db, storage } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
+import {  doc, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import profilePic from "../../assets/images/profilepicture.png";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
+import { loadCategories } from "../../hooks/useLoadCategories";
+import { loadUniversities } from "../../hooks/useLoadUniversities";
 
 const Register = () => {
   const [userType, setUserType] = useState("");
@@ -90,17 +92,8 @@ const Register = () => {
   };
   
   useEffect(()=>{
-    onSnapshot(collection(db,"Categories"),(response)=>{
-      setCategories(
-        response.docs.map((doc) => ({ id: doc.id, ...doc.data() })
-      ))
-    })
- 
-    onSnapshot(collection(db,"Universities"),(response)=>{
-      setUniversities(
-        response.docs.map((doc) => ({ id: doc.id, ...doc.data() })
-      ))
-    })
+    loadCategories(setCategories)
+    loadUniversities(setUniversities)
   })
 
   return (
