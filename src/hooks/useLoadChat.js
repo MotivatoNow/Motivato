@@ -126,7 +126,6 @@ export const sendMessage = async (conversationId,newMessage,currentUser,setNewMe
 
 export const fetchConversationData = async (
   conversationId,
-  unsubscribe,
   setMessages,
   currentUser,
   setParticipants
@@ -134,7 +133,7 @@ export const fetchConversationData = async (
   if (!conversationId) return;
 
   try {
-    unsubscribe = await loadConversations(
+     await loadConversations(
       conversationId,
       setMessages,
       markMessagesAsRead,
