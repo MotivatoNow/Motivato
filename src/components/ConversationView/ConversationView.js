@@ -1,18 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  getDoc,
-  addDoc,
-  updateDoc,
-  orderBy,
-  onSnapshot,
-} from "firebase/firestore";
-import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
+import { fetchConversationData, sendMessage} from "../../hooks/useLoadChat";
 
 const ConversationView = ({ conversationId }) => {
   const [messages, setMessages] = useState([]);
@@ -20,82 +8,11 @@ const ConversationView = ({ conversationId }) => {
   const [newMessage, setNewMessage] = useState("");
   const { currentUser } = useAuth();
 
-  
-  const markMessagesAsRead = async () => {
-    const messageRef = collection(db, "Conversations", conversationId, "messages");
-    const q = query(messageRef, where("isRead", "==", false));
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach(async (docSnapshot) => {
-      const messageRef = doc(db, "Conversations", conversationId, "messages", docSnapshot.id);
-      await updateDoc(messageRef, { isRead: true });
-    });
-  };
 
   useEffect(() => {
-    const fetchMessagesAndParticipants = async () => {
-      
-      const messagesQuery = query(
-        collection(db, "Conversations", conversationId, "messages"),
-        orderBy("timestamp", "asc")
-      );
-
-      const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
-        const messagesData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setMessages(messagesData);
-      });
-
-      const conversationDoc = await getDoc(
-        doc(db, "Conversations", conversationId)
-      );
-      const participants = conversationDoc.data().participants;
-
-      const usersData = {};
-      for (const participantId of participants) {
-        const userRef = doc(db, "Users", participantId);
-        const userSnapshot = await getDoc(userRef);
-        if (userSnapshot.exists()) {
-          usersData[participantId] = userSnapshot.data();
-        }
-      }
-      setParticipantsData(usersData);
-
-      markMessagesAsRead();
-
-      return () => unsubscribe();
-    };
-
-    fetchMessagesAndParticipants();
+    let unsubscribe;
+    fetchConversationData(conversationId,unsubscribe,setMessages,currentUser,setParticipantsData)
   }, [conversationId]);
-
-  const sendMessage = async () => {
-    if (newMessage.trim() === "") return;
-
-    try {
-      const messageRef = collection(
-        db,
-        `Conversations/${conversationId}/messages`
-      );
-      await addDoc(messageRef, {
-        author: currentUser.uid,
-        content: newMessage,
-        timestamp: new Date(),
-        type: "text",
-        isRead: false, 
-      });
-
-      await updateDoc(doc(db, "Conversations", conversationId), {
-        lastMessage: newMessage,
-        lastMessageTimestamp: new Date(),
-      });
-    } catch (error) {
-      console.error("Error sending message: ", error);
-    }
-    setNewMessage("");
-  };
 
   return (
     <div className="p-4">
@@ -137,7 +54,7 @@ const ConversationView = ({ conversationId }) => {
       />
       <button
         className="bg-blue-500 text-white w-full py-2 rounded-lg"
-        onClick={sendMessage}
+        onClick={sendMessage(conversationId,newMessage,currentUser,setNewMessage)}
       >
         Send
       </button>

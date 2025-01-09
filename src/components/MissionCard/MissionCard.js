@@ -21,6 +21,10 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { loadUser } from "../../hooks/useLoadUsers";
 import { createNotification } from "../../hooks/useLoadNotifications";
+import {
+  createConversation,
+  getExistingConversation,
+} from "../../hooks/useLoadChat";
 
 const MissionCard = ({ missions, user }) => {
   const { currentUser } = useAuth();
@@ -33,38 +37,13 @@ const MissionCard = ({ missions, user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
 
-  // Conversation creation logic
-  const createConversation = async (participants) => {
-    const conversationRef = await addDoc(collection(db, "Conversations"), {
-      participants: [participants[0], participants[1]],
-      lastMessage: "",
-      lastMessageTimestamp: new Date(),
-      isGroup: false,
-    });
-
-    return conversationRef.id;
-  };
-
-  const getExistingConversation = async (participants) => {
-    const q = query(
-      collection(db, "Conversations"),
-      where("participants", "array-contains", currentUser.uid)
-    );
-    const querySnapshot = await getDocs(q);
-    const conversation = querySnapshot.docs.find((doc) => {
-      const conversationParticipants = doc.data().participants;
-      return (
-        conversationParticipants.includes(participants[0]) &&
-        conversationParticipants.includes(participants[1])
-      );
-    });
-    return conversation ? conversation.id : null;
-  };
-
   const handleChatButtonClick = async () => {
     const participants = [currentUser.uid, missions.user.uid];
 
-    const existingConversationId = await getExistingConversation(participants);
+    const existingConversationId = await getExistingConversation(
+      participants,
+      currentUser
+    );
     console.log(existingConversationId);
     if (existingConversationId) {
       setActiveChatUser(existingConversationId);
@@ -252,7 +231,13 @@ const MissionCard = ({ missions, user }) => {
           {currentUser.uid !== missions.user.uid && (
             <>
               <button
-                onClick={() => handleChatButtonClick(missions.user.uid)}
+                onClick={() =>
+                  handleChatButtonClick(
+                    currentUser,
+                    missions.user,
+                    setActiveChatUser
+                  )
+                }
                 className="px-4 py-2 rounded"
               >
                 Send a message
