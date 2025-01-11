@@ -51,7 +51,6 @@ export const handleChatButtonClick = async (
     participants,
     currentUser
   );
-  console.log(existingConversationId);
   if (existingConversationId) {
     setActiveChatUser(existingConversationId);
   } else {
@@ -65,7 +64,6 @@ export const loadConversations = async (
   setMessages,
   markMessagesAsRead,
   currentUser,
-  setParticipants
 ) => {
   if (!conversationId) return;
 
@@ -137,7 +135,7 @@ export const fetchConversationData = async (
       conversationId,
       setMessages,
       markMessagesAsRead,
-      currentUser
+      currentUser,
     );
 
     const conversationDoc = await getDoc(doc(db, "Conversations", conversationId));

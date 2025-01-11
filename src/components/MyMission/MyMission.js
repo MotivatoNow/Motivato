@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalMission from "../Modal/ModalMission/ModalMission";
 import { useAuth } from "../../context/AuthContext";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { createMission } from "../../hooks/useLoadMissions";
 import { createNotification } from "../../hooks/useLoadNotifications";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase";
 
 const MyMission = () => {
   const { currentUser } = useAuth();
@@ -54,6 +56,14 @@ const MyMission = () => {
       console.error("Error posting mission or creating notification: ", error);
     }
   };
+  useEffect(() => {
+      onSnapshot(collection(db, "Categories"), (response) => {
+        setEducations(
+          response.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+      });
+    });
+  
 
   return (
     <div className="post-status-main">

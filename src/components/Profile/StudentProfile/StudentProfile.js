@@ -19,12 +19,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { AiOutlineClose } from "react-icons/ai";
-import {
-  CiEdit,
-  CiLocationOn,
-  CiMail,
-  CiSettings,
-} from "react-icons/ci";
+import { CiEdit, CiLocationOn, CiMail, CiSettings } from "react-icons/ci";
 import { loadData, loadFollowers, loadUser } from "../../../hooks/useLoadUsers";
 import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
@@ -34,6 +29,7 @@ import { FaGithubSquare, FaLinkedinIn } from "react-icons/fa";
 import { FaEarthEurope } from "react-icons/fa6";
 import ModalEditBio from "../../Modal/ModalEditProfile/ModalEditBio/ModalEditBio";
 import { loadPostByID } from "../../../hooks/useLoadPosts";
+import { handleChatButtonClick } from "../../../hooks/useLoadChat";
 
 const StudentProfile = ({ user, currentUser }) => {
   const [userData, setUserData] = useState(user);
@@ -81,18 +77,6 @@ const StudentProfile = ({ user, currentUser }) => {
     return null;
   };
 
-  const handleChatButtonClick = async () => {
-    const participants = [currentUser.uid, user.uid];
-
-    const existingConversationId = await getExistingConversation(participants);
-
-    if (existingConversationId) {
-      setActiveChatUser(existingConversationId);
-    } else {
-      const conversationId = await createConversation(participants);
-      setActiveChatUser(conversationId);
-    }
-  };
 
   // useEffect
   useEffect(() => {
@@ -211,7 +195,7 @@ const StudentProfile = ({ user, currentUser }) => {
               <>
                 <FriendButton user={user} />
                 <ChatButton
-                  onClick={() => handleChatButtonClick(userData.uid)}
+                  onClick={() => handleChatButtonClick(currentUser,user,setActiveChatUser)}
                 />
               </>
             )}
@@ -291,23 +275,29 @@ const StudentProfile = ({ user, currentUser }) => {
 
             {/* About */}
             <div className="break-words max-w-full text-gray-800">
-  <h3 className="font-semibold flex items-center">
-    אודות
-    {currentUser.uid === userData.uid && (
-      <button onClick={() => setModalOpenEditBio(true)} className="ml-2">
-        <CiEdit size={24} />
-      </button>
-    )}
-  </h3>
-  {userData.bio ? (
-    <p dangerouslySetInnerHTML={{ __html: userData.bio.replace(/\n/g, '<br>') }} />
-  ) : currentUser.uid === userData.uid ? (
-    <p className="text-gray-500">לא עדכנת את האודות עדיין</p>
-  ) : (
-    <p className="text-gray-500">המשתמש לא עדכן את האודות עדיין</p>
-  )}
-</div>
-
+              <h3 className="font-semibold flex items-center">
+                אודות
+                {currentUser.uid === userData.uid && (
+                  <button
+                    onClick={() => setModalOpenEditBio(true)}
+                    className="ml-2"
+                  >
+                    <CiEdit size={24} />
+                  </button>
+                )}
+              </h3>
+              {userData.bio ? (
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: userData.bio.replace(/\n/g, "<br>"),
+                  }}
+                />
+              ) : currentUser.uid === userData.uid ? (
+                <p className="text-gray-500">לא עדכנת את האודות עדיין</p>
+              ) : (
+                <p className="text-gray-500">המשתמש לא עדכן את האודות עדיין</p>
+              )}
+            </div>
 
             {/* Skills */}
             <div>
@@ -375,9 +365,9 @@ const StudentProfile = ({ user, currentUser }) => {
             </div>
             {followers.length > 5 && (
               <Link to={`/followers/${userData.uid}`}>
-              <button className="mt-4 text-blue-600 hover:underline text-sm font-medium">
-                הצג עוד חברים
-              </button>
+                <button className="mt-4 text-blue-600 hover:underline text-sm font-medium">
+                  הצג עוד חברים
+                </button>
               </Link>
             )}
           </section>

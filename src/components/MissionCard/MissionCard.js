@@ -223,6 +223,9 @@ const MissionCard = ({ missions, user }) => {
         <div className="mt-4">
           <h2 className="text-xl font-bold text-gray-800">{missions.title}</h2>
           <p className="text-gray-600 mt-2">{missions.post}</p>
+          <div>
+            {missions.education}
+          </div>
         </div>
 
         <hr className="my-4" />
