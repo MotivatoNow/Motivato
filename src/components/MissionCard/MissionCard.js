@@ -12,6 +12,7 @@ import {
   handleApply,
   handleFileChange,
 } from "../../hooks/useApply";
+import { Link } from "react-router-dom";
 
 const MissionCard = ({ missions, user }) => {
   const { currentUser } = useAuth();
@@ -57,23 +58,25 @@ const MissionCard = ({ missions, user }) => {
   return (
     <>
       <div className="bg-white shadow-lg rounded-lg p-6 mb-6 max-w-3xl mx-auto transition hover:shadow-xl">
-        
         <div className="flex items-center justify-between">
-          
           <div className="flex items-center gap-4">
-            <img
-              src={userData.profilePicture || "defaultProfilePictureURL"}
-              alt="Profile"
-              className="w-14 h-14 rounded-full border border-gray-300"
-            />
+            <Link to={`/profile/${userData.uid}`}>
+              <img
+                src={userData.profilePicture || "defaultProfilePictureURL"}
+                alt="Profile"
+                className="w-14 h-14 rounded-full border border-gray-300"
+              />
+            </Link>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">
-                {userData.userName || "Unknown User"}
-              </h3>
+              <Link to={`/profile/${userData.uid}`}>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {userData.userName || "Unknown User"}
+                </h3>
+              </Link>
               <p className="text-sm text-gray-500">{missions.timeStamp}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 text-gray-600">
             {currentUser.uid === userData.uid && (
               <>
@@ -107,21 +110,18 @@ const MissionCard = ({ missions, user }) => {
           </div>
         </div>
 
-        
         <div className="mt-6">
           <h2 className="text-xl font-bold text-gray-800">{missions.title}</h2>
-          <p className="text-gray-700 mt-3 leading-relaxed">{missions.post}</p>
           {missions.education && (
             <p className="mt-3 text-sm text-gray-600 italic">
               {missions.education}
             </p>
           )}
+          <p className="text-gray-700 mt-3 leading-relaxed">{missions.post}</p>
         </div>
 
-        
         <hr className="my-6 border-gray-200" />
 
-        
         <div className="flex gap-4">
           {currentUser.uid !== missions.user.uid && (
             <>
@@ -147,7 +147,6 @@ const MissionCard = ({ missions, user }) => {
           )}
         </div>
 
-        
         {apply && (
           <div className="mt-6">
             <label
@@ -193,7 +192,6 @@ const MissionCard = ({ missions, user }) => {
           </div>
         )}
 
-        
         {currentUser.uid === userData.uid && applications.length > 0 && (
           <div className="mt-8">
             <button
