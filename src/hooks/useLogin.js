@@ -4,7 +4,6 @@ import { db } from "../firebase";
 import { message } from "antd";
 
 export const handleLogin = async (e,auth,email,password,setError,navigate) => {
-    e.preventDefault();
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);

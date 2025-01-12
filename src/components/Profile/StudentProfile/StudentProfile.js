@@ -75,7 +75,6 @@ const StudentProfile = ({ user, currentUser }) => {
     return null;
   };
 
-
   // useEffect
   useEffect(() => {
     const fetchData = async () => {
@@ -193,7 +192,9 @@ const StudentProfile = ({ user, currentUser }) => {
               <>
                 <FriendButton user={user} />
                 <ChatButton
-                  onClick={() => handleChatButtonClick(currentUser,user,setActiveChatUser)}
+                  onClick={() =>
+                    handleChatButtonClick(currentUser, user, setActiveChatUser)
+                  }
                 />
               </>
             )}
@@ -397,7 +398,13 @@ const StudentProfile = ({ user, currentUser }) => {
             currentUser.uid === user.uid ? "" : "mt-2"
           } flex justify-start`}
         >
-          <div className="">
+          <div
+            className="bg-white overflow-hidden shadow-sm rounded-lg p-6 mb-6 mx-auto mt-3"
+            style={{
+              width: "940px", // רוחב רגיל למסכים גדולים
+              maxWidth: "100%", // מתאים למסכים קטנים
+            }}
+          >
             {currentUser.uid === user.uid && (
               <>
                 <MyPost />
