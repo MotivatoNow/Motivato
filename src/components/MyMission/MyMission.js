@@ -42,17 +42,6 @@ const MyMission = () => {
       setType("");
       setEducation("");
 
-      const notification = {
-        type: "new Mission",
-        user: currentUser.uid,
-        missionTitle: title,
-        missionId: missionRef.id,
-        postUser: currentUser.uid,
-        postUserName: currentUser.userName,
-        timeStamp:getCurrentTimeStamp("LLL")
-      };
-
-      await createNotification(notification);
     } catch (error) {
       console.error("Error posting mission or creating notification: ", error);
     }

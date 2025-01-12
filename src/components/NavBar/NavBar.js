@@ -111,7 +111,6 @@ const NavBar = () => {
         let totalUnread = 0;
 
         snapshot.docs.forEach((docSnapshot) => {
-          const conversation = docSnapshot.data();
           const messagesRef = collection(
             db,
             `Conversations/${docSnapshot.id}/messages`
