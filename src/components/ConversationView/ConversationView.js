@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
+import { fetchMessagesAndParticipants, markMessagesAsRead } from "../../hooks/useLoadChat";
 
 const ConversationView = ({ conversationId }) => {
   const [messages, setMessages] = useState([]);
@@ -21,54 +22,10 @@ const ConversationView = ({ conversationId }) => {
   const { currentUser } = useAuth();
 
   
-  const markMessagesAsRead = async () => {
-    const messageRef = collection(db, "Conversations", conversationId, "messages");
-    const q = query(messageRef, where("isRead", "==", false));
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach(async (docSnapshot) => {
-      const messageRef = doc(db, "Conversations", conversationId, "messages", docSnapshot.id);
-      await updateDoc(messageRef, { isRead: true });
-    });
-  };
-
+  
   useEffect(() => {
-    const fetchMessagesAndParticipants = async () => {
-      
-      const messagesQuery = query(
-        collection(db, "Conversations", conversationId, "messages"),
-        orderBy("timestamp", "asc")
-      );
-
-      const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
-        const messagesData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setMessages(messagesData);
-      });
-
-      const conversationDoc = await getDoc(
-        doc(db, "Conversations", conversationId)
-      );
-      const participants = conversationDoc.data().participants;
-
-      const usersData = {};
-      for (const participantId of participants) {
-        const userRef = doc(db, "Users", participantId);
-        const userSnapshot = await getDoc(userRef);
-        if (userSnapshot.exists()) {
-          usersData[participantId] = userSnapshot.data();
-        }
-      }
-      setParticipantsData(usersData);
-
-      markMessagesAsRead();
-
-      return () => unsubscribe();
-    };
-
-    fetchMessagesAndParticipants();
+    
+    fetchMessagesAndParticipants(conversationId,setMessages,setParticipantsData,markMessagesAsRead,currentUser);
   }, [conversationId]);
 
   const sendMessage = async () => {

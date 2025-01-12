@@ -15,10 +15,8 @@ const ChatPopup = ({ conversationId, closePopup }) => {
 
 
   useEffect(() => {
-    let unsubscribe
     fetchConversationData(
       conversationId,
-      unsubscribe,
       setMessages, 
       currentUser,
       setParticipants

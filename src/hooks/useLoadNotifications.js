@@ -14,7 +14,9 @@ import { db } from "../config/firebase";
 const notificationCollect = collection(db, "Notifications");
 export const createNotification = async (notification) => {
   try {
+    console.log(notification)
     const notificationRef = await addDoc(notificationCollect, notification);
+    console.
     return notificationRef;
   } catch (error) {
     console.error("Error adding notification:", error);

@@ -63,12 +63,11 @@ export const loadConversations = async (
   conversationId,
   setMessages,
   markMessagesAsRead,
-  currentUser,
+  currentUser
 ) => {
   if (!conversationId) return;
 
-  const conversationRef = doc(db, "Conversations", conversationId);
-
+  
   const messagesRef = collection(
     db,
     `Conversations/${conversationId}/messages`
@@ -82,45 +81,60 @@ export const loadConversations = async (
     }));
 
     setMessages(fetchedMessages);
-    markMessagesAsRead(fetchedMessages,conversationId,currentUser);
+    markMessagesAsRead(fetchedMessages, conversationId, currentUser);
   });
 
   return () => unsubscribe();
 };
 
-export  const markMessagesAsRead=async(fetchedMessages,conversationId,currentUser)=>{
+export const markMessagesAsRead = async (
+  fetchedMessages,
+  conversationId,
+  currentUser
+) => {
+  const unreadMessages = fetchedMessages.filter(
+    (message) => message.author !== currentUser.uid && !message.isRead
+  );
+  for (const message of unreadMessages) {
+    const messageRef = doc(
+      db,
+      `Conversations/${conversationId}/messages`,
+      message.id
+    );
+    updateDoc(messageRef, { isRead: true });
+  }
+};
 
-        const unreadMessages=fetchedMessages.filter((message)=>message.author!==currentUser.uid &&!message.isRead)
-        for(const message of unreadMessages){
-            const messageRef=doc(db,`Conversations/${conversationId}/messages`,message.id)
-            updateDoc(messageRef,{isRead:true})
-        }
-    }
+export const sendMessage = async (
+  conversationId,
+  newMessage,
+  currentUser,
+  setNewMessage
+) => {
+  if (newMessage.trim() === "") return;
 
-export const sendMessage = async (conversationId,newMessage,currentUser,setNewMessage) => {
-        if (newMessage.trim() === '') return;
+  try {
+    const messageRef = collection(
+      db,
+      `Conversations/${conversationId}/messages`
+    );
+    await addDoc(messageRef, {
+      author: currentUser.uid,
+      content: newMessage,
+      timestamp: new Date(),
+      type: "text",
+      isRead: false,
+    });
 
-        try {
-
-            const messageRef = collection(db, `Conversations/${conversationId}/messages`);
-            await addDoc(messageRef, {
-                author: currentUser.uid,
-                content: newMessage,
-                timestamp: new Date(),
-                type: 'text',
-                isRead:false
-            });
-
-            await updateDoc(doc(db, "Conversations", conversationId), {
-                lastMessage: newMessage,
-                lastMessageTimestamp: new Date(),
-            });
-
-        } catch (error) {
-            console.error("Error sending message: ", error);
-        }
-        setNewMessage('');
-    };
+    await updateDoc(doc(db, "Conversations", conversationId), {
+      lastMessage: newMessage,
+      lastMessageTimestamp: new Date(),
+    });
+  } catch (error) {
+    console.error("Error sending message: ", error);
+  }
+  setNewMessage("");
+};
 
 export const fetchConversationData = async (
   conversationId,
@@ -131,17 +145,19 @@ export const fetchConversationData = async (
   if (!conversationId) return;
 
   try {
-     await loadConversations(
+    await loadConversations(
       conversationId,
       setMessages,
       markMessagesAsRead,
-      currentUser,
+      currentUser
     );
 
-    const conversationDoc = await getDoc(doc(db, "Conversations", conversationId));
+    const conversationDoc = await getDoc(
+      doc(db, "Conversations", conversationId)
+    );
     if (!conversationDoc.exists()) {
       console.error("Conversation not found.");
-      setParticipants([]); 
+      setParticipants([]);
       return;
     }
 
@@ -161,4 +177,42 @@ export const fetchConversationData = async (
     console.error("Error fetching conversation data: ", error);
     setParticipants([]);
   }
+};
+export const fetchMessagesAndParticipants = async (
+  conversationId,
+  setMessages,
+  setParticipantsData,
+  markMessagesAsRead,currentUser
+) => {
+  const messagesQuery = query(
+    collection(db, "Conversations", conversationId, "messages"),
+    orderBy("timestamp", "asc")
+  );
+
+  const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+    const messagesData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setMessages(messagesData);
+    markMessagesAsRead(messagesData,conversationId,currentUser)
+  });
+
+  const conversationDoc = await getDoc(
+    doc(db, "Conversations", conversationId)
+  );
+  const participants = conversationDoc.data().participants;
+
+  const usersData = {};
+  for (const participantId of participants) {
+    const userRef = doc(db, "Users", participantId);
+    const userSnapshot = await getDoc(userRef);
+    if (userSnapshot.exists()) {
+      usersData[participantId] = userSnapshot.data();
+    }
+  }
+  setParticipantsData(usersData);
+
+
+  return () => unsubscribe();
 };

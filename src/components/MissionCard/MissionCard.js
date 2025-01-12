@@ -24,7 +24,9 @@ import { createNotification } from "../../hooks/useLoadNotifications";
 import {
   createConversation,
   getExistingConversation,
+  handleChatButtonClick,
 } from "../../hooks/useLoadChat";
+import { getApplications, getApplicationsData, handleApply, handleFileChange } from "../../hooks/useApply";
 
 const MissionCard = ({ missions, user }) => {
   const { currentUser } = useAuth();
@@ -37,21 +39,6 @@ const MissionCard = ({ missions, user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
 
-  const handleChatButtonClick = async () => {
-    const participants = [currentUser.uid, missions.user.uid];
-
-    const existingConversationId = await getExistingConversation(
-      participants,
-      currentUser
-    );
-    console.log(existingConversationId);
-    if (existingConversationId) {
-      setActiveChatUser(existingConversationId);
-    } else {
-      const conversationId = await createConversation(participants);
-      setActiveChatUser(conversationId);
-    }
-  };
 
   // Fetch user data
   useEffect(() => {
@@ -68,92 +55,6 @@ const MissionCard = ({ missions, user }) => {
       fetchUserData();
     }
   }, [missions.user.uid]);
-
-  // Handle file application
-  const handleApply = async () => {
-    try {
-      if (!selectFile) {
-        console.error("No file selected.");
-        return;
-      }
-
-      // Upload file to Firebase Storage
-      const fileRef = ref(
-        storage,
-        `Applications/${missions.id}/${currentUser.uid}/${selectFile.name}`
-      );
-      await uploadBytes(fileRef, selectFile);
-      const fileUrl = await getDownloadURL(fileRef);
-
-      if (!fileUrl) {
-        throw new Error("Failed to retrieve the file URL after upload.");
-      }
-      console.log(selectFile.name);
-
-      await addDoc(collection(db, "Applications"), {
-        missionId: missions.id,
-        userId: currentUser.uid,
-        fileUrl: fileUrl,
-        fileName: selectFile.name,
-        timeStamp: getCurrentTimeStamp("LLL"),
-      });
-      const notification = {
-        type: "Application",
-        user: currentUser.uid,
-        missionTitle: missions.title,
-        missionId: missions.id,
-        postUser: missions.postUser,
-        postUserName: missions.postUserName,
-      };
-      await createNotification(notification);
-      // Reset application state
-      setApply(false);
-      setSelectedFile(null);
-    } catch (error) {
-      console.error("Error during the application process:", error);
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type !== "application/pdf") {
-      console.error("Only PDF files are allowed.");
-      alert("Please select a valid PDF file.");
-      setSelectedFile(null);
-      return;
-    }
-    setSelectedFile(file);
-  };
-
-  // Fetch applications
-  const getApplicationsData = async (applications) => {
-    return Promise.all(
-      applications.docs.map(async (docA) => {
-        const applicationData = docA.data();
-        const userDoc = await getDoc(doc(db, "Users", applicationData.userId));
-
-        return {
-          id: docA.id,
-          ...applicationData,
-          userName: userDoc.exists() ? userDoc.data().userName : "Unknown User",
-          userProfilePicture: userDoc.exists()
-            ? userDoc.data().profilePicture
-            : "defaultProfilePictureURL",
-        };
-      })
-    );
-  };
-
-  const getApplications = async (missionId, setApplications) => {
-    const applicationsRef = collection(db, "Applications");
-    const q = query(applicationsRef, where("missionId", "==", missionId));
-
-    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-      const applicationsData = await getApplicationsData(querySnapshot);
-      setApplications(applicationsData);
-    });
-    return () => unsubscribe();
-  };
 
   useEffect(() => {
     if (missions.id) {
@@ -267,7 +168,7 @@ const MissionCard = ({ missions, user }) => {
               id="file-upload"
               type="file"
               accept=".pdf"
-              onChange={handleFileChange}
+              onChange={(e)=>handleFileChange(e,setSelectedFile)}
               className="mt-2 border border-gray-300 rounded p-2 w-full"
             />
             {selectFile && (
@@ -277,7 +178,7 @@ const MissionCard = ({ missions, user }) => {
             )}
             <div className="flex gap-4 mt-4">
               <button
-                onClick={() => handleApply()}
+                onClick={() => handleApply(selectFile,missions,currentUser,setApply,setSelectedFile)}
                 className="px-4 py-2 rounded"
               >
                 Submit Application
