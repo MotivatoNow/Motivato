@@ -7,7 +7,6 @@ import {
   onSnapshot,
   addDoc,
 } from "firebase/firestore";
-import React, { useEffect } from "react";
 import { db } from "../config/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../firebase";
@@ -87,17 +86,18 @@ export const handleApply = async (
       fileName: selectFile.name,
       timeStamp: getCurrentTimeStamp("LLL"),
     });
+    
     const notification = {
       type: "Application",
       user: currentUser.uid,
       missionTitle: missions.title,
       missionId: missions.id,
-      postUser: missions.postUser,
-      postUserName: missions.postUserName,
+      postUser: missions.user.uid,
+      postUserName: missions.user.userName,
       timeStamp:getCurrentTimeStamp("LLL")
     };
     await createNotification(notification);
-  } catch (error) {
+  }catch (error) {
     console.error("Error during the application process:", error);
   }
 };

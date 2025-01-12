@@ -4,15 +4,11 @@ import { useAuth } from "../../context/AuthContext";
 import { db, auth } from "../../config/firebase";
 import {
   doc,
-  getDoc,
   query,
   collection,
   where,
   onSnapshot,
   updateDoc,
-  arrayUnion,
-  addDoc,
-  getDocs,
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { FaBarsStaggered } from "react-icons/fa6";
@@ -24,7 +20,7 @@ import logo from "../../assets/images/Icon.png";
 import mobileLogo from "../../assets/images/Logo_PNG.png";
 import Search from "../Search/Search";
 import "../../App.css";
-import { clearNotifications, createNotification, loadNotifications } from "../../hooks/useLoadNotifications";
+import { clearNotifications, loadNotifications } from "../../hooks/useLoadNotifications";
 import { handleAccept, handleReject, loadFollowerRequest } from "../../hooks/useLoadFollowerRequest";
 import { checkVerification } from "../../hooks/useLoadUsers";
 
@@ -285,7 +281,7 @@ const NavBar = () => {
                               </>
                             )}
                             {/* mission */}
-                            {notification.type === "new Mission" && (
+                            {notification.type === "Application" && (
                               <>
                                 <Link
                                   className="flex mb-2 items-center gap-2"

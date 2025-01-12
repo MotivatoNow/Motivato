@@ -5,7 +5,6 @@ import NavBar from './components/NavBar/NavBar';
 import HomePage from './pages/Home/Home';
 import LoginPage from './pages/Login/Login'; // רכיב התחברות
 import RegisterPage from './pages/Register/Register';
-import AddCategory from "./features/AddCategory/AddCategory";
 import Profile from './pages/Profile/Profile';
 import {AuthProvider} from './context/AuthContext';
 import React from 'react';

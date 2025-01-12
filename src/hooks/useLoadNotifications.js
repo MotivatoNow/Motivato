@@ -3,10 +3,8 @@ import {
   collection,
   doc,
   getDoc,
-  getDocs,
   onSnapshot,
   query,
-  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
@@ -14,9 +12,7 @@ import { db } from "../config/firebase";
 const notificationCollect = collection(db, "Notifications");
 export const createNotification = async (notification) => {
   try {
-    console.log(notification)
     const notificationRef = await addDoc(notificationCollect, notification);
-    console.
     return notificationRef;
   } catch (error) {
     console.error("Error adding notification:", error);
@@ -41,7 +37,6 @@ export const loadNotifications = (
           const notificationData = docN.data();
           let userDoc;
 
-          // Traite les différents types de notifications
           if (
             notificationData.type === "comment" &&
             notificationData.postUser === currentUser.uid

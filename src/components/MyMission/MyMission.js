@@ -49,6 +49,7 @@ const MyMission = () => {
         missionId: missionRef.id,
         postUser: currentUser.uid,
         postUserName: currentUser.userName,
+        timeStamp:getCurrentTimeStamp("LLL")
       };
 
       await createNotification(notification);

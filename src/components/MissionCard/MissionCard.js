@@ -1,32 +1,17 @@
 import React, { useEffect, useState } from "react";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "../../config/firebase";
 import { useAuth } from "../../context/AuthContext";
 import ChatPopup from "../ChatPopup/ChatPopup";
 import { MdDeleteOutline } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 import { deleteMissions, editMission } from "../../hooks/useContentActions";
 import ModalEditMission from "../Modal/ModalEditMission/ModalEditMission";
-import { storage } from "../../firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { loadUser } from "../../hooks/useLoadUsers";
-import { createNotification } from "../../hooks/useLoadNotifications";
+import { handleChatButtonClick } from "../../hooks/useLoadChat";
 import {
-  createConversation,
-  getExistingConversation,
-  handleChatButtonClick,
-} from "../../hooks/useLoadChat";
-import { getApplications, getApplicationsData, handleApply, handleFileChange } from "../../hooks/useApply";
+  getApplications,
+  handleApply,
+  handleFileChange,
+} from "../../hooks/useApply";
 
 const MissionCard = ({ missions, user }) => {
   const { currentUser } = useAuth();
@@ -38,7 +23,6 @@ const MissionCard = ({ missions, user }) => {
   const [selectFile, setSelectedFile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
-
 
   // Fetch user data
   useEffect(() => {
@@ -124,9 +108,7 @@ const MissionCard = ({ missions, user }) => {
         <div className="mt-4">
           <h2 className="text-xl font-bold text-gray-800">{missions.title}</h2>
           <p className="text-gray-600 mt-2">{missions.post}</p>
-          <div>
-            {missions.education}
-          </div>
+          <div>{missions.education}</div>
         </div>
 
         <hr className="my-4" />
@@ -168,7 +150,7 @@ const MissionCard = ({ missions, user }) => {
               id="file-upload"
               type="file"
               accept=".pdf"
-              onChange={(e)=>handleFileChange(e,setSelectedFile)}
+              onChange={(e) => handleFileChange(e, setSelectedFile)}
               className="mt-2 border border-gray-300 rounded p-2 w-full"
             />
             {selectFile && (
@@ -178,7 +160,15 @@ const MissionCard = ({ missions, user }) => {
             )}
             <div className="flex gap-4 mt-4">
               <button
-                onClick={() => handleApply(selectFile,missions,currentUser,setApply,setSelectedFile)}
+                onClick={() =>
+                  handleApply(
+                    selectFile,
+                    missions,
+                    currentUser,
+                    setApply,
+                    setSelectedFile
+                  )
+                }
                 className="px-4 py-2 rounded"
               >
                 Submit Application
