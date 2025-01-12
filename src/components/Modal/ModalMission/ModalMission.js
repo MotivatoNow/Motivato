@@ -105,7 +105,7 @@ const ModalMission = ({
               onChange={(e) => setEducation(e.target.value)}
               required
             >
-              <option value=""></option>
+              {education!==""&&(<option value={education}>{education}</option>)}
               {educations.map((edu) => {
                 return (
                   <option value={edu.nameCategory} key={edu.id}>

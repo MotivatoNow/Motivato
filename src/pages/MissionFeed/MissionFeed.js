@@ -13,11 +13,11 @@ const MissionFeed = () => {
   }, []);
 
   return (
-    <div className="feed-page">
+    <div className="feed-page space-y-5">
       <div className="my-post">
         <MyMission />
       </div>
-      <div className="feed-post">
+      <div className="feed-post space-y-6">
         {allMissions && allMissions.length > 0 ? (
           allMissions.map((mission) => (
             <div key={mission.id}>

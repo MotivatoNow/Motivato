@@ -39,8 +39,9 @@ const AddCategory = ({setCategories} ) => {
       setCategories((prev) => [...prev, { ...newCategories, id: newCategories.categoryId }]);
       setSuccess("Category added successfully");
       setNameCategory("");
-      setImageCategory("");
+      setImageCategory(null);
       setDescriptionCategory("");
+      
     } catch (error) {
       setError(error.message);
     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChatButton from "../../ChatButton/ChatButton";
 import FriendButton from "../../FriendButton/FriendButton";
 import MyPost from "../../MyPost/MyPost";
@@ -10,9 +10,7 @@ import {
   arrayRemove,
   collection,
   doc,
-  getDoc,
   getDocs,
-  onSnapshot,
   query,
   updateDoc,
   where,
@@ -20,7 +18,7 @@ import {
 import { db } from "../../../firebase";
 import { AiOutlineClose } from "react-icons/ai";
 import { CiEdit, CiLocationOn, CiMail, CiSettings } from "react-icons/ci";
-import { loadData, loadFollowers, loadUser } from "../../../hooks/useLoadUsers";
+import { loadFollowers, loadUser } from "../../../hooks/useLoadUsers";
 import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
 import ModalEditSkills from "../../Modal/ModalEditProfile/ModalEditSkills/ModalEditSkills";
