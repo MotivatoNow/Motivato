@@ -7,7 +7,7 @@ export const shuffleArray = (array) => {
   return array.sort(() => Math.random() - 0.5);
 };
 
-export const loadUser = async (id, setUserData) => {
+export const loadUser = async (id, setUserData=()=>{}) => {
   try {
     const userDoc = await getDoc(doc(db, "Users", id));
     if (userDoc.exists()) {

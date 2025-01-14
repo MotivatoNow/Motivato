@@ -58,14 +58,13 @@ const ChatPopup = ({ conversationId, closePopup }) => {
           <p>No messages yet</p>
         )}
       </div>
-      <input
-        type="text"
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-        className="border p-2 w-full rounded-lg mb-2"
-        placeholder="Type a message..."
-      />
-      <button
+      <textarea
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          rows="1"
+          className="w-full h-12 border p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 resize"
+          placeholder="Type a message..."
+        /><button
         className="bg-blue-500 text-white w-full py-2 rounded-lg"
         onClick={() =>
             sendMessage(conversationId, newMessage, currentUser, setNewMessage)
