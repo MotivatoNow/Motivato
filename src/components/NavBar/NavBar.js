@@ -141,7 +141,7 @@ const NavBar = () => {
   //End of useEffect
 
   return (
-    <header className="bg-white shadow-sm w-full top-0 z-50">
+    <header className="bg-white shadow-sm fixed w-full top-0 z-50">
       <nav className="grid grid-cols-3 items-center px-5 py-2 bg-white">
         {/* Logo and Search */}
         <div className="flex items-center gap-1">

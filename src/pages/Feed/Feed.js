@@ -20,9 +20,17 @@ const Feed = () => {
   const handleMouseEnterRight = () => setRightScrolling(true);
   const handleMouseLeaveRight = () => setRightScrolling(false);
 
-  const handleMouseEnterLeft = () => setLeftScrolling(true);
-  const handleMouseLeaveLeft = () => setLeftScrolling(false);
-
+  const handleMouseEnterLeft = () => {
+    if (!leftScrolling) {
+      setLeftScrolling(true);
+    }
+  };
+  
+  const handleMouseLeaveLeft = () => {
+    if (leftScrolling) {
+      setLeftScrolling(false);
+    }
+  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-[#F6F9FC] w-full mx-auto ">
       {/* עמודת פרופיל - צד שמאל */}
@@ -34,15 +42,26 @@ const Feed = () => {
         onMouseLeave={handleMouseLeaveRight}
         style={{
           position: 'sticky', 
-          top: '0',  
-          height: '100vh',
+          top: '60px', 
+          height: 'calc(100vh - 60px)',
+          overflowY:'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
         }}
         >
         <RightSide />
       </div>
 
       {/* עמודת הפיד המרכזית */}
-      <div className="col-span-1 lg:col-span-2">
+      <div className="col-span-1 lg:col-span-2"
+      style={{
+        position: 'sticky', 
+        top: '60px', 
+        height: 'calc(100vh - 60px)',
+        overflowY:'auto' ,
+        scrollbarWidth: 'none', 
+        msOverflowStyle: 'none', 
+      }}>
         <div>
           <MyPost />
           <div>
@@ -64,8 +83,11 @@ const Feed = () => {
         onMouseLeave={handleMouseLeaveLeft}
         style={{
           position: 'sticky', 
-          top: '0', 
-          height: '100vh',  
+          top: '60px', 
+          height: 'calc(100vh - 60px)',
+          overflowY:'auto' ,
+          scrollbarWidth: 'none', 
+          msOverflowStyle: 'none', 
         }}
         >
         <LeftSide />

@@ -24,6 +24,7 @@ function App() {
       <AuthProvider>
         <Router>
           <NavBar />
+          <div className="main-content pt-16">
           <Routes>
           <Route
               path="/"
@@ -68,7 +69,7 @@ function App() {
             <Route path="/post/:id" element={<Post />} />
             <Route path="/mission/:id" element={<Mission />} />
             <Route path="/followers/:id" element={<FollowersView />} />
-          </Routes>
+          </Routes></div>
         </Router>
       </AuthProvider>
     </>
