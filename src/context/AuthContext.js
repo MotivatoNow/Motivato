@@ -4,6 +4,7 @@ import {onAuthStateChanged, signOut} from 'firebase/auth';
 import {auth, db} from '../config/firebase';
 import {doc, getDoc} from 'firebase/firestore';
 import {Loading} from "../components/Loading/Loading";
+import { Navigate } from 'react-router-dom';
 
 const AuthContext = React.createContext ();
 
@@ -42,3 +43,13 @@ export const AuthProvider = ({children}) => {
         </AuthContext.Provider>
     );
 };
+export const AuthWrapper=({children})=>{
+    const { currentUser, loading } = useAuth();
+
+    if (loading) {
+      return <div>Loading...</div>; 
+    }
+  
+    return currentUser ? <Navigate to="/feed" /> : children;
+  };
+

@@ -6,7 +6,7 @@ import HomePage from "./pages/Home/Home";
 import LoginPage from "./pages/Login/Login"; // רכיב התחברות
 import RegisterPage from "./pages/Register/Register";
 import Profile from "./pages/Profile/Profile";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider, AuthWrapper, useAuth } from "./context/AuthContext";
 import React from "react";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
@@ -19,14 +19,20 @@ import Mission from "./pages/Mission/Mission";
 import FollowersView from "./pages/FollowersView/FollowersView";
 
 function App() {
-  
   return (
     <>
       <AuthProvider>
         <Router>
           <NavBar />
           <Routes>
-            <Route path="/" element={<HomePage />} />
+          <Route
+              path="/"
+              element={
+                <AuthWrapper>
+                  <HomePage />
+                </AuthWrapper>
+              }
+            />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/reset" element={<ForgetPassword />} />
