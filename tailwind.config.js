@@ -6,7 +6,9 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('daisyui'),
+  ],
   safelist: [
     'scrollbar-hide'
   ],

@@ -1,65 +1,118 @@
-@import '../../assets/styles/AppColors.css';
-@import '../../assets/styles/App.css';
-/*Hero Header */
-.header_Hero{
-    padding:0 3%;
-    background-color:var(--primary-color);
-    width:100%;
-    min-height:100vh;
-}
-
-/*Section about us*/
-.col{
-    margin-top:1.5em;
-}
-.aboutus_section .motivato_title{
-    color:var(--blue-color);
-    font-weight: bold;
-    margin-top:1.5em;
-}
-.aboutus_section .aboutus_text{
-    font-size: var(--paragraph-fontsize);
-    font-weight: var(--paragraph-fontweight);
-    line-height: 1.5em;
-    margin-top:3em;
-    letter-spacing:0.050em;
-}
-.aboutus_section .aboutus_btn{
-    padding:var(--button-padding);
-    border-radius: var(--borderadius-button);
-    width:100%;
-    color:var(--paragraph-fontsize);
-    background:var(--button-background-color);
+/* General Styles */
+.homepage {
+    font-family: Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  /* Hero Section */
+  .hero_section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem;
+    background: #f5f5f5;
+  }
+  .hero_content {
+    max-width: 50%;
+  }
+  .hero_image {
+    max-width: 40%;
+    border-radius: 10px;
+  }
+  .hero_search {
+    margin-top: 1rem;
+    display: flex;
+  }
+  .hero_search input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-right: none;
+  }
+  .hero_search button {
+    padding: 0.5rem 1rem;
     border: none;
-    font-width: var(--button-textweight);
-    font-size: var(--paragraph-fontsize);
-}
-.picture_container{
-    position: relative;
-    height:50%;
-}
-
-.picture_container img{
-    position: absolute;
-    top:0;
-    box-shadow: var(--box-shadow);
-}
-.aboutus_section .aboutus_picture{
-    width:100%;
-    object-fit: contain;
-}
-
-
-@media screen and (max-width: 769px) {
-
-    .aboutus_section .row{
-        display:flex;
-        flex-direction: column;
-    }
-    .picture_container{
-        order:-1;
-        width:100%;
-        margin-bottom:250px;
-    }
-}
-
+    background: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  /* Categories Section */
+  .categories_section {
+    text-align: center;
+    padding: 2rem;
+  }
+  .categories_grid {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .category_card {
+    text-align: center;
+  }
+  .category_card img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  /* How It Works Section */
+  .howitworks_section {
+    padding: 2rem;
+    background: #f9f9f9;
+  }
+  .steps {
+    display: flex;
+    justify-content: space-between;
+  }
+  .step {
+    text-align: center;
+    width: 30%;
+  }
+  
+  /* Popular Services Section */
+  .services_section {
+    padding: 2rem;
+  }
+  .services_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+  .service_card {
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 5px;
+  }
+  
+  /* Testimonials Section */
+  .testimonials_section {
+    padding: 2rem;
+    background: #f5f5f5;
+  }
+  .testimonials_grid {
+    display: flex;
+    justify-content: space-between;
+  }
+  .testimonial_card {
+    width: 30%;
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 5px;
+  }
+  
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 1rem;
+    background: #333;
+    color: #fff;
+  }
+  .footer_links a {
+    margin: 0 1rem;
+    color: #fff;
+    text-decoration: none;
+  }
+  
