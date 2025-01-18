@@ -6,7 +6,7 @@ const Joinus = () => {
   return (
     <div className="w-full bg-[#15CDCA13] py-24">
       <div className="md:max-w-[1480px] m-auto grid md:grid-cols-2 gap-8 max-w-[600px] items-center  px-4 md:px-0">
-        <img src={cta} className="h-full mx-auto" />
+        <img src={cta} className="md:h-full mx-auto h-60" />
 
         <div>
           <h1 className="py-2 text-3xl font-semibold">

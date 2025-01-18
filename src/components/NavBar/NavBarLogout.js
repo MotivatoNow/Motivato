@@ -3,13 +3,14 @@ import logo from "../../assets/images/Icon.png";
 import { CiUnlock } from "react-icons/ci";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { GrHomeRounded } from "react-icons/gr";
 
 const NavBarLogout = () => {
   const [toggle, setToggle] = useState(false);
   const handleClick = () => setToggle(!toggle);
 
   return (
-    <header className="w-full h-[80px] bg-white border-b fixed">
+    <header className="w-full h-[80px] bg-white border-b fixed z-[100000]">
       <nav className="md:max-w-[1480px] max-w-[600px] m-auto w-full h-full flex justify-between items-center md:px-0 px-4">
         <Link to={"/"}>
           <img src={logo} className="h-[36px]" />
@@ -17,7 +18,11 @@ const NavBarLogout = () => {
 
         <div className="hidden md:flex items-center ">
           <ul className="flex gap-4">
-            <Link to={'/'}><li>דף הבית</li></Link>
+             <li className="bg-gray-100 py-2 px-8 rounded-[10px] hover:border-b-2 hover:border-[#15CDCA] transition">
+                              <Link to="/">
+                                <GrHomeRounded color="#3E54D3" size={24} />
+                              </Link>
+                            </li>
           </ul>
         </div>
 
