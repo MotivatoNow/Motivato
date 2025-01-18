@@ -54,7 +54,7 @@ const Categories = () => {
                     <CategoryCard icons={<MdAttachMoney size={30} />} title={'Finance'} />
                     <CategoryCard icons={<FaUniversity size={30} />} title={'Teaching'} /> */}
                    {categories.map((category,index)=>(
-                    <Link to={"/register"}><CategoryCard key={index}icons={<BsVectorPen size={30} />} title={category.nameCategory}/></Link>
+                    <CategoryCard key={index}icons={<BsVectorPen size={30} />} title={category.nameCategory}/>
                    )
 
                    )}

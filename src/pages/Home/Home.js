@@ -6,7 +6,6 @@ import Categories from '../../components/HomePage/Categories/Categories,'
 import Feedback from '../../components/HomePage/Feedback/Feedback'
 import Footer from '../../components/Footer/Footer'
 import Joinus from '../../components/HomePage/Joinus/Joinus'
-import NavBarLogout from '../../components/NavBar/NavBarLogout'
 
 const Home = () => {
   return (
@@ -17,7 +16,6 @@ const Home = () => {
     <Categories/>
     <Feedback/>
     <Joinus/>
-    
     <Footer/>
     </>
   )

@@ -10,6 +10,7 @@ import { deletePost, editPost } from "../../hooks/useContentActions";
 import ModalEditPost from "../Modal/ModalEditPost/ModalEditPost";
 import CommentButton from "../CommentButton/CommentButton";
 import { loadUser } from "../../hooks/useLoadUsers";
+import { Loading } from "../Loading/Loading";
 
 const PostCard = ({ posts }) => {
   const { currentUser } = useAuth();
@@ -38,7 +39,7 @@ const PostCard = ({ posts }) => {
   }, [posts.user.uid]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading/>
   }
 
   if (!userData) {

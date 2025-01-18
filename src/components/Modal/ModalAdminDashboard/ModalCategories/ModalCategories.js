@@ -91,61 +91,73 @@ const ModalCategories = ({ isOpen, onClose, setCategories, categories }) => {
   };
 
   return (
-    <Modal
-      title="עריכת קטגוריה"
-      visible={isOpen}
-      onCancel={onClose}
-      onOk={handleSaveCategory}
-      okText="שמור"
-      cancelText="ביטול"
-    >
-      {categories ? (
-        <div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">שם קטגוריה</label>
-            <Input
-              value={editNameCategory}
-              onChange={(e) => setEditNameCategory(e.target.value)}
-              placeholder="הכנס שם קטגוריה"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              תיאור קטגוריה
-            </label>
-            <Input.TextArea
-              value={descriptionCategory}
-              onChange={(e) => setDescriptionCategory(e.target.value)}
-              placeholder="הכנס תיאור קטגוריה"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">תמונה</label>
-            <Upload
-              beforeUpload={() => false}
-              onChange={handleFileChange}
-              accept="image/*"
-              showUploadList={false}
-            >
-              <Button icon={<UploadOutlined />}>בחר תמונה</Button>
-            </Upload>
-            {imageCategory && (
-              <img
-                src={
-                  typeof imageCategory === "string"
-                    ? imageCategory
-                    : URL.createObjectURL(imageCategory)
-                }
-                alt="Category"
-                className="mt-4 w-32 h-32 object-cover"
-              />
-            )}
-          </div>
-        </div>
-      ) : (
-        <p className="text-gray-500">לא נבחרה קטגוריה לעריכה</p>
-      )}
-    </Modal>
+<Modal
+  title="עריכת קטגוריה"
+  visible={isOpen}
+  onCancel={onClose}
+  onOk={handleSaveCategory}
+  okText="שמור"
+  cancelText="ביטול"
+>
+  {categories ? (
+    <div className="space-y-4">
+      {/* שם הקטגוריה */}
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text">שם קטגוריה</span>
+        </label>
+        <Input
+          value={editNameCategory}
+          onChange={(e) => setEditNameCategory(e.target.value)}
+          placeholder="הכנס שם קטגוריה"
+          className="input input-bordered"
+        />
+      </div>
+
+      {/* תיאור הקטגוריה */}
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text">תיאור קטגוריה</span>
+        </label>
+        <Input.TextArea
+          value={descriptionCategory}
+          onChange={(e) => setDescriptionCategory(e.target.value)}
+          placeholder="הכנס תיאור קטגוריה"
+          className="textarea textarea-bordered"
+        />
+      </div>
+
+      {/* העלאת תמונה */}
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text">תמונה</span>
+        </label>
+        <Upload
+          beforeUpload={() => false}
+          onChange={handleFileChange}
+          accept="image/*"
+          showUploadList={false}
+        >
+          <Button icon={<UploadOutlined />}>בחר תמונה</Button>
+        </Upload>
+        {imageCategory && (
+          <img
+            src={
+              typeof imageCategory === "string"
+                ? imageCategory
+                : URL.createObjectURL(imageCategory)
+            }
+            alt="Category"
+            className="mt-4 w-32 h-32 rounded-lg object-cover"
+          />
+        )}
+      </div>
+    </div>
+  ) : (
+    <p className="text-gray-500">לא נבחרה קטגוריה לעריכה</p>
+  )}
+</Modal>
+
   );
 };
 

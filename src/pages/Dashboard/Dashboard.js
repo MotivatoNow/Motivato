@@ -15,8 +15,22 @@ import ModalCategories from "../../components/Modal/ModalAdminDashboard/ModalCat
 import ModalUniversity from "../../components/Modal/ModalAdminDashboard/ModalUniversity/Modaluniversity";
 import { deleteComment } from "../../hooks/useContentActions";
 import { Link } from "react-router-dom";
-
-
+import {
+  FaUsers,
+  FaPen,
+  FaHeart,
+  FaComments,
+  FaTasks,
+  FaFileAlt,
+  FaHome,
+  FaUser,
+  FaCog,
+  FaBell,
+  FaChartBar,
+  FaPlus,
+  FaUniversity,
+  FaTrashAlt,
+} from "react-icons/fa";
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
@@ -67,14 +81,16 @@ const Dashboard = () => {
             ...doc.data(),
           }))
         );
-        const unsubscribe = onSnapshot(collection(db, "Comments"), (snapshot) => {
-          const updatedComments = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setComments(updatedComments);
-        });
-    
+        const unsubscribe = onSnapshot(
+          collection(db, "Comments"),
+          (snapshot) => {
+            const updatedComments = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            setComments(updatedComments);
+          }
+        );
 
         setStats({
           users: usersSnapshot.size,
@@ -86,7 +102,7 @@ const Dashboard = () => {
         });
 
         setLoading(false);
-        return ()=>unsubscribe
+        return () => unsubscribe;
       } catch (error) {
         console.error("Erreur lors de la récupération des données :", error);
         setLoading(false);
@@ -161,26 +177,38 @@ const Dashboard = () => {
     { id: "deleteComments", label: "מחיקת תגובות" },
   ];
 
+  const iconMap = {
+    newRegistrations: <FaUser />,
+    allUsers: <FaUsers />,
+    addCategory: <FaPlus />,
+    addUniversity: <FaUniversity />,
+    statistics: <FaChartBar />,
+    deleteComments: <FaTrashAlt />,
+  };
+
   return (
     <div className="flex h-screen">
       {/* Tabs Navigation */}
-      <div className="w-1/4 bg-gray-100 p-4 border-l border-gray-200">
-        <h2 className="text-lg font-medium mb-4 text-center text-gray-700">
+      <div className="md:w-1/4 w-full bg-base-100 p-4 border-l border-gray-200 shadow-lg">
+        <h2 className="text-lg font-bold mb-4 text-center text-gray-700">
           אפשרויות
         </h2>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={`block w-full text-right px-4 py-2 rounded-md mb-2 ${
-              activeTab === tab.id
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
+        <div className="menu menu-vertical bg-base-100 rounded-box">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`btn justify-start gap-3 w-full ${
+                activeTab === tab.id
+                  ? "btn-primary"
+                  : "btn-ghost hover:bg-gray-200"
+              }`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="text-xl">{iconMap[tab.id]}</span> {/* Icon */}
+              <span className="flex-grow text-right">{tab.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
       {/* Content Area */}
       <div className="w-3/4 p-6 overflow-auto">
@@ -189,43 +217,47 @@ const Dashboard = () => {
         </h1>
 
         {activeTab === "newRegistrations" && (
-          <div>
+          <div className="overflow-x-auto">
             <h2 className="text-lg font-medium mb-4">נרשמים חדשים</h2>
-            <table className="w-full border border-gray-200 rounded-lg">
+            <table className="table w-full border border-gray-200 rounded-lg">
+              {/* ראש הטבלה */}
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="p-2 text-left">תמונה</th>
-                  <th className="p-2 text-left">שם</th>
-                  <th className="p-2 text-left">אימייל</th>
-                  <th className="p-2 text-left">מכללה</th>
-                  <th className="p-2 text-left">פעולות</th>
+                  <th>תמונה</th>
+                  <th>שם</th>
+                  <th>אימייל</th>
+                  <th>מכללה</th>
+                  <th>פעולות</th>
                 </tr>
               </thead>
               <tbody>
+                {/* שורות הטבלה */}
                 {users
                   .filter((user) => !user.isVerified)
                   .map((user) => (
-                    <tr key={user.id} className="border-t">
-                      <td className="p-2">
-                        <img
-                          src={user.studentCard}
-                          alt="Student Card"
-                          className="w-20 h-20 rounded-md"
-                        />
+                    <tr key={user.id}>
+                      <td>
+                        <div className="avatar">
+                          <div className="mask mask-squircle w-20 h-20">
+                            <img src={user.studentCard} alt="Student Card" />
+                          </div>
+                        </div>
                       </td>
-                      <td className="p-2">{user.userName}</td>
-                      <td className="p-2">{user.email}</td>
-                      <td className="p-2">{user.studentCollege}</td>
-                      <td className="p-2">
+                      <td>
+                        <div className="font-bold">{user.userName}</div>
+                      </td>
+                      <td>{user.email}</td>
+                      <td>{user.studentCollege}</td>
+                      <td>
                         <button
                           onClick={() => handleApprove(user.id)}
-                          className="bg-green-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-green-600"
+                          className="btn btn-success btn-sm mr-2"
                         >
                           אשר
                         </button>
                         <button
                           onClick={() => handleReject(user.id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                          className="btn btn-error btn-sm"
                         >
                           מחק
                         </button>
@@ -233,28 +265,55 @@ const Dashboard = () => {
                     </tr>
                   ))}
               </tbody>
+              {/* תחתית הטבלה */}
+              <tfoot>
+                <tr>
+                  <th>תמונה</th>
+                  <th>שם</th>
+                  <th>אימייל</th>
+                  <th>מכללה</th>
+                  <th>פעולות</th>
+                </tr>
+              </tfoot>
             </table>
           </div>
         )}
 
         {activeTab === "allUsers" && (
-          <div>
+          <div className="overflow-x-auto">
             <h2 className="text-lg font-medium mb-4">כל המשתמשים</h2>
-            <table className="w-full border border-gray-200 rounded-lg">
+            <table className="table w-full border border-gray-200 rounded-lg">
+              {/* ראש הטבלה */}
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="p-2 text-left">שם</th>
-                  <th className="p-2 text-left">אימייל</th>
-                  <th className="p-2 text-left">פרופיל</th>
-                  <th className="p-2 text-left">פעולות</th>
+                  <th>שם</th>
+                  <th>אימייל</th>
+                  <th>פרופיל</th>
+                  <th>פעולות</th>
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <tr key={user.id} className="border-t">
-                    <td className="p-2">{user.userName}</td>
-                    <td className="p-2">{user.email}</td>
-                    <td className="p-2">
+                {/* שורות הטבלה */}
+                {users.map((user, index) => (
+                  <tr key={user.id}>
+                    <td>
+                      <div className="flex items-center gap-3">
+                        <div className="avatar">
+                          <div className="mask mask-squircle h-12 w-12">
+                            <img
+                              src={user.profilePicture}
+                              alt={`${user.userName} profile picture`}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="font-bold">{user.userName}</div>
+                          <div className="text-sm opacity-50">#{index + 1}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{user.email}</td>
+                    <td>
                       <a
                         href={`/profile/${user.id}`}
                         className="text-blue-600 hover:underline"
@@ -262,10 +321,10 @@ const Dashboard = () => {
                         פרופיל
                       </a>
                     </td>
-                    <td className="p-2">
+                    <td>
                       <button
                         onClick={() => handleDeleteUser(user.id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                        className="btn btn-ghost btn-xs bg-red-500 text-white hover:bg-red-600"
                       >
                         מחק
                       </button>
@@ -273,6 +332,15 @@ const Dashboard = () => {
                   </tr>
                 ))}
               </tbody>
+              {/* תחתית הטבלה */}
+              <tfoot>
+                <tr>
+                  <th>שם</th>
+                  <th>אימייל</th>
+                  <th>פרופיל</th>
+                  <th>פעולות</th>
+                </tr>
+              </tfoot>
             </table>
           </div>
         )}
@@ -282,24 +350,43 @@ const Dashboard = () => {
             <h2 className="text-lg font-medium mb-4">הוספת קטגוריות</h2>
             <AddCategory setCategories={setCategories} />
             <h3 className="text-md font-medium mt-6 mb-2">קטגוריות קיימות:</h3>
-            <ul className="list-disc pl-6">
+            <div className="card bg-base-100 shadow-lg p-4">
               {categories.length > 0 ? (
-                <ul className="list-disc pl-6">
+                <ul className="space-y-4">
                   {categories.map((category) => (
                     <li
                       key={category.id}
-                      className="flex justify-between items-center mt-3"
+                      className="flex justify-between items-center border-b pb-2"
                     >
-                      <span>{category.nameCategory}</span>
-                      <div className="flex gap-1">
+                      <div className="flex items-center gap-4">
+                        {/* תמונה של הקטגוריה */}
+                        <div className="avatar">
+                          <div className="mask mask-squircle w-12 h-12">
+                            <img
+                              src={
+                                category.imageURL ||
+                                "https://via.placeholder.com/150"
+                              }
+                              alt={`Category ${category.nameCategory}`}
+                            />
+                          </div>
+                        </div>
+                        {/* שם הקטגוריה */}
+                        <span className="font-medium">
+                          {category.nameCategory}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        {/* כפתור עריכה */}
                         <button
                           onClick={() => handleEditCategory(category)}
-                          className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                          className="btn btn-sm btn-info"
                         >
                           Edit
                         </button>
+                        {/* כפתור מחיקה */}
                         <button
-                          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                          className="btn btn-sm btn-error"
                           onClick={() => handleDeleteCategory(category.id)}
                         >
                           מחיקת קטגוריה
@@ -311,7 +398,7 @@ const Dashboard = () => {
               ) : (
                 <p className="text-gray-500 mt-4">אין קטגוריות זמינות.</p>
               )}
-            </ul>
+            </div>
           </div>
         )}
 
@@ -322,91 +409,193 @@ const Dashboard = () => {
             <h3 className="text-md font-medium mt-6 mb-2">
               אוניברסיטאות קיימות:
             </h3>
-            <ul className="list-disc pl-6">
-              {universities.map((university) => (
-                <li
-                  key={university.id}
-                  className="flex justify-between items-center mt-3"
-                >
-                  <span>{university.nameUniversity}</span>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => handleEditUniversity(university)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+            <div className="card bg-base-100 shadow-lg p-4">
+              {universities.length > 0 ? (
+                <ul className="space-y-4">
+                  {universities.map((university) => (
+                    <li
+                      key={university.id}
+                      className="flex justify-between items-center border-b pb-2"
                     >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUniversity(university.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
-                    >
-                      מחיקת מוסד לימודי
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                      <div className="flex items-center gap-4">
+                        {/* לוגו של האוניברסיטה */}
+                        <div className="avatar">
+                          <div className="mask mask-squircle w-12 h-12">
+                            <img
+                              src={university.logoUniversity}
+                              alt={`Logo of ${university.nameUniversity}`}
+                            />
+                          </div>
+                        </div>
+                        {/* שם האוניברסיטה */}
+                        <span className="font-medium">
+                          {university.nameUniversity}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        {/* כפתור עריכה */}
+                        <button
+                          onClick={() => handleEditUniversity(university)}
+                          className="btn btn-sm btn-info"
+                        >
+                          Edit
+                        </button>
+                        {/* כפתור מחיקה */}
+                        <button
+                          onClick={() => handleDeleteUniversity(university.id)}
+                          className="btn btn-sm btn-error"
+                        >
+                          מחיקת מוסד לימודי
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 mt-4">אין אוניברסיטאות זמינות.</p>
+              )}
+            </div>
           </div>
         )}
 
         {activeTab === "statistics" && (
           <div>
-            <h2 className="text-lg font-medium mb-4">סטטיסטיקות</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-100 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold">Utilisateurs</h3>
-                <p>{stats.users}</p>
+            <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">
+              סטטיסטיקות
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {/* משתמשים */}
+              <div className="card shadow-xl bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300">
+                <div className="card-body items-center text-center">
+                  <div className="text-4xl text-blue-800">
+                    <FaUsers />
+                  </div>
+                  <h3 className="text-lg font-bold text-blue-800 mt-2">
+                    משתמשים
+                  </h3>
+                  <p className="stat-value text-blue-600 text-4xl">
+                    {stats.users}
+                  </p>
+                  <div className="stat-desc text-blue-500">סה"כ משתמשים</div>
+                </div>
               </div>
-              <div className="bg-green-100 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold">Publications</h3>
-                <p>{stats.posts}</p>
+              {/* פוסטים */}
+              <div className="card shadow-xl bg-gradient-to-br from-green-100 via-green-200 to-green-300">
+                <div className="card-body items-center text-center">
+                  <div className="text-4xl text-green-800">
+                    <FaPen />
+                  </div>
+                  <h3 className="text-lg font-bold text-green-800 mt-2">
+                    פוסטים
+                  </h3>
+                  <p className="stat-value text-green-600 text-4xl">
+                    {stats.posts}
+                  </p>
+                  <div className="stat-desc text-green-500">סה"כ פוסטים</div>
+                </div>
               </div>
-              <div className="bg-red-100 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold">Likes</h3>
-                <p>{stats.likes}</p>
+              {/* לייקים */}
+              <div className="card shadow-xl bg-gradient-to-br from-red-100 via-red-200 to-red-300">
+                <div className="card-body items-center text-center">
+                  <div className="text-4xl text-red-800">
+                    <FaHeart />
+                  </div>
+                  <h3 className="text-lg font-bold text-red-800 mt-2">
+                    לייקים
+                  </h3>
+                  <p className="stat-value text-red-600 text-4xl">
+                    {stats.likes}
+                  </p>
+                  <div className="stat-desc text-red-500">סה"כ לייקים</div>
+                </div>
               </div>
-              <div className="bg-yellow-100 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold">Commentaires</h3>
-                <p>{stats.comments}</p>
+              {/* תגובות */}
+              <div className="card shadow-xl bg-gradient-to-br from-yellow-100 via-yellow-200 to-yellow-300">
+                <div className="card-body items-center text-center">
+                  <div className="text-4xl text-yellow-800">
+                    <FaComments />
+                  </div>
+                  <h3 className="text-lg font-bold text-yellow-800 mt-2">
+                    תגובות
+                  </h3>
+                  <p className="stat-value text-yellow-600 text-4xl">
+                    {stats.comments}
+                  </p>
+                  <div className="stat-desc text-yellow-500">סה"כ תגובות</div>
+                </div>
               </div>
-              <div className="bg-purple-100 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold">Missions</h3>
-                <p>{stats.missions}</p>
+              {/* משימות */}
+              <div className="card shadow-xl bg-gradient-to-br from-purple-100 via-purple-200 to-purple-300">
+                <div className="card-body items-center text-center">
+                  <div className="text-4xl text-purple-800">
+                    <FaTasks />
+                  </div>
+                  <h3 className="text-lg font-bold text-purple-800 mt-2">
+                    משימות
+                  </h3>
+                  <p className="stat-value text-purple-600 text-4xl">
+                    {stats.missions}
+                  </p>
+                  <div className="stat-desc text-purple-500">סה"כ משימות</div>
+                </div>
               </div>
-              <div className="bg-teal-100 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold">Candidatures</h3>
-                <p>{stats.applications}</p>
+              {/* מועמדויות */}
+              <div className="card shadow-xl bg-gradient-to-br from-teal-100 via-teal-200 to-teal-300">
+                <div className="card-body items-center text-center">
+                  <div className="text-4xl text-teal-800">
+                    <FaFileAlt />
+                  </div>
+                  <h3 className="text-lg font-bold text-teal-800 mt-2">
+                    מועמדויות
+                  </h3>
+                  <p className="stat-value text-teal-600 text-4xl">
+                    {stats.applications}
+                  </p>
+                  <div className="stat-desc text-teal-500">סה"כ מועמדויות</div>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-{activeTab === "deleteComments" && (
-  <div>
-    <h2 className="text-lg font-medium mb-4">מחיקת תגובות</h2>
-    <table className="w-full border border-gray-200 rounded-lg">
+        {activeTab === "deleteComments" && (
+          <div className="card bg-base-100 shadow-lg p-6">
+  <h2 className="text-2xl font-semibold text-gray-800 mb-6">מחיקת תגובות</h2>
+  <div className="overflow-x-auto">
+    <table className="table w-full border border-gray-200 rounded-lg">
       <thead className="bg-gray-100">
         <tr>
-          <th className="p-2 text-left">Auteur</th>
-          <th className="p-2 text-left">Commentaire</th>
-          <th className="p-2 text-left">Actions</th>
+          <th className="text-left p-2">שם המשתמש</th>
+          <th className="text-left p-2">תגובה</th>
+          <th className="text-left p-2">תמונה</th>
+          <th className="text-center p-2">פעולות</th>
         </tr>
       </thead>
       <tbody>
         {comments.map((comment) => (
-          <tr key={comment.id} className="border-t">
-            <Link to={`/post/${comment.postId}`} className="hover:text-blue-600"><td className="p-2">{comment.commentUserName}</td>
+          <tr key={comment.id} className="hover:bg-gray-50">
+            <td className="p-2">
+              <Link
+                to={`/post/${comment.postId}`}
+                className="text-blue-600 hover:underline"
+              >
+                {comment.commentUserName}
+              </Link>
+            </td>
             <td className="p-2">{comment.comment}</td>
             <td className="p-2">
               {comment.commentImage && (
-                <img src={comment.commentImage} alt="Commentaire" className="w-20 h-20 object-cover rounded-md" />
+                <img
+                  src={comment.commentImage}
+                  alt="Commentaire"
+                  className="w-20 h-20 object-cover rounded-md"
+                />
               )}
             </td>
-            </Link>
-            <td className="p-2">
+            <td className="p-2 text-center">
               <button
                 onClick={() => deleteComment(comment.id)}
-                className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                className="btn btn-error btn-sm"
               >
                 מחק
               </button>
@@ -416,8 +605,9 @@ const Dashboard = () => {
       </tbody>
     </table>
   </div>
-)}
+</div>
 
+        )}
       </div>
       <ModalCategories
         isOpen={isOpenCategory}

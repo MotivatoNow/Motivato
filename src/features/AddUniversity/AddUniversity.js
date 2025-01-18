@@ -47,44 +47,69 @@ const AddUniversity = ({setUniversities} ) => {
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        הוסף מוסד לימודי
-      </h2>
-      <form onSubmit={handleAddUniversity} className="space-y-4">
-        <input
-          type="text"
-          value={nameUniversity}
-          onChange={(e) => setNameUniversity(e.target.value)}
-          placeholder="שם מוסד לימודי"
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:ring-blue-500 focus:border-blue-500"
-          required
-        />
-        <input
-          type="text"
-          value={URLUniversity}
-          onChange={(e) => setURLUniversity(e.target.value)}
-          placeholder="אתר מוסד לימודי"
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:ring-blue-500 focus:border-blue-500"
-          required
-        />
-
-        <input
-          type="file"
-          onChange={(e) => setLogoUniversity(e.target.files[0])}
-          className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          הוסף מוסד לימודי
-        </button>
-        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-        {success && <p className="mt-2 text-sm text-green-600">{success}</p>}
-      </form>
+    <div className="max-w-lg mx-auto mt-10 bg-base-100 p-6 rounded-lg shadow-md">
+  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+    הוסף מוסד לימודי
+  </h2>
+  <form onSubmit={handleAddUniversity} className="space-y-4">
+    {/* שם מוסד לימודי */}
+    <div className="form-control">
+      <label className="label">
+        <span className="label-text">שם מוסד לימודי</span>
+      </label>
+      <input
+        type="text"
+        value={nameUniversity}
+        onChange={(e) => setNameUniversity(e.target.value)}
+        placeholder="שם מוסד לימודי"
+        className="input input-bordered w-full"
+        required
+      />
     </div>
+
+    {/* אתר מוסד לימודי */}
+    <div className="form-control">
+      <label className="label">
+        <span className="label-text">אתר מוסד לימודי</span>
+      </label>
+      <input
+        type="text"
+        value={URLUniversity}
+        onChange={(e) => setURLUniversity(e.target.value)}
+        placeholder="אתר מוסד לימודי"
+        className="input input-bordered w-full"
+        required
+      />
+    </div>
+
+    {/* העלאת לוגו */}
+    <div className="form-control">
+      <label className="label">
+        <span className="label-text">לוגו מוסד לימודי</span>
+      </label>
+      <input
+        type="file"
+        onChange={(e) => setLogoUniversity(e.target.files[0])}
+        className="file-input file-input-bordered w-full"
+        accept="image/*"
+        required
+      />
+    </div>
+
+    {/* כפתור שליחה */}
+    <button
+      type="submit"
+      className="btn btn-primary w-full"
+    >
+      הוסף מוסד לימודי
+    </button>
+
+    {/* הודעות שגיאה/הצלחה */}
+    {error && <p className="text-error text-sm mt-2">{error}</p>}
+    {success && <p className="text-success text-sm mt-2">{success}</p>}
+  </form>
+</div>
+
   );
 };
 export default AddUniversity;
