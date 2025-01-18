@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { auth, db, storage } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import {  doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import profilePic from "../../assets/images/profilepicture.png";
 import "./Register.css";
@@ -24,8 +24,8 @@ const Register = () => {
   const [studentCard, setStudentCard] = useState(null);
   const [location, setLocation] = useState("");
   const [error, setError] = useState("");
-  const [categories, setCategories]=useState([])
-  const[universities,setUniversities]=useState([])
+  const [categories, setCategories] = useState([]);
+  const [universities, setUniversities] = useState([]);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -41,22 +41,28 @@ const Register = () => {
         password
       );
       const user = userCredential.user;
-  
+
       // העלאת תמונת כרטיס סטודנט
       let cardURL = "";
       if (studentCard) {
-        const storageCard = ref(storage, `StudentsImages/${user.uid}/studentCard/${studentCard.name}`);
+        const storageCard = ref(
+          storage,
+          `StudentsImages/${user.uid}/studentCard/${studentCard.name}`
+        );
         await uploadBytes(storageCard, studentCard);
         cardURL = await getDownloadURL(storageCard);
       }
-  
+
       // העלאת תמונת פרופיל ברירת מחדל
       const response = await fetch(profilePic);
       const profileBlob = await response.blob();
-      const storageProfile = ref(storage, `StudentsImages/${user.uid}/studentProfile/defaultProfilePicture.png`);
+      const storageProfile = ref(
+        storage,
+        `StudentsImages/${user.uid}/studentProfile/defaultProfilePicture.png`
+      );
       await uploadBytes(storageProfile, profileBlob);
       const profileURL = await getDownloadURL(storageProfile);
-  
+
       // שמירת הנתונים במסד הנתונים
       const userData = {
         uid: user.uid,
@@ -65,7 +71,7 @@ const Register = () => {
         profilePicture: profileURL,
         bio: "",
       };
-      
+
       if (userType === "Company") {
         userData.companyName = companyName;
         userData.userWebsite = userWebsite;
@@ -80,9 +86,9 @@ const Register = () => {
         userData.location = location;
         userData.userName = `${firstName} ${lastName}`;
       }
-      
+
       await setDoc(doc(db, "Users", user.uid), userData);
-  
+
       console.log("User registered with ID: ", user.uid);
       navigate("/login");
     } catch (error) {
@@ -90,11 +96,11 @@ const Register = () => {
       setError(error.message);
     }
   };
-  
-  useEffect(()=>{
-    loadCategories(setCategories)
-    loadUniversities(setUniversities)
-  })
+
+  useEffect(() => {
+    loadCategories(setCategories);
+    loadUniversities(setUniversities);
+  });
 
   return (
     <>
@@ -104,24 +110,22 @@ const Register = () => {
           <p className="register-subtitle">הכניסו את הפרטים כדי להתחיל</p>
         </div>
 
-        <div className="type-selection">
-          <button
-            className={`btn_register btn__student ${
-              userType === "Student" ? "btn-selected" : ""
-            }`}
+        <div class="flex w-full flex-col lg:flex-row px-10">
+          <div
             onClick={() => setUserType("Student")}
+            class="card bg-[#4F80E2] cursor-pointer rounded-box grid h-32 flex-grow place-items-center"
           >
-            סטודנט
-          </button>
-          <button
-            className={`btn_register btn__company ${
-              userType === "Company" ? "btn-selected" : ""
-            }`}
+            <h3>סטודנט</h3>
+          </div>
+          <div class="divider lg:divider-horizontal">או</div>
+          <div
             onClick={() => setUserType("Company")}
+            class="card bg-[#15CDCA] cursor-pointer rounded-box grid h-32 flex-grow place-items-center"
           >
-            חברה
-          </button>
+            <h3>חברה</h3>
+          </div>
         </div>
+
         {/* */}
         {userType === "" && (
           <>
@@ -185,34 +189,44 @@ const Register = () => {
                   <div className="form-group">
                     <label htmlFor="inputCollege">אוניברסיטה/מכללה</label>
                     <select
-                    name="college"
-                    id="inputCollege"
-                    onChange={(e) => setStudentCollege(e.target.value)}
-                    required
-                  >
-                    <option value=""></option>
-                    {
-                      universities.map((university)=>{
-                        return <option value={university.nameUniversity} key={university.id}>{university.nameUniversity}</option>
-                      })
-                    }
-                  </select>
+                      name="college"
+                      id="inputCollege"
+                      onChange={(e) => setStudentCollege(e.target.value)}
+                      required
+                    >
+                      <option value=""></option>
+                      {universities.map((university) => {
+                        return (
+                          <option
+                            value={university.nameUniversity}
+                            key={university.id}
+                          >
+                            {university.nameUniversity}
+                          </option>
+                        );
+                      })}
+                    </select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="inputEducation">תחום לימודי</label>
                     <select
-                    name="education"
-                    id="inputEducation"
-                    onChange={(e) => setStudentEducation(e.target.value)}
-                    required
-                  >
-                    <option value=""></option>
-                    {
-                      categories.map((categorie)=>{
-                        return <option value={categorie.nameCategory} key={categorie.id}>{categorie.nameCategory}</option>
-                      })
-                    }
-                  </select>
+                      name="education"
+                      id="inputEducation"
+                      onChange={(e) => setStudentEducation(e.target.value)}
+                      required
+                    >
+                      <option value=""></option>
+                      {categories.map((categorie) => {
+                        return (
+                          <option
+                            value={categorie.nameCategory}
+                            key={categorie.id}
+                          >
+                            {categorie.nameCategory}
+                          </option>
+                        );
+                      })}
+                    </select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="inputStudentCard">העלאת כרטיס סטודנט</label>
@@ -223,8 +237,7 @@ const Register = () => {
                       required
                     />
                   </div>
-
-                                  </>
+                </>
               )}
               {userType === "Company" && (
                 <>
