@@ -20,45 +20,78 @@ const ForgetPassword = () => {
   };
   return (
     <>
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-  <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-    <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
-      Forget Password
-    </h1>
-    <form onSubmit={(e) => handleSubmit(e)} className="space-y-6">
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email Address
-        </label>
-        <input
-          id="email"
-          value={email}
-          type="email"
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
-          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200 focus:outline-none"
-        />
-      </div>
-
-      {error != null ? (
-        <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-          <p>{error}</p>
+ <div className="flex items-center justify-center min-h-screen bg-base-200">
+  <div className="card w-full max-w-md shadow-xl bg-base-100">
+    <div className="card-body">
+      <h1 className="text-2xl font-bold text-center text-primary mb-6">
+        שחזור סיסמה
+      </h1>
+      <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
+        <div className="form-control">
+          <label htmlFor="email" className="label">
+            <span className="label-text">כתובת מייל</span>
+          </label>
+          <input
+            id="email"
+            value={email}
+            type="email"
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="הכנס את כתובת המייל שלך"
+            className="input input-bordered w-full"
+          />
         </div>
-      ) : (
-        <div className="text-sm text-green-600 rounded">
-          <p>{success}</p>
-        </div>
-      )}
 
-      <button
-        type="submit"
-        className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition"
-      >
-        Send
-      </button>
-    </form>
+        {error != null ? (
+          <div className="alert alert-error shadow-lg">
+            <div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current flex-shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728"
+                />
+              </svg>
+              <span>{error}</span>
+            </div>
+          </div>
+        ) : success && (
+          <div className="alert alert-success shadow-lg">
+            <div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current flex-shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m-6 6h10M9 5h10"
+                />
+              </svg>
+              <span>{success}</span>
+            </div>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className="btn btn-primary w-full"
+        >
+          שלח
+        </button>
+      </form>
+    </div>
   </div>
 </div>
+
 
     </>
   );
