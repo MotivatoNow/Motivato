@@ -15,6 +15,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../../firebase";
+import { FaUserPlus, FaUserTimes, FaCheck, FaTimes } from "react-icons/fa";
 
 const FriendButton = ({ user }) => {
   const { currentUser } = useAuth();
@@ -186,39 +187,56 @@ const FriendButton = ({ user }) => {
   
 
   return (
+<>
+  {/* הצגת הכפתור בהתאם לסטטוס */}
+  {!status && status !== "accepted" && status !== "pending" ? (
+    <button
+      onClick={addFriend}
+      className="btn bg-[#3E54D3] text-white hover:bg-[#3e54d2] flex items-center gap-2"
+    >
+      <FaUserPlus />
+      הוספת חבר
+    </button>
+  ) : (
     <>
-      {/* הצגת הכפתור בהתאם לסטטוס */}
-      {!status && status !== "accepted" && status !== "pending" ? (
-        <button onClick={addFriend}>הוספת חבר</button>
-      ) : (
-        <>
-          {status === "pending" && isReceiver && !isSender && (
-            <>
-              <div className="flex justify-end gap-2 mt-2">
-                <button
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                  onClick={handleAccept}
-                >
-                  אישור
-                </button>
-                <button
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                  onClick={() => handleReject(request)}
-                >
-                  דחייה
-                </button>
-              </div>
-            </>
-          )}
-          {status === "pending" && !isReceiver && (
-            <button disabled>בקשתכם נשלחה</button>
-          )}
-          {status === "accepted" && (
-            <button onClick={removeFriend}>הסרת חבר</button>
-          )}
-        </>
+      {status === "pending" && isReceiver && !isSender && (
+        <div className="flex justify-end gap-2 mt-2">
+          <button
+            className="btn btn-success flex items-center gap-2"
+            onClick={handleAccept}
+          >
+            <FaCheck />
+            אישור
+          </button>
+          <button
+            className="btn btn-error flex items-center gap-2"
+            onClick={() => handleReject(request)}
+          >
+            <FaTimes />
+            דחייה
+          </button>
+        </div>
+      )}
+      {status === "pending" && !isReceiver && (
+        <button
+          disabled
+          className="btn bg-[#3E54D3] hover:bg-[#3e54d2] flex items-center gap-2"
+        >
+          בקשתכם נשלחה
+        </button>
+      )}
+      {status === "accepted" && (
+        <button
+          onClick={removeFriend}
+          className="btn bg-[#3E54D3] text-white hover:bg-[#3e54d2] flex items-center gap-2"
+        >
+          <FaUserTimes />
+          הסרת חבר
+        </button>
       )}
     </>
+  )}
+</>
   );
 };
 

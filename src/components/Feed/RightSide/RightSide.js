@@ -28,64 +28,63 @@ const RightSide = () => {
   }, [currentUser]);
 
   return (
-    <div className="rounded-lg p-2 mt-5 mr-4">
-      <div className="rounded-lg bg-white p-2 items-center flex justify-center flex-col gap-1 space-x-4">
-        <img
-          src={currentUser.profilePicture || "defaultProfilePictureURL"}
-          alt="Profile"
-          className="w-16 h-16 rounded-full object-cover ml-1 border border-[#3E54D3]"
-        />
-        <div>
-          <Link to={`/profile/${currentUser.uid}`}>
-            <h3 className="text-lg font-semibold text-gray-800">
-              {currentUser.userName}
-            </h3>
-          </Link>
-        </div>
-        <p className="text-gray-500">{currentUser.studentEducation}</p>
-        <hr className="w-full border-t border-gray-200 my-2" />
-        <div className="flex justify-center items-center flex-col">
-          <p className="text-gray-600 font-bold">{followers.length}</p>
-          <p className="text-gray-400 font-semibold">Followers</p>
-        </div>
-        <hr className="w-full border-t border-gray-200 my-2" />
-        <Link
+    <div className="rounded-lg p-4 shadow bg-white space-y-6">
+    {/* פרופיל משתמש */}
+    <div className="flex flex-col items-center text-center space-y-2">
+      <img
+        src={currentUser.profilePicture || "https://via.placeholder.com/100"}
+        alt="Profile"
+        className="w-20 h-20 rounded-full border-2 border-primary shadow"
+      />
+      <Link to={`/profile/${currentUser.uid}`} className="text-lg font-bold text-gray-800 hover:underline">
+        {currentUser.userName}
+      </Link>
+      <p className="text-sm text-gray-500">{currentUser.studentEducation}</p>
+      <div className="divider w-full" />
+      <div>
+        <p className="font-bold text-gray-700">{followers.length}</p>
+        <p className="text-sm text-gray-500">Followers</p>
+      </div>
+      <div className="divider w-full" />
+      <Link
           className="text-[#3E54D3] font-semibold"
           to={`/profile/${currentUser.uid}`}
         >
           הפרופיל שלי
         </Link>
-      </div>
-
-      {/* הצעות חברים */}
-      <div className="rounded-lg bg-white p-2 mt-2 flex justify-center flex-col gap-3 space-x-4">
-        <h2 className="text-gray-800 font-semibold px-2">הצעות חברות חדשות</h2>
-
-        {/* הצגת הצעות חברים */}
-        {suggestedFollowers.map(
+    </div>
+  
+    {/* הצעות חברים */}
+    <div className="space-y-4">
+      <h2 className="text-lg font-semibold text-gray-800">הצעות חברות חדשות</h2>
+      {suggestedFollowers.length > 0 ? (
+        suggestedFollowers.map(
           (user) =>
-            user.userType !== "Admin"  && (
-              <div key={user.uid} className="px-2 flex gap-2 items-center">
-                <Link
-                  to={`/profile/${user.uid}`}
-                  className="flex gap-2 items-center"
-                >
+            user.userType !== "Admin" && (
+              <div
+                key={user.uid}
+                className="flex items-center justify-between p-2 bg-gray-50 rounded-lg shadow hover:shadow-md transition"
+              >
+                <Link to={`/profile/${user.uid}`} className="flex items-center gap-3">
                   <img
-                    src={user.profilePicture || "defaultProfilePictureURL"}
+                    src={user.profilePicture || "https://via.placeholder.com/50"}
                     alt="Profile"
-                    className="w-8 h-8 rounded-full object-cover ml-1 border border-[#3E54D3]"
+                    className="w-10 h-10 rounded-full border border-primary"
                   />
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {user.userType === "Student" && <>{user.userName}</>}
-                    {user.userType === "Company" && <>{user.companyName}</>}
+                  <h3 className="text-md font-medium text-gray-800">
+                    {user.userType === "Student" ? user.userName : user.companyName}
                   </h3>
                 </Link>
                 <FriendButton user={user} />
               </div>
             )
-        )}
-      </div>
+        )
+      ) : (
+        <p className="text-gray-500 text-center">אין הצעות חברות חדשות</p>
+      )}
     </div>
+  </div>
+  
   );
 };
 
