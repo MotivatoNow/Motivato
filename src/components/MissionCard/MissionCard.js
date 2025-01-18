@@ -57,188 +57,189 @@ const MissionCard = ({ missions, user }) => {
 
   return (
     <>
-      <div className="bg-white shadow-lg rounded-lg p-6 mb-6 max-w-3xl mx-auto transition hover:shadow-xl">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to={`/profile/${userData.uid}`}>
-              <img
-                src={userData.profilePicture || "defaultProfilePictureURL"}
-                alt="Profile"
-                className="w-14 h-14 rounded-full border border-gray-300"
-              />
-            </Link>
-            <div>
-              <Link to={`/profile/${userData.uid}`}>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {userData.userName || "Unknown User"}
-                </h3>
-              </Link>
-              <p className="text-sm text-gray-500">{missions.timeStamp}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 text-gray-600">
-            {currentUser.uid === userData.uid && (
-              <>
-                <MdDeleteOutline
-                  onClick={() => deleteMissions(missions.id)}
-                  size={24}
-                  className="cursor-pointer hover:text-red-500"
-                />
-                <CiEdit
-                  onClick={() => editMission(setIsEditing)}
-                  size={24}
-                  className="cursor-pointer hover:text-gray-700"
-                />
-                {isEditing && (
-                  <ModalEditMission
-                    isOpen={isEditing}
-                    onClose={() => setIsEditing(false)}
-                    missions={missions}
-                    user={currentUser}
-                  />
-                )}
-              </>
-            )}
-            {currentUser.userType === "Admin" && (
-              <MdDeleteOutline
-                onClick={() => deleteMissions(missions.id)}
-                size={24}
-                className="cursor-pointer hover:text-red-500"
-              />
-            )}
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <h2 className="text-xl font-bold text-gray-800">{missions.title}</h2>
-          {missions.education && (
-            <p className="mt-3 text-sm text-gray-600 italic">
-              {missions.education}
-            </p>
-          )}
-          <p className="text-gray-700 mt-3 leading-relaxed">{missions.post}</p>
-        </div>
-
-        <hr className="my-6 border-gray-200" />
-
-        <div className="flex gap-4">
-          {currentUser.uid !== missions.user.uid && (
-            <>
-              <button
-                onClick={() =>
-                  handleChatButtonClick(
-                    currentUser,
-                    missions.user,
-                    setActiveChatUser
-                  )
-                }
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg shadow-sm hover:bg-gray-200 transition"
-              >
-                Send a Message
-              </button>
-              <button
-                onClick={() => setApply(true)}
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg shadow-sm hover:bg-gray-200 transition"
-              >
-                Apply
-              </button>
-            </>
-          )}
-        </div>
-
-        {apply && (
-          <div className="mt-6">
-            <label
-              htmlFor="file-upload"
-              className="block text-gray-700 font-medium"
-            >
-              Upload File (PDF only):
-            </label>
-            <input
-              id="file-upload"
-              type="file"
-              accept=".pdf"
-              onChange={(e) => handleFileChange(e, setSelectedFile)}
-              className="mt-2 block w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-gray-200"
+ <div className="card shadow-lg rounded-lg p-6 mb-6 max-w-3xl mx-auto transition hover:shadow-2xl bg-base-100">
+  <div className="flex items-center justify-between">
+    {/* פרטי המשתמש */}
+    <div className="flex items-center gap-4">
+      <Link to={`/profile/${userData.uid}`}>
+        <div className="avatar">
+          <div className="w-16 h-16 mask mask-squircle border border-primary">
+            <img
+              src={userData.profilePicture || "defaultProfilePictureURL"}
+              alt="Profile"
             />
-            {selectFile && (
-              <p className="mt-2 text-gray-600">
-                Selected file: {selectFile.name}
-              </p>
-            )}
-            <div className="flex gap-4 mt-4">
-              <button
-                onClick={() =>
-                  handleApply(
-                    selectFile,
-                    missions,
-                    currentUser,
-                    setApply,
-                    setSelectedFile
-                  )
-                }
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg shadow-sm hover:bg-gray-200 transition"
-              >
-                Submit Application
-              </button>
-              <button
-                onClick={() => setApply(false)}
-                className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition"
-              >
-                Cancel
-              </button>
-            </div>
           </div>
-        )}
-
-        {currentUser.uid === userData.uid && applications.length > 0 && (
-          <div className="mt-8">
-            <button
-              onClick={() => setShowApplications((prev) => !prev)}
-              className="font-medium text-gray-700 bg-gray-100 py-2 px-4 rounded-lg shadow-sm hover:bg-gray-200 transition"
-            >
-              Applications ({applications.length})
-            </button>
-            {showApplications && (
-              <div className="mt-4 border border-gray-300 rounded-lg shadow-lg bg-white p-4 max-h-96 overflow-y-auto">
-                {applications.map((application) => (
-                  <div
-                    key={application.id}
-                    className="border border-gray-200 rounded-lg p-4 mb-4"
-                  >
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={application.userProfilePicture}
-                        alt="User"
-                        className="w-12 h-12 rounded-full"
-                      />
-                      <span className="font-medium text-gray-800">
-                        {application.userName}
-                      </span>
-                    </div>
-                    <iframe
-                      className="w-full h-64 mt-4 border border-gray-300"
-                      src={application.fileUrl}
-                      title={application.fileName}
-                    ></iframe>
-                    <p className="text-sm text-gray-500 mt-2">
-                      {application.timeStamp}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeChatUser && (
-          <ChatPopup
-            conversationId={activeChatUser}
-            closePopup={() => setActiveChatUser(null)}
-          />
-        )}
+        </div>
+      </Link>
+      <div>
+        <Link to={`/profile/${userData.uid}`}>
+          <h3 className="text-lg font-bold text-gray-800">
+            {userData.userName || "Unknown User"}
+          </h3>
+        </Link>
+        <p className="text-sm text-gray-500">{missions.timeStamp}</p>
       </div>
+    </div>
+
+    {/* אייקונים של עריכה ומחיקה */}
+    <div className="flex items-center gap-3 text-gray-600">
+      {currentUser.uid === userData.uid && (
+        <>
+          <MdDeleteOutline
+            onClick={() => deleteMissions(missions.id)}
+            size={24}
+            className="cursor-pointer hover:text-error"
+          />
+          <CiEdit
+            onClick={() => editMission(setIsEditing)}
+            size={24}
+            className="cursor-pointer hover:text-primary"
+          />
+          {isEditing && (
+            <ModalEditMission
+              isOpen={isEditing}
+              onClose={() => setIsEditing(false)}
+              missions={missions}
+              user={currentUser}
+            />
+          )}
+        </>
+      )}
+      {currentUser.userType === "Admin" && (
+        <MdDeleteOutline
+          onClick={() => deleteMissions(missions.id)}
+          size={24}
+          className="cursor-pointer hover:text-error"
+        />
+      )}
+    </div>
+  </div>
+
+  {/* תוכן המשימה */}
+  <div className="mt-6">
+    <h2 className="text-xl font-bold text-gray-800">{missions.title}</h2>
+    {missions.education && (
+      <p className="mt-3 text-sm text-gray-500 italic">{missions.education}</p>
+    )}
+    <p className="text-gray-700 mt-3 leading-relaxed">{missions.post}</p>
+  </div>
+
+  <div className="divider my-6"></div>
+
+  {/* כפתורים לשליחת הודעה או בקשה */}
+  <div className="flex gap-4">
+    {currentUser.uid !== missions.user.uid && (
+      <>
+        <button
+          onClick={() =>
+            handleChatButtonClick(
+              currentUser,
+              missions.user,
+              setActiveChatUser
+            )
+          }
+          className="p-6 rounded-[5px] bg-[#3E54D3] text-white"
+        >
+          שליחת הודעה
+        </button>
+        <button
+          onClick={() => setApply(true)}
+          className="p-6 bg-[#15CDCA] text-white rounded-[5px]"
+        >
+          שליחה
+        </button>
+      </>
+    )}
+  </div>
+
+  {/* חלון בקשה */}
+  {apply && (
+    <div className="mt-6">
+      <label
+        htmlFor="file-upload"
+        className="block text-gray-700 font-medium mb-2"
+      >
+        העלאת קובץ (PDF בלבד):
+      </label>
+      <input
+        id="file-upload"
+        type="file"
+        accept=".pdf"
+        onChange={(e) => handleFileChange(e, setSelectedFile)}
+        className="file-input file-input-bordered w-full"
+      />
+      {selectFile && (
+        <p className="mt-2 text-gray-600">קובץ שנבחר: {selectFile.name}</p>
+      )}
+      <div className="flex gap-4 mt-4">
+        <button
+          onClick={() =>
+            handleApply(selectFile, missions, currentUser, setApply, setSelectedFile)
+          }
+          className="p-3 rounded-[5px] bg-[#3E54D3] text-white"
+        >
+          שלח בקשה
+        </button>
+        <button
+          onClick={() => setApply(false)}
+          className="p-3 rounded-[5px] bg-[#15CDCA] text-white"
+        >
+          ביטול
+        </button>
+      </div>
+    </div>
+  )}
+
+  {/* בקשות */}
+  {currentUser.uid === userData.uid && applications.length > 0 && (
+    <div className="mt-8">
+      <button
+        onClick={() => setShowApplications((prev) => !prev)}
+        className="btn btn-outline btn-info w-full"
+      >
+        בקשות ({applications.length})
+      </button>
+      {showApplications && (
+        <div className="mt-4 bg-base-100 border border-gray-300 rounded-lg shadow p-4 max-h-96 overflow-y-auto">
+          {applications.map((application) => (
+            <div
+              key={application.id}
+              className="border border-gray-200 rounded-lg p-4 mb-4"
+            >
+              <div className="flex items-center gap-4">
+                <div className="avatar">
+                  <div className="w-12 h-12 mask mask-squircle">
+                    <img src={application.userProfilePicture} alt="User" />
+                  </div>
+                </div>
+                <span className="font-medium text-gray-800">
+                  {application.userName}
+                </span>
+              </div>
+              <iframe
+                className="w-full h-64 mt-4 border border-gray-300 rounded-md"
+                src={application.fileUrl}
+                title={application.fileName}
+              ></iframe>
+              <p className="text-sm text-gray-500 mt-2">
+                {application.timeStamp}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+
+  {/* פופאפ צ'אט */}
+  {activeChatUser && (
+    <ChatPopup
+      conversationId={activeChatUser}
+      closePopup={() => setActiveChatUser(null)}
+    />
+  )}
+</div>
+
     </>
   );
 };

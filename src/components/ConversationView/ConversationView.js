@@ -89,78 +89,83 @@ const ConversationView = ({ conversationId }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white p-4 rounded-lg shadow-md max-w-full mx-auto">
-      <h2 className="font-semibold text-2xl text-gray-800 mb-4">Messages</h2>
-      <div
-        ref={messagesContainerRef}
-        className="overflow-y-auto h-[calc(100vh-200px)] mb-2 p-4 bg-gray-100 rounded-lg shadow-inner space-y-4"
-        onScroll={(e) => {
-          if (e.target.scrollTop === 0) {
-            loadMoreMessages();
-          }
-        }}
-      >
-        {" "}
-        {messages.length === 0 ? (
-          <p className="text-center text-gray-500">
-            No messages in this conversation
-          </p>
-        ) : (
-          messages.map((message, index) => {
-            const authorData = participantsData[message.author];
-            return (
-              <div
-                key={message.id}
-                className={`flex items-start ${
-                  message.author === currentUser.uid
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
-              >
-                {authorData &&
-                  authorData.profilePicture &&
-                  authorData.uid !== currentUser.uid && (
+<div className="flex flex-col h-full bg-base-100 p-4 rounded-lg shadow-md max-w-full mx-auto">
+  {/* כותרת הצ'אט */}
+  <h2 className="font-bold text-2xl text-[#3E54D3] mb-4">הודעות</h2>
+
+  {/* אזור ההודעות */}
+  <div
+    ref={messagesContainerRef}
+    className="overflow-y-auto h-[calc(100vh-200px)] mb-2 p-4 bg-gray-100 rounded-lg shadow-inner space-y-4"
+    onScroll={(e) => {
+      if (e.target.scrollTop === 0) {
+        loadMoreMessages();
+      }
+    }}
+  >
+    {/* הודעות */}
+    {messages.length === 0 ? (
+      <p className="text-center text-gray-500">
+        No messages in this conversation
+      </p>
+    ) : (
+      messages.map((message) => {
+        const authorData = participantsData[message.author];
+        const isCurrentUser = message.author === currentUser.uid;
+
+        return (
+          <div
+            key={message.id}
+            className={`chat ${isCurrentUser ? "chat-end" : "chat-start"}`}
+          >
+            {/* תמונת פרופיל */}
+            {authorData &&
+              authorData.profilePicture &&
+              !isCurrentUser && (
+                <div className="chat-image avatar">
+                  <div className="w-10 rounded-full">
                     <img
                       src={authorData.profilePicture}
                       alt={authorData.userName}
-                      className="w-8 h-8 rounded-full mr-3"
                     />
-                  )}
-                <div className="max-w-xs">
-                  <p
-                    className={`p-3 rounded-lg ${
-                      message.author === currentUser.uid
-                        ? "bg-blue-500 text-white ml-auto"
-                        : "bg-gray-300 text-gray-800"
-                    }`}
-                  >
-                    {message.content}
-                  </p>
+                  </div>
                 </div>
-                <div ref={messagesEndRef} />
-              </div>
-            );
-          })
-        )}
-      </div>
+              )}
 
-      <div className="flex items-center space-x-2 mt-2">
-        
-        <textarea
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          rows="1"
-          className="w-full h-12 border p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 resize"
-          placeholder="Type a message..."
-        />
-        <button
-          className="h-12 bg-blue-500 text-white px-6 rounded-lg hover:bg-blue-600 transition duration-300"
-          onClick={sendMessage}
-        >
-          Send
-        </button>
-      </div>
-    </div>
+            {/* בועת ההודעה */}
+            <div
+              className={`chat-bubble ${
+                isCurrentUser
+                  ? "bg-[#3E54D3] text-white"
+                  : "bg-gray-300 text-gray-800"
+              }`}
+            >
+              {message.content}
+            </div>
+          </div>
+        );
+      })
+    )}
+  </div>
+
+  {/* אזור שליחת הודעות */}
+  <div className="flex items-center space-x-2 mt-2">
+    <textarea
+      value={newMessage}
+      onChange={(e) => setNewMessage(e.target.value)}
+      rows="1"
+      className="textarea textarea-bordered w-full h-12 resize-none"
+      placeholder="כתיבה הודעה..."
+    />
+    <button
+      className="btn btn-primary bg-[#3E54D3] hover:bg-[#2a3c9c]"
+      onClick={sendMessage}
+    >
+      שלח הודעה
+    </button>
+  </div>
+</div>
+
   );
 };
 

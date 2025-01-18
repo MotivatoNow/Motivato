@@ -125,48 +125,60 @@ const ChatOverview = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-gray-50">
-      <div className="lg:w-1/3 bg-white shadow-md p-4 overflow-y-auto">
-        <h2 className="font-semibold text-xl mb-6 text-gray-700">צ'אטים</h2>
-        {conversations.length === 0 ? (
-          <p className="text-gray-500">לא נמצאו שיחות</p>
-        ) : (
-          conversations.map((convo, index) => (
-            <div
-              key={index}
-              className="p-4 mb-4 bg-gray-100 rounded-lg shadow hover:shadow-lg transition cursor-pointer"
-              onClick={() => openChat(convo.id)}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-gray-800 flex items-center">
-                    {convo.hasUnreadMessages && (
-                      <span className="bg-blue-500 text-blue-500 text-xs font-bold px-2 py-1 rounded-full mr-2">
-                        *
-                      </span>
-                    )}
-                    {convo.isGroup ? convo.groupName : `${convo.otherUserName}`}
-                  </p>
-
-                  <p className="text-sm text-gray-600 truncate">
-                    {convo.lastMessage || "No messages yet"}
-                  </p>
-                </div>
-              </div>
+    <div className="flex flex-col lg:flex-row h-screen bg-base-200">
+    {/* רשימת שיחות */}
+    <div className="lg:w-1/3 bg-base-100 shadow-md p-6 overflow-y-auto rounded-lg">
+      <h2 className="font-bold text-lg text-gray-700 mb-6">צ'אטים</h2>
+      {conversations.length === 0 ? (
+        <p className="text-center text-gray-500">לא נמצאו שיחות</p>
+      ) : (
+        conversations.map((convo, index) => (
+          <div
+            key={index}
+            className="flex items-center gap-4 p-4 mb-4 bg-base-100 border border-gray-300 rounded-lg hover:shadow transition cursor-pointer"
+            onClick={() => openChat(convo.id)}
+          >
+            {/* תמונת פרופיל */}
+            <img
+              src={convo.profilePicture || "https://via.placeholder.com/50"}
+              alt="Profile"
+              className="w-12 h-12 rounded-full object-cover"
+            />
+            {/* פרטי השיחה */}
+            <div className="flex-grow">
+              <p className="font-semibold text-gray-800">
+                {convo.isGroup ? convo.groupName : convo.otherUserName}
+              </p>
+              <p className="text-sm text-gray-500 truncate">
+                {convo.lastMessage || "אין הודעות"}
+              </p>
             </div>
-          ))
-        )}
-      </div>
-      <div className="lg:w-2/3 flex-grow bg-white shadow-lg rounded-lg p-6 overflow-y-auto">
-        {activeConversationId ? (
-          <ConversationView conversationId={activeConversationId} />
-        ) : (
-          <p className="text-center text-gray-500 mt-16">
-            בחר שיחה כדי להמשיך בצ'אט
-          </p>
-        )}
-      </div>
+            {/* הודעה שלא נקראה */}
+            {convo.hasUnreadMessages && (
+              <span className="badge badge-error text-xs font-bold">חדש</span>
+            )}
+          </div>
+        ))
+      )}
     </div>
+  
+    {/* חלון השיחה הפעילה */}
+    <div className="lg:w-2/3 flex-grow bg-base-100 shadow-lg rounded-lg p-6 overflow-y-auto">
+      {activeConversationId ? (
+        <ConversationView conversationId={activeConversationId} />
+      ) : (
+        <div className="flex flex-col items-center justify-center h-full">
+          <img
+            src="https://via.placeholder.com/100"
+            alt="No Conversation"
+            className="w-24 h-24 mb-4"
+          />
+          <p className="text-gray-500">בחר שיחה כדי להמשיך בצ'אט</p>
+        </div>
+      )}
+    </div>
+  </div>
+  
   );
 };
 
