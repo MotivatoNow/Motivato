@@ -35,6 +35,7 @@ export const AuthProvider = ({children}) => {
     const value = {
         currentUser,
         logout,
+        loading,
     };
    if(loading)return <Loading />
     return (
@@ -43,6 +44,8 @@ export const AuthProvider = ({children}) => {
         </AuthContext.Provider>
     );
 };
+
+
 export const AuthWrapper=({children})=>{
     const { currentUser, loading } = useAuth();
 

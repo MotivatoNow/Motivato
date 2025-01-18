@@ -3,6 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
 
 *{
   margin:0;
@@ -17,3 +19,38 @@ body{
   min-height: 100vh;
   overflow-x:hidden;
 }
+
+.slick-prev:before, 
+.slick-next:before {
+     color: black;
+     font-size: 40px;
+}
+
+.slick-next:before{
+  position: absolute;
+  right:0;
+   margin-top: -10px;
+   margin-right: 5px;
+}
+
+.slick-next,
+.slick-prev
+{
+  position: absolute;
+  right:0;
+ }
+
+.slick-prev{
+  z-index: 99999;
+  margin-left: 25px;
+}
+
+.slick-arrow{
+  position: absolute;
+  right:50;
+  margin-right: 25px;
+ }
+
+.slick-dots {
+  @apply ml-[-10px] hidden
+ }

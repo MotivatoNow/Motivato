@@ -17,13 +17,24 @@ import Post from "./pages/Post/Post";
 import MissionFeed from "./pages/MissionFeed/MissionFeed";
 import Mission from "./pages/Mission/Mission";
 import FollowersView from "./pages/FollowersView/FollowersView";
+import './App.css'
+import NavBarLogout from "./components/NavBar/NavBarLogout";
+import { Loading } from "./components/Loading/Loading";
+
 
 function App() {
+
+  const { currentUser, loading } = useAuth();
+
+  if (loading) {
+    return <Loading/> // מסך טעינה בזמן שהסטטוס של המשתמש נטען
+  }
+
   return (
     <>
       <AuthProvider>
         <Router>
-          <NavBar />
+        {currentUser ? <NavBar /> : <NavBarLogout />}
           <div className="main-content pt-16">
           <Routes>
           <Route
