@@ -4,7 +4,6 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import profilePic from "../../assets/images/profilepicture.png";
-import "./Register.css";
 import { useNavigate } from "react-router-dom";
 import { loadCategories } from "../../hooks/useLoadCategories";
 import { loadUniversities } from "../../hooks/useLoadUniversities";
