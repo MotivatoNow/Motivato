@@ -5,7 +5,7 @@ const CategoryCard = ({icons,title}) => {
   return (
 <div className='category-card bg-white md:p-4 p-2 shadow-lg rounded-md flex items-center justify-between gap-4 border border-transparent hover:border-[#15CDCA] hover:cursor-pointer group/edit'>
     <div className='flex items-center gap-4 overflow-hidden'>
-        {icons}
+        <img className="h-10 object-contain rounded-[5px]" src={icons}/>
         <h1 className='md:max-w-[200px] max-w-[70px] truncate md:text-2xl text-lg font-semibold'>
             {title}
         </h1>

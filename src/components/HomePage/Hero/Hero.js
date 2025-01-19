@@ -28,7 +28,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="w-full bg-white py-24 md:px-0 px-10 overflow-hidden">
+    <div id="hero" className="w-full bg-white py-24 md:px-0 px-10 overflow-hidden">
       {/* Col 1 */}
       <div className="md:max-w-[1480px] max-w-[600px] m-auto grid md:grid-cols-2 gap-6">
         {/* Text */}

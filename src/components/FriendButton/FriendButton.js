@@ -225,15 +225,16 @@ const FriendButton = ({ user }) => {
           בקשתכם נשלחה
         </button>
       )}
-      {status === "accepted" && (
-        <button
-          onClick={removeFriend}
-          className="btn bg-[#3E54D3] text-white hover:bg-[#3e54d2] flex items-center gap-2"
-        >
-          <FaUserTimes />
-          הסרת חבר
-        </button>
-      )}
+     {status === "accepted" && (
+  <button
+    onClick={removeFriend}
+    className="btn bg-[#3E54D3] text-white hover:bg-[#3e54d2] flex items-center gap-2"
+  >
+    <FaUserTimes />
+    הסרת חבר
+  </button>
+)}
+
     </>
   )}
 </>

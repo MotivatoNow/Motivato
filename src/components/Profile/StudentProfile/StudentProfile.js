@@ -6,14 +6,9 @@ import PostCard from "../../PostCard/PostCard";
 import ModalEditProfileComponent from "../../Modal/ModalEditProfile/ModalEditProfile";
 import ChatPopup from "../../ChatPopup/ChatPopup";
 import {
-  addDoc,
   arrayRemove,
-  collection,
   doc,
-  getDocs,
-  query,
   updateDoc,
-  where,
 } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { AiOutlineClose } from "react-icons/ai";
@@ -42,38 +37,6 @@ const StudentProfile = ({ user, currentUser }) => {
   const [activeChatUser, setActiveChatUser] = useState(null);
   const [isLightboxOpen, setLightboxOpen] = useState(false);
 
-  // Chat
-
-  const createConversation = async (participants) => {
-    const conversationRef = await addDoc(collection(db, "Conversations"), {
-      participants: participants,
-      lastMessage: "",
-      lastMessageTimestamp: new Date(),
-      isGroup: false,
-    });
-
-    return conversationRef.id;
-  };
-
-  const getExistingConversation = async (participants) => {
-    let user1 = participants[0];
-
-    if (user1 !== currentUser.uid) {
-      user1 = participants[1];
-    }
-    const q = query(
-      collection(db, "Conversations"),
-      where("participants", "array-contains", user1)
-    );
-
-    const querySnapshot = await getDocs(q);
-    console.log(querySnapshot);
-    if (!querySnapshot.empty) {
-      return querySnapshot.docs[0].id;
-    }
-
-    return null;
-  };
 
   // useEffect
   useEffect(() => {
@@ -338,111 +301,102 @@ const StudentProfile = ({ user, currentUser }) => {
         </div>
       </div>
 
-      <div className="min-h-screen w-full grid gap-2 grid-rows-[auto_1fr] md:grid-cols-[1fr_2fr] p-3">
-        <div className="mt-5 max-h-[50vh] overflow-hidden w-full grid gap-2 grid-rows-[auto,auto]">
-          {/* Followers/Friends Section */}
-          <section className="bg-white p-3 rounded-[5px] max-h-[40vh] overflow-hidden">
-            <h3 className="font-semibold mb-3">עוקבים/חברים</h3>
-            <div className="grid grid-cols-3 gap-1">
-              {followers.slice(0, 6).map((follower) => (
-                <Link to={`/profile/${follower.uid}`} key={follower.uid}>
-                  <div
-                    key={follower.id}
-                    className="text-center flex flex-col items-center space-y-2"
-                  >
-                    <img
-                      src={follower.profilePicture || "/default-profile.png"}
-                      alt={follower.userName}
-                      className="w-24 h-24 rounded-lg object-cover"
-                    />
-                    <span className="text-gray-800 text-sm font-medium">
-                      {follower.userName}
-                    </span>
-                  </div>
-                </Link>
-              ))}
+      <div className="min-h-[50vh] bg-[#FDFDFF] w-full grid gap-6 grid-rows-[auto_1fr] md:grid-cols-[1fr_2fr] p-6 rounded-lg shadow-lg">
+  {/* Left Section */}
+  <div className="flex flex-col gap-6">
+    {/* Followers/Friends Section */}
+    <section className="bg-white p-4 rounded-lg shadow-md">
+      <h3 className="font-semibold mb-4 text-gray-800 text-lg">עוקבים/חברים</h3>
+      <div className="grid grid-cols-3 gap-4">
+        {followers.slice(0, 6).map((follower) => (
+          <Link to={`/profile/${follower.uid}`} key={follower.uid}>
+            <div className="flex flex-col items-center text-center space-y-2">
+              <img
+                src={follower.profilePicture || "/default-profile.png"}
+                alt={follower.userName}
+                className="w-20 h-20 rounded-full object-cover shadow-sm hover:shadow-md transition"
+              />
+              <span className="text-gray-800 text-sm font-medium">
+                {follower.userName}
+              </span>
             </div>
-            {followers.length > 5 && (
-              <Link to={`/followers/${userData.uid}`}>
-                <button className="mt-4 text-blue-600 hover:underline text-sm font-medium">
-                  הצג עוד חברים
-                </button>
-              </Link>
-            )}
-          </section>
-          <section className="bg-white p-3 rounded-[5px] max-h-[50vh] overflow-hidden">
-            <h3 className="font-semibold mb-3">תמונות</h3>
-            {photos.length > 0 ? (
-              photos.map((post) => (
-                <div
-                  key={post.id}
-                  className="text-center flex flex-col p-5 space-y-2"
-                >
-                  <img
-                    key={post.id}
-                    src={post.postImage}
-                    alt={`${userData.firstName} profile `}
-                    className="w-24 h-24 rounded-lg object-cover"
-                  />
-                </div>
-              ))
-            ) : (
-              <p>למשתמש אין תמונות</p>
-            )}
-          </section>
-        </div>
-
-        {/* Posts Section */}
-        <section
-          className={`${
-            currentUser.uid === user.uid ? "" : "mt-2"
-          } flex justify-start`}
-        >
-          <div
-            className="bg-white overflow-hidden shadow-sm rounded-lg p-6 mb-6 mx-auto mt-3"
-            style={{
-              width: "940px", // רוחב רגיל למסכים גדולים
-              maxWidth: "100%", // מתאים למסכים קטנים
-            }}
-          >
-            {currentUser.uid === user.uid && (
-              <>
-                <MyPost />
-              </>
-            )}
-            {allPosts.map((post) => (
-              <div key={post.id}>
-                <PostCard posts={post} user={currentUser} />
-              </div>
-            ))}
-          </div>
-        </section>
-        {/* Modal Component */}
-        <ModalEditProfileComponent
-          modalOpenEditProfile={modalOpenEditProfile}
-          setModalOpenEditProfile={setModalOpenEditProfile}
-          setUser={setUserData}
-          user={currentUser}
-        />
-        <ModalEditWebsites
-          modalOpenEditWebsites={modalOpenEditWebsites}
-          setModalEditWebsites={setModalEditWebsites}
-          setUser={setUserData}
-          user={currentUser}
-        />
-        <ModalEditSkills
-          modalOpenEditSkills={modalOpenEditSkills}
-          setModalOpenEditSkills={setModalOpenEditSkills}
-          setUser={setUserData}
-          user={currentUser}
-        />
-        <ModalEditBio
-          modalOpenEditBio={modalOpenEditBio}
-          setModalOpenEditBio={setModalOpenEditBio}
-          setUser={setUserData}
-          user={currentUser}
-        />
+          </Link>
+        ))}
       </div>
+      {followers.length > 6 && (
+        <Link to={`/followers/${userData.uid}`}>
+          <button className="mt-4 text-blue-600 hover:underline text-sm font-medium">
+            הצג עוד חברים
+          </button>
+        </Link>
+      )}
+    </section>
+
+    {/* Photos Section */}
+    <section className="bg-white p-4 rounded-lg shadow-md">
+      <h3 className="font-semibold mb-4 text-gray-800 text-lg">תמונות</h3>
+      {photos.length > 0 ? (
+        <div className="grid grid-cols-3 gap-4">
+          {photos.map((post) => (
+            <div key={post.id}>
+              <img
+                src={post.postImage}
+                alt={`${userData.firstName} photo`}
+                className="w-20 h-20 rounded-lg object-cover shadow-sm hover:shadow-md transition"
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500">למשתמש אין תמונות</p>
+      )}
+    </section>
+  </div>
+
+  {/* Posts Section */}
+  <section className="flex justify-start">
+    <div
+      className="bg-white overflow-hidden shadow-md rounded-lg p-6 w-full"
+      style={{
+        maxWidth: "940px", // מותאם למסכים גדולים
+      }}
+    >
+      {currentUser.uid === user.uid && <MyPost />}
+      {allPosts.map((post) => (
+        <div key={post.id} className="mb-6">
+          <PostCard posts={post} user={currentUser} />
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* Modals */}
+  <ModalEditProfileComponent
+    modalOpenEditProfile={modalOpenEditProfile}
+    setModalOpenEditProfile={setModalOpenEditProfile}
+    setUser={setUserData}
+    user={currentUser}
+  />
+  <ModalEditWebsites
+    modalOpenEditWebsites={modalOpenEditWebsites}
+    setModalEditWebsites={setModalEditWebsites}
+    setUser={setUserData}
+    user={currentUser}
+  />
+  <ModalEditSkills
+    modalOpenEditSkills={modalOpenEditSkills}
+    setModalOpenEditSkills={setModalOpenEditSkills}
+    setUser={setUserData}
+    user={currentUser}
+  />
+  <ModalEditBio
+    modalOpenEditBio={modalOpenEditBio}
+    setModalOpenEditBio={setModalOpenEditBio}
+    setUser={setUserData}
+    user={currentUser}
+  />
+</div>
+
 
       {activeChatUser && (
         <>

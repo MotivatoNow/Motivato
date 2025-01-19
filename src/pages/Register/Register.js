@@ -104,98 +104,114 @@ const Register = () => {
 
   return (
     <>
-      <div className="container-register_page">
-        <div className="register-header">
-          <h1 className="register-title">בואו נתחיל</h1>
-          <p className="register-subtitle">הכניסו את הפרטים כדי להתחיל</p>
-        </div>
+  <div className="min-h-screen bg-base-200 py-10">
+  <div className="text-center mb-8">
+    <h1 className="text-4xl font-bold text-primary">בואו נתחיל</h1>
+    <p className="text-lg text-gray-600">הכניסו את הפרטים כדי להתחיל</p>
+  </div>
 
-        <div class="flex w-full flex-col lg:flex-row px-10">
-          <div
-            onClick={() => setUserType("Student")}
-            class="card bg-[#4F80E2] cursor-pointer rounded-box grid h-32 flex-grow place-items-center"
-          >
-            <h3>סטודנט</h3>
-          </div>
-          <div class="divider lg:divider-horizontal">או</div>
-          <div
-            onClick={() => setUserType("Company")}
-            class="card bg-[#15CDCA] cursor-pointer rounded-box grid h-32 flex-grow place-items-center"
-          >
-            <h3>חברה</h3>
-          </div>
-        </div>
+  <div className="flex w-full max-w-3xl mx-auto flex-col lg:flex-row gap-4 px-4">
+    <div
+      onClick={() => setUserType("Student")}
+      className="bg-[#3E54D3] text-white cursor-pointer rounded-box flex items-center justify-center h-32 flex-grow text-xl font-medium shadow-lg hover:bg-primary-focus"
+    >
+      סטודנט
+    </div>
+    <div className="divider lg:divider-horizontal">או</div>
+    <div
+      onClick={() => setUserType("Company")}
+      className="bg-accent text-white cursor-pointer rounded-box flex items-center justify-center h-32 flex-grow text-xl font-medium shadow-lg hover:bg-accent-focus"
+    >
+      חברה
+    </div>
+  </div>
 
-        {/* */}
-        {userType === "" && (
+  {userType === "" && (
+    <div className="text-center mt-8">
+      <h2 className="text-2xl font-semibold text-primary mb-2">
+        קודם כל, האם את/ה סטודנט/ית או חברה?
+      </h2>
+      <p className="text-gray-600">בחרו באחד האופציות</p>
+    </div>
+  )}
+
+  {userType && (
+    <div className="card bg-white shadow-lg rounded-lg p-8 mt-8 w-full max-w-4xl mx-auto">
+      <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleRegister}>
+        {userType === "Student" && (
           <>
-            <div className="option_header">
-              <h2 className="option_title">
-                קודם כל, האם את/ה סטודנט/ית או חברה?
-              </h2>
-              <p className="option_subtitle">בחרו באחד האופציות</p>
+            <div className="form-control">
+              <label htmlFor="inputFirstName" className="label">
+                <span className="label-text">שם פרטי</span>
+              </label>
+              <input
+                type="text"
+                id="inputFirstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="input input-bordered"
+                placeholder="שם פרטי"
+                required
+              />
             </div>
-          </>
-        )}
-        {/* */}
-        <div className="register_form-container">
-          {userType && (
-            <form className="register_form" onSubmit={handleRegister}>
-              {userType === "Student" && (
-                <>
-                  <div className="form-group">
-                    <label htmlFor="inputFirstName">שם פרטי</label>
-                    <input
-                      type="text"
-                      id="inputFirstName"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="שם פרטי"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="inputLastName">שם משפחה</label>
-                    <input
-                      id="inputLastName"
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="שם משפחה"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="inputLocation">מדינה</label>
-                    <input
-                      type="text"
-                      id="inputLocation"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="מדינה"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="inputUserDate">תאריך לידה</label>
-                    <input
-                      type="date"
-                      value={dateOfBirth}
-                      id="inputUserDate"
-                      onChange={(e) => setDateOfBirth(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="inputCollege">אוניברסיטה/מכללה</label>
-                    <select
-                      name="college"
-                      id="inputCollege"
-                      onChange={(e) => setStudentCollege(e.target.value)}
-                      required
-                    >
-                      <option value=""></option>
-                      {universities.map((university) => {
+
+            <div className="form-control">
+              <label htmlFor="inputLastName" className="label">
+                <span className="label-text">שם משפחה</span>
+              </label>
+              <input
+                type="text"
+                id="inputLastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="input input-bordered"
+                placeholder="שם משפחה"
+                required
+              />
+            </div>
+
+            <div className="form-control">
+              <label htmlFor="inputLocation" className="label">
+                <span className="label-text">מדינה</span>
+              </label>
+              <input
+                type="text"
+                id="inputLocation"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="input input-bordered"
+                placeholder="מדינה"
+                required
+              />
+            </div>
+
+            <div className="form-control">
+              <label htmlFor="inputUserDate" className="label">
+                <span className="label-text">תאריך לידה</span>
+              </label>
+              <input
+                type="date"
+                id="inputUserDate"
+                value={dateOfBirth}
+                onChange={(e) => setDateOfBirth(e.target.value)}
+                className="input input-bordered"
+                required
+              />
+            </div>
+
+            <div className="form-control">
+              <label htmlFor="inputCollege" className="label">
+                <span className="label-text">אוניברסיטה/מכללה</span>
+              </label>
+              <select
+                id="inputCollege"
+                value={studentCollege}
+                onChange={(e) => setStudentCollege(e.target.value)}
+                className="select select-bordered"
+                required
+              >
+                <option value="">בחר אוניברסיטה</option>
+                {universities.map((university) => {
                         return (
                           <option
                             value={university.nameUniversity}
@@ -205,136 +221,175 @@ const Register = () => {
                           </option>
                         );
                       })}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="inputEducation">תחום לימודי</label>
-                    <select
-                      name="education"
-                      id="inputEducation"
-                      onChange={(e) => setStudentEducation(e.target.value)}
-                      required
-                    >
-                      <option value=""></option>
-                      {categories.map((categorie) => {
+                
+              </select>
+            </div>
+
+            <div className="form-control">
+              <label htmlFor="inputEducation" className="label">
+                <span className="label-text">תחום לימודי</span>
+              </label>
+              <select
+                id="inputEducation"
+                value={studentEducation}
+                onChange={(e) => setStudentEducation(e.target.value)}
+                className="select select-bordered"
+                required
+              >
+                <option value="">בחר תחום לימודי</option>
+                {categories.map((category) => {
                         return (
                           <option
-                            value={categorie.nameCategory}
-                            key={categorie.id}
+                            value={category.nameCategory}
+                            key={category.id}
                           >
-                            {categorie.nameCategory}
+                            {category.nameCategory}
                           </option>
                         );
                       })}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="inputStudentCard">העלאת כרטיס סטודנט</label>
-                    <input
-                      type="file"
-                      id="inputStudentCard"
-                      onChange={(e) => setStudentCard(e.target.files[0])}
-                      required
-                    />
-                  </div>
-                </>
-              )}
-              {userType === "Company" && (
-                <>
-                  <div className="form-group">
-                    <label htmlFor="inputCompanyName">שם החברה</label>
-                    <input
-                      type="text"
-                      id="inputCompanyName"
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="שם החברה"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="inputWebsiteCompany">אתר החברה</label>
-                    <input
-                      type="text"
-                      id="inputWebsiteCompany"
-                      value={userWebsite}
-                      onChange={(e) => setUserWebsite(e.target.value)}
-                      placeholder="אתר החברה"
-                      required
-                    />
-                  </div>
+             
+              </select>
+            </div>
 
-                  {/* Contact Person Section */}
-                  <div className="form-group full-width">
-                    <h2 className="contact-person-title">איש קשר</h2>
-                    <hr />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="inputFirstName">שם פרטי</label>
-                    <input
-                      type="text"
-                      id="inputFirstName"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="שם פרטי"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="inputLastName">שם משפחה</label>
-                    <input
-                      id="inputLastName"
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="שם משפחה"
-                      required
-                    />
-                  </div>
-                </>
-              )}
-              <div className="form-group">
-                <label htmlFor="inputEmail">דואר אלקטרוני</label>
+            <div className="form-control">
+              <label htmlFor="inputStudentCard" className="label">
+                <span className="label-text">העלאת כרטיס סטודנט</span>
+              </label>
+              <input
+                type="file"
+                id="inputStudentCard"
+                onChange={(e) => setStudentCard(e.target.files[0])}
+                className="file-input file-input-bordered"
+                required
+              />
+            </div>
+          </>
+        )}
+
+        {userType === "Company" && (
+          <>
+            <div className="form-control">
+              <label htmlFor="inputCompanyName" className="label">
+                <span className="label-text">שם החברה</span>
+              </label>
+              <input
+                type="text"
+                id="inputCompanyName"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="input input-bordered"
+                placeholder="שם החברה"
+                required
+              />
+            </div>
+
+            <div className="form-control">
+              <label htmlFor="inputWebsiteCompany" className="label">
+                <span className="label-text">אתר החברה</span>
+              </label>
+              <input
+                type="url"
+                id="inputWebsiteCompany"
+                value={userWebsite}
+                onChange={(e) => setUserWebsite(e.target.value)}
+                className="input input-bordered"
+                placeholder="אתר החברה"
+                required
+              />
+            </div>
+
+            <div className="form-control md:col-span-2">
+              <h2 className="text-lg font-semibold">איש קשר</h2>
+              <div className="form-control">
+                <label htmlFor="contactFirstName" className="label">
+                  <span className="label-text">שם פרטי</span>
+                </label>
                 <input
-                  type="email"
-                  id="inputEmail"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="דואר אלקטרוני"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">סיסמא</label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="סיסמא"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="confirmPassword">סיסמא בשנית</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="סיסמא בשנית"
+                  type="text"
+                  id="contactFirstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="input input-bordered"
+                  placeholder="שם פרטי"
                   required
                 />
               </div>
 
-              <button className="btn btn_submit" type="submit">
-                הרשמה
-              </button>
-              {error && <p className="error">{error}</p>}
-            </form>
-          )}
+              <div className="form-control">
+                <label htmlFor="contactLastName" className="label">
+                  <span className="label-text">שם משפחה</span>
+                </label>
+                <input
+                  type="text"
+                  id="contactLastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="input input-bordered"
+                  placeholder="שם משפחה"
+                  required
+                />
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="form-control md:col-span-2">
+          <label htmlFor="inputEmail" className="label">
+            <span className="label-text">דואר אלקטרוני</span>
+          </label>
+          <input
+            type="email"
+            id="inputEmail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input input-bordered"
+            placeholder="דואר אלקטרוני"
+            required
+          />
         </div>
-      </div>
+
+        <div className="form-control">
+          <label htmlFor="password" className="label">
+            <span className="label-text">סיסמא</span>
+          </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input input-bordered"
+            placeholder="סיסמא"
+            required
+          />
+        </div>
+
+        <div className="form-control">
+          <label htmlFor="confirmPassword" className="label">
+            <span className="label-text">סיסמא בשנית</span>
+          </label>
+          <input
+            type="password"
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="input input-bordered"
+            placeholder="סיסמא בשנית"
+            required
+          />
+        </div>
+
+        <div className="md:col-span-2 flex justify-center">
+          <button type="submit" className="btn bg-[#3E54D3] hover:bg-[#3E54D3] text-white w-1/2">
+            הרשמה
+          </button>
+        </div>
+
+        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+      </form>
+    </div>
+  )}
+</div>
+
     </>
   );
 };

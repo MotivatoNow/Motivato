@@ -61,6 +61,7 @@ export const handleApply = async (
   try {
     if (!selectFile) {
       console.error("No file selected.");
+      message.error("לא בחרתם בקובץ")
       return;
     }
 
@@ -73,8 +74,9 @@ export const handleApply = async (
 
     if (!fileUrl) {
       throw new Error("Failed to retrieve the file URL after upload.");
+      
     }
-    message.success("...")
+    message.success("השליחה בוצעה בהצלחה")
 
     setApply(false);
     setSelectedFile(null);

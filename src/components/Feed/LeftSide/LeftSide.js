@@ -12,7 +12,7 @@ const LeftSide = () => {
   }, []);
 const arrayMissions=shuffleArray(allMissions).slice(0,5)
   return (
-<div className="rounded-lg p-2 mt-5 bg-base-100 shadow-lg">
+<div className="rounded-lg p-2 mt-5 bg-base-100 shadow-lg ">
   <div className="flex flex-col gap-6">
     {/* בדיקה אם יש משימות להצגה */}
     {arrayMissions.filter(

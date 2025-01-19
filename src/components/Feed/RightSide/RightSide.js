@@ -28,7 +28,7 @@ const RightSide = () => {
   }, [currentUser]);
 
   return (
-    <div className="rounded-lg p-4 shadow bg-white space-y-6">
+    <div className="rounded-lg p-4 shadow bg-white space-y-6 ">
     {/* פרופיל משתמש */}
     <div className="flex flex-col items-center text-center space-y-2">
       <img

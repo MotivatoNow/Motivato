@@ -18,11 +18,26 @@ const NavBarLogout = () => {
 
         <div className="hidden md:flex items-center ">
           <ul className="flex gap-4">
-             <li className="bg-gray-100 py-2 px-8 rounded-[10px] hover:border-b-2 hover:border-[#15CDCA] transition">
-                              <Link to="/">
-                                <GrHomeRounded color="#3E54D3" size={24} />
-                              </Link>
-                            </li>
+            <li className="bg-gray-100 py-2 px-8 rounded-[10px] hover:border-b-2 hover:border-[#15CDCA] transition">
+              <Link to="/">
+                <GrHomeRounded color="#3E54D3" size={24} />
+              </Link>
+            </li>
+            <a href="#aboutus">
+              <li  className="bg-gray-100 py-2 px-8 rounded-[10px] hover:border-b-2 hover:border-[#15CDCA] transition ">עלינו</li>
+            </a>
+            <a href="#achievement">
+              <li className="bg-gray-100 py-2 px-8 rounded-[10px] hover:border-b-2 hover:border-[#15CDCA] transition">השגים שלנו</li>
+            </a>
+            <a href="#categories">
+              <li className="bg-gray-100 py-2 px-8 rounded-[10px] hover:border-b-2 hover:border-[#15CDCA] transition">תחומי לימוד</li>
+            </a>
+            <a href="#feedback">
+              <li className="bg-gray-100 py-2 px-8 rounded-[10px] hover:border-b-2 hover:border-[#15CDCA] transition"> המלצות</li>
+            </a>
+            <a href="#joinus">
+              <li className="bg-gray-100 py-2 px-8 rounded-[10px] hover:border-b-2 hover:border-[#15CDCA] transition">הצטרפו אלינו</li>
+            </a>
           </ul>
         </div>
 
@@ -51,7 +66,9 @@ const NavBarLogout = () => {
         }
       >
         <ul>
-        <Link to={'/'}><li>דף הבית</li></Link>
+          <Link to={"/"}>
+            <li>דף הבית</li>
+          </Link>
           <div className="flex flex-col my-4 gap-4">
             <button className="border border-[20B486] flex justify-center items-center  bg-transparent  px-6 gap-2 py-4">
               <Link className="flex items-center" to={"/login"}>

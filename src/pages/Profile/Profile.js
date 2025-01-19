@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "./Profile.css";
 import { useAuth } from "../../context/AuthContext";
 import StudentProfile from "../../components/Profile/StudentProfile/StudentProfile";
 import CompanyProfile from "../../components/Profile/CompanyProfile/CompanyProfile";
@@ -43,7 +42,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="profile-container">
+    <div className="min-h-screen">
       {userData && (
         <>
           {userData.userType === "Student" ? (

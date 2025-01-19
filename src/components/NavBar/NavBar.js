@@ -148,7 +148,7 @@ const NavBar = () => {
 
   return (
     <>
-      <header className="w-full h-[80px] bg-white border-b fixed z-[100000]">
+      <header className="w-full h-[80px] bg-white border-b "> {/*fixed z-[100000] */}
         <nav className="md:max-w-[1480px] max-w-[600px] m-auto w-full h-full flex justify-between items-center md:px-0 px-4">
           {/* Logo and search bar */}
           <div className="flex gap-5">
@@ -159,7 +159,7 @@ const NavBar = () => {
           </div>
           {/* List */}
           <div className="hidden md:flex items-center ">
-            <ul className="flex gap-4">
+            <ul className="flex gap-10">
               <li className="bg-gray-100 py-2 px-8 rounded-[10px] hover:border-b-2 hover:border-[#15CDCA] transition">
                 <Link to="/feed">
                   <GrHomeRounded color="#3E54D3" size={24} />
