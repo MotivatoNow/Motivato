@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getCurrentTimeStamp } from "../../../features/useMoment/useMoment";
 import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
-import { db } from "../../../firebase";
+import { db } from "../../../config/firebase";
 import { message } from "antd";
 import ModalMission from "../ModalMission/ModalMission";
 

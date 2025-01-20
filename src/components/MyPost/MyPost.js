@@ -4,7 +4,7 @@ import ModalPost from "../Modal/ModalPost/ModalPost";
 import { useAuth } from "../../context/AuthContext";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../firebase";
+import { storage } from "../../config/firebase";
 import { createPost } from "../../hooks/useLoadPosts";
 
 const MyPost = () => {

@@ -1,5 +1,5 @@
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { db, storage } from "../firebase";
+import { db, storage } from "../config/firebase";
 import { message } from "antd";
 import {
   deleteObject,

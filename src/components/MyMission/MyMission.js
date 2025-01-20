@@ -3,9 +3,9 @@ import ModalMission from "../Modal/ModalMission/ModalMission";
 import { useAuth } from "../../context/AuthContext";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { createMission } from "../../hooks/useLoadMissions";
-import { createNotification } from "../../hooks/useLoadNotifications";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db } from "../../config/firebase";
+import './MyMissions.css'
 
 const MyMission = () => {
   const { currentUser } = useAuth();

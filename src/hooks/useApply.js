@@ -7,9 +7,8 @@ import {
   onSnapshot,
   addDoc,
 } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db,storage } from "../config/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../firebase";
 import { getCurrentTimeStamp } from "../features/useMoment/useMoment";
 import { createNotification } from "./useLoadNotifications";
 import { message } from "antd";

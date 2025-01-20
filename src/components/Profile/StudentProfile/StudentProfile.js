@@ -10,7 +10,7 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../../firebase";
+import { db } from "../../..//config/firebase";
 import { AiOutlineClose } from "react-icons/ai";
 import { CiEdit, CiLocationOn, CiMail, CiSettings } from "react-icons/ci";
 import { loadFollowers, loadUser } from "../../../hooks/useLoadUsers";

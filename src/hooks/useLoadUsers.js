@@ -1,6 +1,5 @@
 import { getDoc, doc, getDocs, collection } from "firebase/firestore";
-import React from "react";
-import { db } from "../firebase";
+import { db } from "../config/firebase";
 
 // Function to shuffle array
 export const shuffleArray = (array) => {

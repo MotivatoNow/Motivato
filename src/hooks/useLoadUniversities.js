@@ -1,5 +1,5 @@
 import { collection, onSnapshot } from "firebase/firestore"
-import { db } from "../firebase"
+import { db } from "../config/firebase"
 
 export const loadUniversities=async(setUniversities)=>{
     onSnapshot(collection(db,"Universities"),(response)=>{

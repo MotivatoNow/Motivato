@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button, Divider, Row, message, Input, Modal, Col } from "antd";
-import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { Button, message, Input, Modal, Col } from "antd";
+import {  doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../config/firebase";
 
 const ModalEditBio = ({

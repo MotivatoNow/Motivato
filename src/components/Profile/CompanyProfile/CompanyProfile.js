@@ -7,35 +7,25 @@ import ModalEditProfileComponent from "../../Modal/ModalEditProfile/ModalEditPro
 import ChatPopup from "../../ChatPopup/ChatPopup";
 import {
   addDoc,
-  arrayRemove,
   collection,
-  doc,
-  getDoc,
   getDocs,
-  onSnapshot,
   query,
-  updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../../../firebase";
-import { AiOutlineClose } from "react-icons/ai";
+import { db } from "../../../config/firebase";
 import {
-  CiCircleQuestion,
   CiEdit,
-  CiLinkedin,
-  CiLocationOn,
   CiMail,
   CiSettings,
 } from "react-icons/ci";
-import { loadData, loadFollowers, loadUser } from "../../../hooks/useLoadUsers";
+import { loadFollowers, loadUser } from "../../../hooks/useLoadUsers";
 import { Link } from "react-router-dom";
 import ModalEditWebsites from "../../Modal/ModalEditProfile/ModalEditWebsites/ModalEditWebsites";
-import { message } from "antd";
-import { FaGithubSquare, FaLinkedinIn } from "react-icons/fa";
 import { FaEarthEurope } from "react-icons/fa6";
 import ModalEditBio from "../../Modal/ModalEditProfile/ModalEditBio/ModalEditBio";
 import { IoIosContact } from "react-icons/io";
 import { loadPostByID } from "../../../hooks/useLoadPosts";
+import { FaLinkedinIn } from "react-icons/fa";
 const CompanyProfile = ({user, currentUser}) => {
   const [userData, setUserData] = useState(user);
   const [modalOpenEditProfile, setModalOpenEditProfile] = useState(false);

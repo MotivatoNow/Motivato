@@ -1,6 +1,5 @@
 import React from "react";
 import { Button, Modal } from "antd";
-import "./Modal.css";
 import { useAuth } from "../../../context/AuthContext";
 import { MdDeleteOutline } from "react-icons/md";
 import { CiCamera } from "react-icons/ci";

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Button, Modal } from "antd";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../../firebase";
+import { db } from "../../../config/firebase";
 
 const ModalMission = ({
   modalOpen,

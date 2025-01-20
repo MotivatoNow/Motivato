@@ -10,7 +10,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,6 +26,10 @@ const Login = () => {
       const userDoc = await getDoc(doc(db, "Users", user.uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
+        if (userData.isRejected) {
+          setError("הרשמתך לא אושרה. לפרטים נוספים, אנא פנה אלינו באמצעות המייל.");
+          return;
+        }
         if (!userData.isVerified) {
           setError("יש להמתין לאישור המערכת לפני התחברות.");
           await auth.signOut(); // התנתקות מהמשתמש הלא מאושר

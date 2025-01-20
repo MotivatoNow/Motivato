@@ -2,14 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   collection,
   query,
-  where,
   getDocs,
   doc,
-  getDoc,
   addDoc,
   updateDoc,
   orderBy,
-  onSnapshot,
   limit,
   startAfter,
 } from "firebase/firestore";

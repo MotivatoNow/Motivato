@@ -3,7 +3,6 @@ import { Button, Modal, Input, message, Divider, Row, Col } from "antd";
 import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../../config/firebase";
-import "./ModalEditProfile.css";
 import {
   getAuth,
   reauthenticateWithCredential,

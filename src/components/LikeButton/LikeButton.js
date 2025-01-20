@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { db } from "../../config/firebase";
-import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import ModalLikes from "../../components/Modal/ModalLikes/ModalLikes";
 import { IoIosHeart } from "react-icons/io";
 import { FaThumbsUp, FaRegThumbsUp } from "react-icons/fa";
-import { createNotification } from "../../hooks/useLoadNotifications";
 import { fetchLikes, handleLike } from "../../hooks/useLoadLikes";
 
 const LikeButton = ({ posts }) => {

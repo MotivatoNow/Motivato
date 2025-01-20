@@ -7,7 +7,6 @@ import { GrHomeRounded } from "react-icons/gr";
 
 const NavBarLogout = () => {
   const [toggle, setToggle] = useState(false);
-  const handleClick = () => setToggle(!toggle);
 
   return (
     <header className="w-full h-[80px] bg-white border-b fixed z-[100000]">

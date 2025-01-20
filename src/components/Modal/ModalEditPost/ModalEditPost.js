@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { getCurrentTimeStamp } from '../../../features/useMoment/useMoment';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db, storage } from '../../../firebase';
+import { db, storage } from '../../../config/firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { message } from 'antd';
 import ModalPost from '../ModalPost/ModalPost';

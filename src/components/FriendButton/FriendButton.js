@@ -10,11 +10,10 @@ import {
   getDocs,
   doc,
   addDoc,
-  getDoc,
   arrayUnion,
   onSnapshot,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db } from "../../config/firebase";
 import { FaUserPlus, FaUserTimes, FaCheck, FaTimes } from "react-icons/fa";
 
 const FriendButton = ({ user }) => {

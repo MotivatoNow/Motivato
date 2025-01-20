@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import welcome from "../../../assets/images/welcome.jpg";
 import { db } from "../../../config/firebase";
 import { collection, getDocs } from "firebase/firestore";import { loadCategories } from "../../../hooks/useLoadCategories";
-import { Loading } from "../../Loading/Loading";
 const Hero = () => {
   const [users, setUsers] = useState([]);
   const [categories, setCategories] = useState([]);

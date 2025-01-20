@@ -8,7 +8,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { db,storage} from "../../config/firebase";
 import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -22,7 +22,6 @@ import {
 import { MdDeleteOutline } from "react-icons/md";
 import { CiCamera, CiEdit } from "react-icons/ci";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../firebase";
 import { createNotification } from "../../hooks/useLoadNotifications";
 
 const CommentButton = ({ posts }) => {

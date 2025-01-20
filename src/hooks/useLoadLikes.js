@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../config/firebase";
 import { createNotification } from "./useLoadNotifications";
 
 export const fetchLikes = async (

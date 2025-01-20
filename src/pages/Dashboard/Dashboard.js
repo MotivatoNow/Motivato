@@ -121,7 +121,7 @@ const Dashboard = () => {
 
   const handleReject = async (id) => {
     const userDoc = doc(db, "Users", id);
-    await deleteDoc(userDoc);
+    await updateDoc(userDoc, { isVerified: false, isRejected: true });
     setUsers(users.filter((user) => user.id !== id));
   };
 

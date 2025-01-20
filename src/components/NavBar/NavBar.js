@@ -11,13 +11,11 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-import { FaBarsStaggered } from "react-icons/fa6";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { BsBell, BsChatDots } from "react-icons/bs";
 import { LiaUserFriendsSolid } from "react-icons/lia";
 import { GrHomeRounded } from "react-icons/gr";
 import logo from "../../assets/images/Icon.png";
-import mobileLogo from "../../assets/images/Logo_PNG.png";
 import Search from "../Search/Search";
 import "../../App.css";
 import {
@@ -39,12 +37,11 @@ const NavBar = () => {
   const { currentUser } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false); // Managing the dropdown state
   const [dropdownOpen2, setDropdownOpen2] = useState(false); // Managing the dropdown state
-  const [menuOpen, setMenuOpen] = useState(false);
+
   const [unreadCount, setUnreadCount] = useState(0);
   const [users, setUsers] = useState([]);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [toggle, setToggle] = useState(false);
-  const handleClick = () => setToggle(!toggle);
 
   const [isDropdownOpenProfile, setDropdownOpenProfile] = useState(false);
 
@@ -52,10 +49,6 @@ const NavBar = () => {
     setDropdownOpenProfile(!isDropdownOpenProfile);
   };
 
-  //function that toggle the hamburger menu
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
 
   //logout function for quit from user.
   const handleLogout = async () => {

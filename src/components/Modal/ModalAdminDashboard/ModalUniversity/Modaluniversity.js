@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { doc, updateDoc } from "firebase/firestore";
-import { db, storage } from "../../../../firebase";
+import { db, storage } from "../../../../config/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { message, Modal, Input, Upload, Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
