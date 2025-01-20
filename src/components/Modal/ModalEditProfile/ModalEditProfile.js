@@ -35,17 +35,19 @@ const ModalEditProfileComponent = ({
   const handleChangePassword = async (currentPassword, newPassword) => {
     const auth = getAuth();
     const user = auth.currentUser;
-  
+
     try {
-      
-      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        currentPassword
+      );
       await reauthenticateWithCredential(user, credential);
-  
+
       await updatePassword(user, newPassword);
-      return true
+      return true;
     } catch (error) {
-      console.error( error);
-  
+      console.error(error);
+
       switch (error.code) {
         case "auth/wrong-password":
           message.error("הסיסמה הנוכחית שגויה");
@@ -54,16 +56,16 @@ const ModalEditProfileComponent = ({
           message.error("הסיסמה החדשה חלשה מדי");
           break;
 
-          case "auth/invalid-credential":
-            message.error(`שגיאה`);
-            break;
+        case "auth/invalid-credential":
+          message.error(`שגיאה`);
+          break;
         default:
           message.error(`שגיאה`);
       }
-      return false
+      return false;
     }
   };
-  
+
   const handleCancel = async () => {
     setFirstName(user.firstName);
     setLastName(user.lastName);
@@ -74,14 +76,19 @@ const ModalEditProfileComponent = ({
   };
 
   const handleSave = async () => {
-    if(newPassword&&newPassword!==confirmPassword){
+    if (newPassword && newPassword !== confirmPassword) {
       message.error("הסיסמאות החדשות לא תואמות");
       return;
     }
 
-    if(newPassword){
-      const passwordChangeSuccessful = await handleChangePassword(currentPassword, newPassword);
-    if (!passwordChangeSuccessful) {return;}
+    if (newPassword) {
+      const passwordChangeSuccessful = await handleChangePassword(
+        currentPassword,
+        newPassword
+      );
+      if (!passwordChangeSuccessful) {
+        return;
+      }
     }
     try {
       // עדכון המסמך ב-Firestore עם הערכים החדשים
@@ -158,183 +165,185 @@ const ModalEditProfileComponent = ({
     setOriginalProfilePicture(user.profilePicture);
   }, [modalOpenEditProfile]);
 
-   const deleteImage = () => {
-      setNewProfilePicture(null);
-    };
+  const deleteImage = () => {
+    setNewProfilePicture(null);
+  };
 
   return (
     <>
-     <Modal
-      title={<h2 className="text-xl font-bold text-gray-800">עריכת פרופיל</h2>}
-      centered
-      open={modalOpenEditProfile}
-      onOk={handleSave}
-      onCancel={handleCancel}
-      width={800}
-      footer={[
-        <Button
-          key="cancel"
-          onClick={() => setModalOpenEditProfile(false)}
-          className="bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-md px-4"
-        >
-          ביטול
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          onClick={handleSave}
-          className="bg-blue-500 text-white hover:bg-blue-600 rounded-md px-6"
-        >
-          שמור שינויים
-        </Button>,
-      ]}
-    >
-      <div className="modal-content space-y-6">
-        {/* Profile Picture Upload */}
-        <div className="flex flex-col gap-4">
-          <label className="block text-sm font-medium text-gray-700">
-            תמונת פרופיל:
-          </label>
-          <div className="flex items-center gap-4">
-            <label
-              htmlFor="file-upload"
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md cursor-pointer hover:bg-blue-600 transition"
-            >
-              <CiCamera size={20} />
-              העלאת תמונה
-              <input
-                id="file-upload"
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileUpload(e.target.files[0])}
-                className="hidden"
-              />
+      <Modal
+        title={
+          <h2 className="text-xl font-bold text-gray-800">עריכת פרופיל</h2>
+        }
+        centered
+        open={modalOpenEditProfile}
+        onOk={handleSave}
+        onCancel={handleCancel}
+        width={800}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => setModalOpenEditProfile(false)}
+            className="bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-md px-4"
+          >
+            ביטול
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleSave}
+            className="bg-blue-500 text-white hover:bg-blue-600 rounded-md px-6"
+          >
+            שמור שינויים
+          </Button>,
+        ]}
+      >
+        <div className="modal-content space-y-6">
+          {/* Profile Picture Upload */}
+          <div className="flex flex-col gap-4">
+            <label className="block text-sm font-medium text-gray-700">
+              תמונת פרופיל:
             </label>
-            {newProfilePicture && (
-              <div className="relative flex items-center gap-4 bg-gray-100 p-2 rounded-md shadow-md">
-                <img
-                  src={
-                    newProfilePicture instanceof File
-                      ? URL.createObjectURL(newProfilePicture)
-                      : ""
-                  }
-                  alt="Preview"
-                  className="h-12 w-12 object-cover rounded-md"
+            <div className="flex items-center gap-4">
+              <label
+                htmlFor="file-upload"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md cursor-pointer hover:bg-blue-600 transition"
+              >
+                <CiCamera size={20} />
+                העלאת תמונה
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e.target.files[0])}
+                  className="hidden"
                 />
-                <MdDeleteOutline
-                  className="text-red-500 cursor-pointer hover:text-red-700"
-                  size={24}
-                  onClick={deleteImage}
-                />
-              </div>
-            )}
+              </label>
+              {newProfilePicture && (
+                <div className="relative flex items-center gap-4 bg-gray-100 p-2 rounded-md shadow-md">
+                  <img
+                    src={
+                      newProfilePicture instanceof File
+                        ? URL.createObjectURL(newProfilePicture)
+                        : ""
+                    }
+                    alt="Preview"
+                    className="h-12 w-12 object-cover rounded-md"
+                  />
+                  <MdDeleteOutline
+                    className="text-red-500 cursor-pointer hover:text-red-700"
+                    size={24}
+                    onClick={deleteImage}
+                  />
+                </div>
+              )}
+            </div>
           </div>
+
+          <Divider />
+
+          {/* User Information */}
+          <Row gutter={16}>
+            <Col span={12}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                שם פרטי:
+              </label>
+              <Input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="שם פרטי"
+                className="w-full p-2 border-gray-300 rounded-md"
+              />
+            </Col>
+            <Col span={12}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                שם משפחה:
+              </label>
+              <Input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="שם משפחה"
+                className="w-full p-2 border-gray-300 rounded-md"
+              />
+            </Col>
+          </Row>
+
+          {user.userType === "Student" && (
+            <>
+              <Divider />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                מיקום:
+              </label>
+              <Input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="מיקום"
+                className="w-full p-2 border-gray-300 rounded-md"
+              />
+            </>
+          )}
+
+          <Divider />
+
+          {/* Email and Password */}
+          <Row gutter={16}>
+            <Col span={12}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                דואר אלקטרוני:
+              </label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="דואר אלקטרוני"
+                className="w-full p-2 border-gray-300 rounded-md"
+              />
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                סיסמה נוכחית:
+              </label>
+              <Input.Password
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="סיסמה נוכחית"
+                className="w-full p-2 border-gray-300 rounded-md"
+              />
+            </Col>
+            <Col span={12}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                סיסמה חדשה:
+              </label>
+              <Input.Password
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="סיסמה חדשה"
+                className="w-full p-2 border-gray-300 rounded-md"
+              />
+            </Col>
+          </Row>
+
+          <Row>
+            <Col span={24}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                אישור סיסמה חדשה:
+              </label>
+              <Input.Password
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="אישור סיסמה חדשה"
+                className="w-full p-2 border-gray-300 rounded-md"
+              />
+            </Col>
+          </Row>
         </div>
-
-        <Divider />
-
-        {/* User Information */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              שם פרטי:
-            </label>
-            <Input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="שם פרטי"
-              className="w-full p-2 border-gray-300 rounded-md"
-            />
-          </Col>
-          <Col span={12}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              שם משפחה:
-            </label>
-            <Input
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="שם משפחה"
-              className="w-full p-2 border-gray-300 rounded-md"
-            />
-          </Col>
-        </Row>
-
-        {user.userType === "Student" && (
-          <>
-            <Divider />
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              מיקום:
-            </label>
-            <Input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="מיקום"
-              className="w-full p-2 border-gray-300 rounded-md"
-            />
-          </>
-        )}
-
-        <Divider />
-
-        {/* Email and Password */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              דואר אלקטרוני:
-            </label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="דואר אלקטרוני"
-              className="w-full p-2 border-gray-300 rounded-md"
-            />
-          </Col>
-        </Row>
-
-        <Row gutter={16}>
-          <Col span={12}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              סיסמה נוכחית:
-            </label>
-            <Input.Password
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="סיסמה נוכחית"
-              className="w-full p-2 border-gray-300 rounded-md"
-            />
-          </Col>
-          <Col span={12}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              סיסמה חדשה:
-            </label>
-            <Input.Password
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="סיסמה חדשה"
-              className="w-full p-2 border-gray-300 rounded-md"
-            />
-          </Col>
-        </Row>
-
-        <Row>
-          <Col span={24}>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              אישור סיסמה חדשה:
-            </label>
-            <Input.Password
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="אישור סיסמה חדשה"
-              className="w-full p-2 border-gray-300 rounded-md"
-            />
-          </Col>
-        </Row>
-      </div>
-    </Modal>
+      </Modal>
     </>
   );
 };

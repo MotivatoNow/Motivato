@@ -17,70 +17,69 @@ import Post from "./pages/Post/Post";
 import MissionFeed from "./pages/MissionFeed/MissionFeed";
 import Mission from "./pages/Mission/Mission";
 import FollowersView from "./pages/FollowersView/FollowersView";
-import './App.css'
+import "./App.css";
 import NavBarLogout from "./components/NavBar/NavBarLogout";
 import { Loading } from "./components/Loading/Loading";
 
-
 function App() {
-
   const { currentUser, loading } = useAuth();
 
   if (loading) {
-    return <Loading/> // מסך טעינה בזמן שהסטטוס של המשתמש נטען
+    return <Loading />;
   }
 
   return (
     <>
       <AuthProvider>
         <Router>
-        {currentUser ? <NavBar /> : <NavBarLogout />}
+          {currentUser ? <NavBar /> : <NavBarLogout />}
           <div className="main-content pt-16">
-          <Routes>
-          <Route
-              path="/"
-              element={
-                <AuthWrapper>
-                  <HomePage />
-                </AuthWrapper>
-              }
-            />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/reset" element={<ForgetPassword />} />
-            {/*******/}
-            <Route path="/admin-dashboard" element={<Dashboard />} />
-            {/*******/}
-            <Route
-              path="/feed"
-              element={
-                <ProtectedRoute>
-                  <Feed />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/chats" element={<ChatOverview />} />
-            <Route
-              path="/missions"
-              element={
-                <ProtectedRoute>
-                  <MissionFeed />
-                </ProtectedRoute>
-              }
-            />
-            {/*******/}
-            <Route
-              path="/profile/:id"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/post/:id" element={<Post />} />
-            <Route path="/mission/:id" element={<Mission />} />
-            <Route path="/followers/:id" element={<FollowersView />} />
-          </Routes></div>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <AuthWrapper>
+                    <HomePage />
+                  </AuthWrapper>
+                }
+              />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/reset" element={<ForgetPassword />} />
+              {/*******/}
+              <Route path="/admin-dashboard" element={<Dashboard />} />
+              {/*******/}
+              <Route
+                path="/feed"
+                element={
+                  <ProtectedRoute>
+                    <Feed />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/chats" element={<ChatOverview />} />
+              <Route
+                path="/missions"
+                element={
+                  <ProtectedRoute>
+                    <MissionFeed />
+                  </ProtectedRoute>
+                }
+              />
+              {/*******/}
+              <Route
+                path="/profile/:id"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/post/:id" element={<Post />} />
+              <Route path="/mission/:id" element={<Mission />} />
+              <Route path="/followers/:id" element={<FollowersView />} />
+            </Routes>
+          </div>
         </Router>
       </AuthProvider>
     </>

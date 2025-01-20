@@ -560,53 +560,54 @@ const Dashboard = () => {
 
         {activeTab === "deleteComments" && (
           <div className="card bg-base-100 shadow-lg p-6">
-  <h2 className="text-2xl font-semibold text-gray-800 mb-6">מחיקת תגובות</h2>
-  <div className="overflow-x-auto">
-    <table className="table w-full border border-gray-200 rounded-lg">
-      <thead className="bg-gray-100">
-        <tr>
-          <th className="text-left p-2">שם המשתמש</th>
-          <th className="text-left p-2">תגובה</th>
-          <th className="text-left p-2">תמונה</th>
-          <th className="text-center p-2">פעולות</th>
-        </tr>
-      </thead>
-      <tbody>
-        {comments.map((comment) => (
-          <tr key={comment.id} className="hover:bg-gray-50">
-            <td className="p-2">
-              <Link
-                to={`/post/${comment.postId}`}
-                className="text-blue-600 hover:underline"
-              >
-                {comment.commentUserName}
-              </Link>
-            </td>
-            <td className="p-2">{comment.comment}</td>
-            <td className="p-2">
-              {comment.commentImage && (
-                <img
-                  src={comment.commentImage}
-                  alt="Commentaire"
-                  className="w-20 h-20 object-cover rounded-md"
-                />
-              )}
-            </td>
-            <td className="p-2 text-center">
-              <button
-                onClick={() => deleteComment(comment.id)}
-                className="btn btn-error btn-sm"
-              >
-                מחק
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
-
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+              מחיקת תגובות
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="table w-full border border-gray-200 rounded-lg">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="text-left p-2">שם המשתמש</th>
+                    <th className="text-left p-2">תגובה</th>
+                    <th className="text-left p-2">תמונה</th>
+                    <th className="text-center p-2">פעולות</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comments.map((comment) => (
+                    <tr key={comment.id} className="hover:bg-gray-50">
+                      <td className="p-2">
+                        <Link
+                          to={`/post/${comment.postId}`}
+                          className="text-blue-600 hover:underline"
+                        >
+                          {comment.commentUserName}
+                        </Link>
+                      </td>
+                      <td className="p-2">{comment.comment}</td>
+                      <td className="p-2">
+                        {comment.commentImage && (
+                          <img
+                            src={comment.commentImage}
+                            alt="Commentaire"
+                            className="w-20 h-20 object-cover rounded-md"
+                          />
+                        )}
+                      </td>
+                      <td className="p-2 text-center">
+                        <button
+                          onClick={() => deleteComment(comment.id)}
+                          className="btn btn-error btn-sm"
+                        >
+                          מחק
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         )}
       </div>
       <ModalCategories

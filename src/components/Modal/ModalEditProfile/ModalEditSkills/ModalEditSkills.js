@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Divider, Row, Input, Modal, List, message } from "antd";
-import { arrayUnion, arrayRemove, doc, updateDoc, onSnapshot } from "firebase/firestore";
+import {
+  arrayUnion,
+  arrayRemove,
+  doc,
+  updateDoc,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "../../../../config/firebase";
 
 const ModalEditSkills = ({
@@ -79,10 +85,6 @@ const ModalEditSkills = ({
     }
   };
 
-  
-
-  
-
   return (
     <>
       <Modal
@@ -114,7 +116,9 @@ const ModalEditSkills = ({
             הוסף
           </Button>
         </Row>
-        {errorMessage && <p style={{ color: "red", marginTop: "10px" }}>{errorMessage}</p>}
+        {errorMessage && (
+          <p style={{ color: "red", marginTop: "10px" }}>{errorMessage}</p>
+        )}
         <Divider />
         <h4>רשימת מיומנויות</h4>
         <List
@@ -140,6 +144,5 @@ const ModalEditSkills = ({
     </>
   );
 };
- 
 
 export default ModalEditSkills;
