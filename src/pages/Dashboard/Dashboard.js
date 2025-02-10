@@ -52,7 +52,15 @@ const Dashboard = () => {
     missions: 0,
     applications: 0,
   });
+  const [selectedImage, setSelectedImage] = useState(null);
 
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedImage(null);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -219,8 +227,10 @@ const Dashboard = () => {
         {activeTab === "newRegistrations" && (
           <div className="overflow-x-auto">
             <h2 className="text-lg font-medium mb-4">נרשמים חדשים</h2>
-            <table className="table w-full border border-gray-200 rounded-lg">
-              {/* ראש הטבלה */}
+
+            {/* טבלת סטודנטים */}
+            <h3 className="text-md font-semibold mb-2">סטודנטים</h3>
+            <table className="table w-full border border-gray-200 rounded-lg mb-8">
               <thead className="bg-gray-100">
                 <tr>
                   <th>תמונה</th>
@@ -231,15 +241,22 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* שורות הטבלה */}
                 {users
-                  .filter((user) => !user.isVerified)
+                  .filter(
+                    (user) => !user.isVerified && user.userType === "Student"
+                  )
                   .map((user) => (
                     <tr key={user.id}>
                       <td>
                         <div className="avatar">
-                          <div className="mask mask-squircle w-20 h-20">
-                            <img src={user.studentCard} alt="Student Card" />
+                          <div
+                            className="mask mask-squircle w-20 h-20 cursor-pointer"
+                            onClick={() => handleImageClick(user.studentCard)}
+                          >
+                            <img
+                              src={user.studentCard}
+                              alt={`Student Card of ${user.userName}`}
+                            />
                           </div>
                         </div>
                       </td>
@@ -265,13 +282,78 @@ const Dashboard = () => {
                     </tr>
                   ))}
               </tbody>
-              {/* תחתית הטבלה */}
               <tfoot>
                 <tr>
                   <th>תמונה</th>
                   <th>שם</th>
                   <th>אימייל</th>
                   <th>מכללה</th>
+                  <th>פעולות</th>
+                </tr>
+              </tfoot>
+            </table>
+
+            {/* טבלת חברות */}
+            <h3 className="text-md font-semibold mb-2">חברות</h3>
+            <table className="table w-full border border-gray-200 rounded-lg">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th>שם החברה</th>
+                  <th>שם איש קשר</th>
+                  <th>אתר החברה</th>
+                  <th>אימייל</th>
+                  <th>פעולות</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users
+                  .filter(
+                    (user) => !user.isVerified && user.userType === "Company"
+                  )
+                  .map((user) => (
+                    <tr key={user.id}>
+                      <td className="font-bold">{user.companyName}</td>
+                      <td>
+                        {user.firstName} {user.lastName}
+                      </td>
+                      <td>
+                        <a
+                          href={
+                            user.userWebsite.startsWith("http")
+                              ? user.userWebsite
+                              : `https://${user.userWebsite}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
+                        >
+                          {user.userWebsite}
+                        </a>
+                      </td>
+                      <td>{user.email}</td>
+                      <td>
+                        <button
+                          onClick={() => handleApprove(user.id)}
+                          className="btn btn-success btn-sm mr-2"
+                        >
+                          אשר
+                        </button>
+                        <button
+                          onClick={() => handleReject(user.id)}
+                          className="btn btn-error btn-sm"
+                        >
+                          מחק
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>שם החברה</th>
+                  <th>שם איש קשר</th>
+                  <th>אתר החברה</th>
+                  <th>אימייל</th>
                   <th>פעולות</th>
                 </tr>
               </tfoot>

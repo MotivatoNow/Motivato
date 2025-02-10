@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { createNotification } from "./useLoadNotifications";
 
@@ -10,19 +10,31 @@ export const fetchLikes = async (
 ) => {
   try {
     const docRef = doc(db, "Likes", posts.id);
-    const docS = await getDoc(docRef);
 
-    if (docS.exists()) {
-      const data = docS.data();
-      setLikedCount(data.likeCount || 0);
-      setLiked(data.likedUsers.includes(currentUser.uid));
-    }
+    const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        setLikedCount(data.likeCount || 0);
+        setLiked(data.likedUsers.includes(currentUser.uid));
+      } else {
+        setLikedCount(0);
+        setLiked(false);
+      }
+    });
+    return unsubscribe;
   } catch (error) {
     console.log(error);
   }
 };
-export const handleLike = async (currentUser,posts,likedCount,liked,setLiked,setLikedCount) => {
-    
+
+export const handleLike = async (
+  currentUser,
+  posts,
+  likedCount,
+  liked,
+  setLiked,
+  setLikedCount
+) => {
   if (!currentUser || !currentUser.uid) {
     console.error("User not logged in or user ID is undefined");
     return;
@@ -52,14 +64,14 @@ export const handleLike = async (currentUser,posts,likedCount,liked,setLiked,set
     }
 
     await setDoc(
-        docRef,
-        { likeCount: newLikedCount, likedUsers },
-        { merge: true }
-      );
-      
-      setLiked(!liked); 
-      setLikedCount(newLikedCount); 
-      
+      docRef,
+      { likeCount: newLikedCount, likedUsers },
+      { merge: true }
+    );
+
+    setLiked(!liked);
+    setLikedCount(newLikedCount);
+
     if (!liked && posts.user.uid !== currentUser.uid) {
       const notification = {
         type: "like",

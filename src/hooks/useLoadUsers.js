@@ -82,7 +82,7 @@ export const loadUsers = async (currentUser, setSuggestedFriends) => {
         ...doc.data(),
       }))
       .filter(
-        (user) => user.id !== currentUser.uid && !followersId.includes(user.id)
+        (user) => user.id !== currentUser.uid && !followersId.includes(user.id) && user.isVerified
       ); // הסרת החברים והמשתמש הנוכחי
 
     const randomUsers = shuffleArray(allUsers).slice(0, 6); // ערבוב וחיתוך ל-5–6 משתמשים רנדומליים

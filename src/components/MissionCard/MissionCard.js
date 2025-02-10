@@ -57,13 +57,13 @@ const MissionCard = ({ missions, user }) => {
 
   return (
     <>
- <div className="card shadow-lg rounded-lg p-6 mb-6 max-w-3xl mx-auto transition hover:shadow-2xl bg-base-100">
+ <div className="card shadow-md rounded-lg p-6 mb-6 max-w-3xl mx-auto transition  bg-base-100">
   <div className="flex items-center justify-between">
     {/* פרטי המשתמש */}
     <div className="flex items-center gap-4">
       <Link to={`/profile/${userData.uid}`}>
         <div className="avatar">
-          <div className="w-16 h-16 mask mask-squircle border border-primary">
+          <div className="w-16 h-16 mask mask-squircle ">
             <img
               src={userData.profilePicture || "defaultProfilePictureURL"}
               alt="Profile"
@@ -138,13 +138,13 @@ const MissionCard = ({ missions, user }) => {
               setActiveChatUser
             )
           }
-          className="p-6 rounded-[5px] bg-[#3E54D3] text-white"
+          className="p-2 rounded-[5px] bg-[#3E54D3] text-white"
         >
           שליחת הודעה
         </button>
         <button
           onClick={() => setApply(true)}
-          className="p-6 bg-[#15CDCA] text-white rounded-[5px]"
+          className="p-2 bg-[#15CDCA] text-white rounded-[5px]"
         >
           שליחה
         </button>
@@ -176,13 +176,13 @@ const MissionCard = ({ missions, user }) => {
           onClick={() =>
             handleApply(selectFile, missions, currentUser, setApply, setSelectedFile)
           }
-          className="p-3 rounded-[5px] bg-[#3E54D3] text-white"
+          className="p-2 rounded-[5px] bg-[#3E54D3] text-white"
         >
           שלח בקשה
         </button>
         <button
           onClick={() => setApply(false)}
-          className="p-3 rounded-[5px] bg-[#15CDCA] text-white"
+          className="p-2 rounded-[5px] bg-[#15CDCA] text-white"
         >
           ביטול
         </button>

@@ -12,6 +12,7 @@ import { db } from "../../config/firebase";
 import ConversationView from "../../components/ConversationView/ConversationView";
 import { useAuth } from "../../context/AuthContext";
 import { loadUser } from "../../hooks/useLoadUsers";
+import noConv from '../../assets/images/2389.jpg'
 
 const ChatOverview = () => {
   const [conversations, setConversations] = useState([]);
@@ -71,11 +72,6 @@ const ChatOverview = () => {
 
     fetchConversations();
   }, [currentUser]);
-
-  const getUserData = async (userId) => {
-    const userData = await loadUser(userId, () => {});
-    return userData;
-  };
 
   const checkUnreadMessages = async (conversationId) => {
     const messageRef = collection(
@@ -169,7 +165,7 @@ const ChatOverview = () => {
       ) : (
         <div className="flex flex-col items-center justify-center h-full">
           <img
-            src="https://via.placeholder.com/100"
+            src={noConv}
             alt="No Conversation"
             className="w-24 h-24 mb-4"
           />

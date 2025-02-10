@@ -103,7 +103,7 @@ const ConversationView = ({ conversationId }) => {
     {/* הודעות */}
     {messages.length === 0 ? (
       <p className="text-center text-gray-500">
-        No messages in this conversation
+        אין הודעות בשיחה
       </p>
     ) : (
       messages.map((message) => {

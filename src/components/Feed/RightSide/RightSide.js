@@ -34,7 +34,7 @@ const RightSide = () => {
       <img
         src={currentUser.profilePicture || "https://via.placeholder.com/100"}
         alt="Profile"
-        className="w-20 h-20 rounded-full border-2 border-primary shadow"
+        className="w-20 h-20 object-contain rounded-full border-2 shadow"
       />
       <Link to={`/profile/${currentUser.uid}`} className="text-lg font-bold text-gray-800 hover:underline">
         {currentUser.userName}
@@ -60,7 +60,7 @@ const RightSide = () => {
       {suggestedFollowers.length > 0 ? (
         suggestedFollowers.map(
           (user) =>
-            user.userType !== "Admin" && (
+            user.userType !== "Admin" && user.isVerified && (
               <div
                 key={user.uid}
                 className="flex items-center justify-between p-2 bg-gray-50 rounded-lg shadow hover:shadow-md transition"

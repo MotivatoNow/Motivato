@@ -30,7 +30,7 @@ const arrayMissions=shuffleArray(allMissions).slice(0,5)
                   <div className="flex items-center gap-4">
                     {/* תמונה של המשתמש */}
                     <div className="avatar">
-                      <div className="w-12 h-12 mask mask-squircle border border-primary">
+                      <div className="w-10 h-10 mask mask-squircle">
                         <img
                           src={mission.user?.profilePicture || ""}
                           alt="Profile"

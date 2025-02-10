@@ -5,6 +5,7 @@ import StudentProfile from "../../components/Profile/StudentProfile/StudentProfi
 import CompanyProfile from "../../components/Profile/CompanyProfile/CompanyProfile";
 import { Loading } from "../../components/Loading/Loading";
 import { loadData, loadFollowers } from "../../hooks/useLoadUsers";
+import UserNotFound from "../../components/UserNotFound/UserNotFound";
 
 const Profile = () => {
   const { id } = useParams(); 
@@ -31,14 +32,7 @@ const Profile = () => {
   }
 
   if (userNotFound) {
-    return (
-      <div className="not-found-container">
-        <div className="not-found-content">
-          <h1>User Not Found</h1>
-          <p>Sorry, we couldn’t find the user you’re looking for.</p>
-        </div>
-      </div>
-    );
+    return <UserNotFound/>
   }
 
   return (

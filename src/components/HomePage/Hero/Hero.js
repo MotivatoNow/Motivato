@@ -87,8 +87,8 @@ const Hero = () => {
                 </svg>
               </div>
               <div className="stat-title">סה"כ משתמשים</div>
-              <div className="stat-value">{users.length}</div>
-              <div className="stat-desc">↗︎ 400 (22%)</div>
+              <div className="stat-value">{users.length - 1}</div>
+              <div className="stat-desc">↗︎ 1 </div>
             </div>
 
             <div className="stat">
@@ -109,7 +109,7 @@ const Hero = () => {
               </div>
               <div className="stat-title">סה"כ תחומים</div>
               <div className="stat-value">{categories.length}</div>
-              <div className="stat-desc">↘︎ 90 (14%)</div>
+              <div className="stat-desc">↗︎ 2</div>
             </div>
           </div>
         </div>

@@ -118,7 +118,7 @@ const CompanyProfile = ({user, currentUser}) => {
    <div className="flex space-x-4">
      {/* Profile Image */}
      <img
-       className="rounded-[5px] cursor-pointer h-48 w-48 shadow-md object-cover"
+       className="rounded-[5px] cursor-pointer h-48 w-48 shadow-md object-fit p-3"
        src={userData.profilePicture}
        alt={`${userData.userName} profile image`}
        onClick={() => setLightboxOpen(true)}

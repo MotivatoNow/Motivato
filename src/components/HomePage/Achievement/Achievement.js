@@ -88,7 +88,7 @@ const Achievement = () => {
                 <SlPeople size={30} style={{ color: "#0075FD" }} />
               </div>
               <div className="px-3">
-                <h1 className="text-2xl font-semibold">{users.length}</h1>
+                <h1 className="text-2xl font-semibold">{users.length - 1}</h1>
                 <p className="text-[#6D737A]">משתמשים</p>
               </div>
             </div>

@@ -1,35 +1,49 @@
-// src/context/AuthContext.js
-import React, {createContext, useContext, useEffect, useState} from 'react';
-import {onAuthStateChanged, signOut} from 'firebase/auth';
-import {auth, db} from '../config/firebase';
-import {doc, getDoc} from 'firebase/firestore';
-import {Loading} from "../components/Loading/Loading";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth, db } from '../config/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { Loading } from "../components/Loading/Loading";
 import { Navigate } from 'react-router-dom';
 
-const AuthContext = React.createContext ();
+const AuthContext = createContext();
 
-export const useAuth = () => useContext (AuthContext);
+export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({children}) => {
-    const [currentUser, setCurrentUser] = useState (null);
-    const [loading, setLoading] = useState (true);
+export const AuthProvider = ({ children }) => {
+    const [currentUser, setCurrentUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    useEffect (() => {
-        const unsubscribe = onAuthStateChanged (auth, async (user) => {
+    useEffect(() => {
+        let unsubscribeSnapshot; // משתנה כדי לוודא שההאזנה לא מתנתקת לפני הזמן
+
+        const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
             if (user) {
-                const userDoc = await getDoc (doc (db, 'Users', user.uid));
-                setCurrentUser ({uid: user.uid, ...userDoc.data ()});
+                const userRef = doc(db, 'Users', user.uid);
+
+                unsubscribeSnapshot = onSnapshot(userRef, (docSnapshot) => {
+                    if (docSnapshot.exists()) {
+                        setCurrentUser({ uid: user.uid, ...docSnapshot.data() });
+                    } else {
+                        setCurrentUser(null);
+                    }
+
+                    // מסיימים את מצב הטעינה אחרי קבלת המידע
+                    setLoading(false);
+                });
             } else {
-                setCurrentUser (null);
+                setCurrentUser(null);
+                setLoading(false); // מסיימים את מצב הטעינה גם כשאין משתמש מחובר
             }
-            setLoading (false);
         });
 
-        return () => unsubscribe ();
+        return () => {
+            unsubscribeAuth();
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
+        };
     }, []);
 
     const logout = async () => {
-        await signOut (auth);
+        await signOut(auth);
     };
 
     const value = {
@@ -37,22 +51,22 @@ export const AuthProvider = ({children}) => {
         logout,
         loading,
     };
-   if(loading)return <Loading />
+
+    if (loading) return <Loading />;
+
     return (
         <AuthContext.Provider value={value}>
-            { children}
+            {children}
         </AuthContext.Provider>
     );
 };
 
-
-export const AuthWrapper=({children})=>{
+export const AuthWrapper = ({ children }) => {
     const { currentUser, loading } = useAuth();
 
     if (loading) {
-      return <div>Loading...</div>; 
+        return <div>Loading...</div>;
     }
-  
-    return currentUser ? <Navigate to="/feed" /> : children;
-  };
 
+    return currentUser ? <Navigate to="/feed" /> : children;
+};

@@ -26,12 +26,13 @@ const Login = () => {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         if (userData.isRejected) {
-          setError("הרשמתך לא אושרה. לפרטים נוספים, אנא פנה אלינו באמצעות המייל.");
+          setError("הרשמתך לא אושרה. לפרטים נוספים, אנא פנה אלינו באמצעות המייל. motivatoffice@gmail.com");
+          await auth.signOut(); 
           return;
         }
         if (!userData.isVerified) {
           setError("יש להמתין לאישור המערכת לפני התחברות.");
-          await auth.signOut(); // התנתקות מהמשתמש הלא מאושר
+          await auth.signOut(); 
           return;
         }
       }

@@ -28,6 +28,7 @@ import {
   loadFollowerRequest,
 } from "../../hooks/useLoadFollowerRequest";
 import { checkVerification } from "../../hooks/useLoadUsers";
+import { GoProjectRoadmap } from "react-icons/go";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -137,6 +138,9 @@ const NavBar = () => {
     fetchUnreadMessage();
   }, [currentUser]);
 
+
+ 
+
   //End of useEffect
 
   return (
@@ -168,6 +172,11 @@ const NavBar = () => {
                       </span>
                     )}
                   </div>
+                </Link>
+              </li>
+              <li className="py-2 px-4 cursor-pointer hover:border-b-2 hover:border-[#15CDCA] transition">
+                <Link to="/missions">
+                <GoProjectRoadmap size={24} />
                 </Link>
               </li>
               {/* Notification icon (the bell) */}
@@ -338,10 +347,10 @@ const NavBar = () => {
           </div>
           <div className="hidden md:flex">
             {/* Profile and Logout */}
-            <div className="flex items-center cursor-pointer justify-end gap-4 col-span-1 md:flex md:items-center md:justify-end ">
+            <div className="flex items-center  cursor-pointer justify-end gap-4 col-span-1 md:flex md:items-center md:justify-end ">
               <div
                 onClick={toggleDropdownProfile}
-                className="md:flex relative md:justify-between md:items-center md:gap-2 md:bg-gray-100 md:py-2 md:px-5 md:rounded-[15px]"
+                className="md:flex relative z-50 md:justify-between md:items-center md:gap-2 md:bg-gray-100 md:py-2 md:px-5 md:rounded-[15px]"
               >
                 <img
                   src={currentUser.profilePicture || "defaultProfilePictureURL"}

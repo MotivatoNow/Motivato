@@ -5,7 +5,6 @@ import { getCurrentTimeStamp } from "../../features/useMoment/useMoment";
 import { createMission } from "../../hooks/useLoadMissions";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../config/firebase";
-import './MyMissions.css'
 
 const MyMission = () => {
   const { currentUser } = useAuth();
@@ -56,9 +55,9 @@ const MyMission = () => {
   
 
   return (
-    <div className="post-status-main">
-      <div className="post-status">
-        <button className="open-post-modal" onClick={() => setModalOpen(true)}>
+    <div className="flex items-center justify-center p-10 shadow-sm">
+      <div className="bg-gray-50 rounded-[5px] w-full p-3  ">
+        <button className="" onClick={() => setModalOpen(true)}>
           {" "}
           כתיבת משימה חדשה
         </button>

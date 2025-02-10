@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { auth, db, storage } from "../../config/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import profilePic from "../../assets/images/profilepicture.png";
@@ -40,7 +40,7 @@ const Register = () => {
         password
       );
       const user = userCredential.user;
-
+ 
       // העלאת תמונת כרטיס סטודנט
       let cardURL = "";
       if (studentCard) {
@@ -75,6 +75,8 @@ const Register = () => {
         userData.companyName = companyName;
         userData.userWebsite = userWebsite;
         userData.userName = companyName;
+        userData.firstName = firstName;
+        userData.lastName = lastName;
       } else if (userType === "Student") {
         userData.firstName = firstName;
         userData.lastName = lastName;
@@ -89,6 +91,7 @@ const Register = () => {
       await setDoc(doc(db, "Users", user.uid), userData);
 
       console.log("User registered with ID: ", user.uid);
+      await signOut(auth);
       navigate("/login");
     } catch (error) {
       console.error("Error registering user: ", error);
@@ -287,7 +290,7 @@ const Register = () => {
                 <span className="label-text">אתר החברה</span>
               </label>
               <input
-                type="url"
+                type="text"
                 id="inputWebsiteCompany"
                 value={userWebsite}
                 onChange={(e) => setUserWebsite(e.target.value)}

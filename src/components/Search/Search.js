@@ -26,33 +26,40 @@ const Search = () => {
       const userNameQuery = query(
         collection(db, "Users"),
         where("userNameLower", ">=", lowerCaseSearchTerm),
-        where("userNameLower", "<=", lowerCaseSearchTerm + "\uf8ff")
+        where("userNameLower", "<=", lowerCaseSearchTerm + "\uf8ff"),
+
       );
   
       const firstNameQuery = query(
         collection(db, "Users"),
         where("firstName", ">=", searchTerm),
-        where("firstName", "<=", searchTerm + "\uf8ff")
+        where("firstName", "<=", searchTerm + "\uf8ff"),
       );
   
       const lastNameQuery = query(
         collection(db, "Users"),
         where("lastName", ">=", searchTerm),
-        where("lastName", "<=", searchTerm + "\uf8ff")
+        where("lastName", "<=", searchTerm + "\uf8ff"),
       );
-  
+      const educationQuery = query(
+        collection(db, "Users"),
+        where("studentEducation", ">=", searchTerm),
+        where("studentEducation", "<=", searchTerm + "\uf8ff"),
+      );
       const firstNameSnapshot = await getDocs(firstNameQuery);
       const lastNameSnapshot = await getDocs(lastNameQuery);
       const userNameSnapshot = await getDocs(userNameQuery);
-  
+      const educationSnapshot = await getDocs(educationQuery);
+
       const results = [];
       firstNameSnapshot.forEach((doc) => results.push(doc.data()));
       lastNameSnapshot.forEach((doc) => results.push(doc.data()));
       userNameSnapshot.forEach((doc) => results.push(doc.data()));
-  
-      // סינון משתמשים מסוג Admin והמשתמש הנוכחי
+      educationSnapshot.forEach((doc) => results.push(doc.data()));
+
+      // סינון משתמשים לפי תנאים ספציפיים
       const filteredResults = results.filter(
-        (user) => user.userType !== "Admin" && user.uid !== currentUser?.uid
+        (user) => user.userType !== "Admin" && user.uid !== currentUser?.uid && user.isVerified
       );
   
       const uniqueResults = Array.from(
@@ -144,6 +151,8 @@ const Search = () => {
               >
                 <FaSearch className="text-gray-400 mr-3" size={18} />
                 <p className="text-gray-700 text-lg">{search.userName}</p>
+                
+                
               </div>
             ))}
           </div>
@@ -165,6 +174,7 @@ const Search = () => {
                     <p className="font-medium text-gray-700 text-lg">
                       {user.userName}
                     </p>
+                    <p className="font-small text-gray-700 text-m">{user.studentEducation}</p>
                   </div>
                 </div>
               ))
