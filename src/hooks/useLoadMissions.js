@@ -7,7 +7,7 @@ const missionsCollection = collection(db, "Missions");
 export const createMission = async (object) => {
   try {
     const mission = await addDoc(missionsCollection, object);
-    message.success("Document added");
+    message.success("משימה נוספה בהצלחה");
     return mission;
   } catch (error) {
     console.error(error);

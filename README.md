@@ -1,70 +1,105 @@
-# Getting Started with Create React App
+# Motivato
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Motivato is a social network designed for students and companies, combining a freelance portal with social media features. The platform allows students to connect with potential employers, showcase their skills, and collaborate on projects.
 
-## Available Scripts
+## 🚀 Features
+- **User Authentication** – Secure login and registration using Firebase.
+- **Freelancer Portal** – Students can offer their services and companies can hire them.
+- **Social Media Elements** – Users can post updates, like, comment, and interact with others.
+- **Real-Time Chat** – Built-in chat functionality powered by Firebase.
+- **Professional Profiles** – Students and companies have detailed profile pages.
+- **Dashboard & Analytics** – Data visualization using Chart.js and Recharts.
+- **Modals for Interactions** – Various modals for editing profiles, posts, missions, and admin dashboard.
 
-In the project directory, you can run:
+## 🛠 Technologies Used
+- **Frontend:** React.js, React Router, React Icons, Ant Design, Tailwind CSS, DaisyUI
+- **Backend & Database:** Firebase (Authentication, Firestore, Real-Time Database)
+- **State Management:** React Hooks
+- **Styling:** Tailwind CSS, DaisyUI, Ant Design
+- **Utilities:** Moment.js (date/time formatting), React Toastify (notifications)
+- **Charts & Graphs:** Chart.js, Recharts
+- **Carousel & Animations:** React Slick, Slick Carousel, React Flip Move
+- **Modals:** Custom modal components for various interactions
 
-### `npm start`
+## 📁 Project Structure
+```
+motivato/
+│-- public/             # Static assets
+│-- src/
+│   │-- components/     # Reusable React components
+│   │-- pages/          # Different application pages
+│   │-- hooks/          # Custom React hooks for data fetching and actions
+│   │-- styles/         # Global styling
+│   │-- config/         # Firebase configuration and API setup
+│-- package.json        # Dependencies and scripts
+│-- tailwind.config.js  # Tailwind CSS configuration
+│-- .gitignore          # Git ignore file
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## ⚙️ Setup & Installation
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/NatanelSmadja/motivato.git
+   cd motivato
+   ```
+2. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+3. **Configure Firebase:**
+   - Go to `src/config/firebase.js`
+   - Replace the placeholder Firebase configuration with your own project details.
+   ```javascript
+   const firebaseConfig = {
+       apiKey: "YOUR_API_KEY",
+       authDomain: "YOUR_AUTH_DOMAIN",
+       projectId: "YOUR_PROJECT_ID",
+       storageBucket: "YOUR_STORAGE_BUCKET",
+       messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+       appId: "YOUR_APP_ID"
+   };
+   ```
+4. **Start the development server:**
+   ```sh
+   npm start
+   ```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🔥 Firebase Database Structure
+This project uses Firestore and Firebase Authentication. Below is an example of the Firestore data structure:
+```
+Firestore Collections:
+- users
+  - userId (document)
+    - firstName
+    - lastName
+    - email
+    - profilePicture
+    - bio
+    - skills
+- posts
+  - postId (document)
+    - userId
+    - content
+    - timestamp
+    - likes
+    - comments
+- chats
+  - chatId (document)
+    - participants
+    - messages (subcollection)
+      - messageId (document)
+        - senderId
+        - text
+        - timestamp
+```
 
-### `npm test`
+## 📌 Scripts
+- **`npm start`** – Runs the app in development mode.
+- **`npm build`** – Builds the app for production.
+- **`npm test`** – Launches the test runner.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📜 License
+This project is part of a final year submission and is not licensed for commercial use.
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📞 Contact
+For any inquiries, feel free to reach out!

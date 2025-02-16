@@ -579,14 +579,14 @@ const NavBar = () => {
                 <div className="flex items-center cursor-pointer justify-end gap-4 col-span-1 md:flex md:items-center md:justify-end ">
                   <div
                     onClick={toggleDropdownProfile}
-                    className="md:flex relative md:justify-between md:items-center md:gap-2 md:bg-gray-100 md:py-2 md:px-5 md:rounded-[15px]"
+                    className="md:flex relative object-contain md:justify-between  md:items-center md:gap-2 md:bg-gray-100 md:py-2 md:px-5 md:rounded-[15px]"
                   >
                     <img
                       src={
                         currentUser.profilePicture || "defaultProfilePictureURL"
                       }
                       alt="Profile"
-                      className="w-8 h-8 rounded-full border-[#3E54D3] border"
+                      className="w-8 h-8 rounded-full object-contain border-[#3E54D3] border"
                     />
                     <span className="md:block hidden">
                       {currentUser.userName}

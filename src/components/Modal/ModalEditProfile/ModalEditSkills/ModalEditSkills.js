@@ -13,6 +13,7 @@ const ModalEditSkills = ({
   modalOpenEditSkills,
   setModalOpenEditSkills,
   user,
+  setUserData
 }) => {
   const [skills, setSkills] = useState([]); // רשימת המיומנויות הנוכחית
   const [newSkill, setNewSkill] = useState(""); // מיומנות חדשה
@@ -49,41 +50,56 @@ const ModalEditSkills = ({
       setErrorMessage("ניתן להוסיף עד 12 מיומנויות בלבד");
       return;
     }
-
-    setIsUpdating(true); // מסמן התחלת עדכון
+  
+    setIsUpdating(true);
     try {
       const userRef = doc(db, "Users", user.uid);
       await updateDoc(userRef, {
-        skills: arrayUnion(newSkill), // הוספה ל-Firebase בלבד
+        skills: arrayUnion(newSkill),
       });
-      setNewSkill(""); // איפוס השדה
+  
+
+      setSkills((prevSkills) => [...prevSkills, newSkill]);
+  
+      setUserData((prevUser) => ({
+        ...prevUser,
+        skills: [...(prevUser.skills || []), newSkill],
+      }));
+  
+      setNewSkill("");
       setErrorMessage("");
       message.success("מיומנות נוספה בהצלחה");
     } catch (error) {
       console.error("Error adding skill: ", error);
       message.error("שגיאה בעת הוספת מיומנות");
     } finally {
-      setIsUpdating(false); // מסמן סיום עדכון
+      setIsUpdating(false);
     }
   };
-
-  // פונקציה למחיקת מיומנות
+  
   const handleDeleteSkill = async (skill) => {
-    setIsUpdating(true); // מסמן התחלת עדכון
+    setIsUpdating(true);
     try {
       const userRef = doc(db, "Users", user.uid);
       await updateDoc(userRef, {
         skills: arrayRemove(skill),
       });
-
+ 
+      setSkills((prevSkills) => prevSkills.filter((s) => s !== skill));
+      setUserData((prevUser) => ({
+        ...prevUser,
+        skills: prevUser.skills.filter((s) => s !== skill),
+      }));
+  
       message.success("מיומנות נמחקה בהצלחה");
     } catch (error) {
       console.error("Error removing skill: ", error);
       message.error("שגיאה בעת מחיקת מיומנות");
     } finally {
-      setIsUpdating(false); // מסמן סיום עדכון
+      setIsUpdating(false);
     }
   };
+  
 
   return (
     <>

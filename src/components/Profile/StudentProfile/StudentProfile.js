@@ -63,6 +63,11 @@ const StudentProfile = ({ user, currentUser }) => {
     };
   }, [user.uid]);
 
+  useEffect(() => {
+    setSkills(userData?.skills || []);
+  }, [userData]); // 
+  
+
   const handleDeleteSkillFromStudent = async (skill) => {
     try {
       const userRef = doc(db, "Users", user.uid);
@@ -90,7 +95,7 @@ const StudentProfile = ({ user, currentUser }) => {
             <img
               className="rounded-[5px] cursor-pointer h-48 w-48 shadow-md object-fit p-3"
               src={userData.profilePicture}
-              alt={`${userData.userName} profile image`}
+              alt={`${userData.userName} profile avatar`}
               onClick={() => setLightboxOpen(true)}
             />
             {isLightboxOpen && (
@@ -101,7 +106,7 @@ const StudentProfile = ({ user, currentUser }) => {
                 <img
                   className="rounded-[5px] max-h-[90vh] max-w-[90vw] object-contain"
                   src={userData.profilePicture}
-                  alt={`${userData.userName} profile image enlarged`}
+                  alt={`${userData.userName} profile avatar enlarged`}
                 />
               </div>
             )}
@@ -341,7 +346,7 @@ const StudentProfile = ({ user, currentUser }) => {
             <div key={post.id}>
               <img
                 src={post.postImage}
-                alt={`${userData.firstName} photo`}
+                alt={`${userData.firstName} avatar`}
                 className="w-20 h-20 rounded-lg object-cover shadow-sm hover:shadow-md transition"
               />
             </div>
@@ -382,12 +387,14 @@ const StudentProfile = ({ user, currentUser }) => {
     setModalEditWebsites={setModalEditWebsites}
     setUser={setUserData}
     user={currentUser}
+    setUserData={setUserData}
   />
   <ModalEditSkills
     modalOpenEditSkills={modalOpenEditSkills}
     setModalOpenEditSkills={setModalOpenEditSkills}
     setUser={setUserData}
     user={currentUser}
+    setUserData={setUserData}
   />
   <ModalEditBio
     modalOpenEditBio={modalOpenEditBio}

@@ -121,7 +121,7 @@ const MissionCard = ({ missions, user }) => {
     {missions.education && (
       <p className="mt-3 text-sm text-gray-500 italic">{missions.education}</p>
     )}
-    <p className="text-gray-700 mt-3 leading-relaxed">{missions.post}</p>
+    <p className="text-gray-700 mt-3 leading-relaxed break-words whitespace-break-spaces">{missions.post}</p>
   </div>
 
   <div className="divider my-6"></div>
@@ -159,7 +159,7 @@ const MissionCard = ({ missions, user }) => {
         htmlFor="file-upload"
         className="block text-gray-700 font-medium mb-2"
       >
-        העלאת קובץ (PDF בלבד):
+        העלאת קורות חיים (PDF בלבד):
       </label>
       <input
         id="file-upload"

@@ -7,7 +7,7 @@ const postsCollection=collection(db, "Posts");
 export const createPost=async(object)=>{
     try{
         await addDoc(postsCollection, object);
-        message.success("Document has been added successfully")
+        message.success("הפוסט התפרסם בהצלחה")
     }
     catch(error){
         console.log(error)

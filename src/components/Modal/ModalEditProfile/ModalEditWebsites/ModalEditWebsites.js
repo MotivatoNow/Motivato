@@ -8,6 +8,7 @@ const ModalEditWebsites = ({
   setModalEditWebsites,
   user,
   setUser,
+  setUserData
 }) => {
   const [userGitHub, setUserGitHub] = useState(user.userGitHub);
   const [userWebsite, setUserWebsite] = useState(user.userWebsite);
@@ -23,25 +24,27 @@ const ModalEditWebsites = ({
         userGitHub: userGitHub || "",
         userWebsite: userWebsite || "",
         userLinkedin: userLinkedin || "",
-        nameUserLinkedin : nameUserLinkedin || "",
-        nameUserWebsite : nameUserWebsite || "",
-        nameUserGithub : nameUserGithub || "",
+        nameUserLinkedin: nameUserLinkedin || "",
+        nameUserWebsite: nameUserWebsite || "",
+        nameUserGithub: nameUserGithub || "",
       });
 
-      // עדכון ה-state המקומי
-      setUser((prevUser) => ({
+      // ✅ עדכון `setUserData` כדי לעדכן את הפרופיל הראשי
+      setUserData((prevUser) => ({
         ...prevUser,
-        userGitHub: userGitHub,
-        userWebsite: userWebsite,
-        userLinkedin: userLinkedin,
-        nameUserWebsite:nameUserWebsite,
-        nameUserGithub:nameUserGithub,
+        userGitHub,
+        userWebsite,
+        userLinkedin,
+        nameUserLinkedin,
+        nameUserWebsite,
+        nameUserGithub,
       }));
+
       setModalEditWebsites(false);
-      message.success("נתונים נשמרו בהצלחה");
+      message.success("הקישורים עודכנו בהצלחה!");
     } catch (error) {
       console.error("Error updating user profile: ", error);
-      message.error(`בעיה בשמירת הנתונים ${error}`);
+      message.error("שגיאה בעת עדכון הקישורים.");
     }
   };
 

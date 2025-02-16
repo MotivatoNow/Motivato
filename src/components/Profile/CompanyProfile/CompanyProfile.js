@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChatButton from "../../ChatButton/ChatButton";
 import FriendButton from "../../FriendButton/FriendButton";
 import MyPost from "../../MyPost/MyPost";
@@ -118,7 +118,7 @@ const CompanyProfile = ({user, currentUser}) => {
    <div className="flex space-x-4">
      {/* Profile Image */}
      <img
-       className="rounded-[5px] cursor-pointer h-48 w-48 shadow-md object-fit p-3"
+       className="rounded-[5px] cursor-pointer h-48 w-48 shadow-md object-contain p-3"
        src={userData.profilePicture}
        alt={`${userData.userName} profile image`}
        onClick={() => setLightboxOpen(true)}

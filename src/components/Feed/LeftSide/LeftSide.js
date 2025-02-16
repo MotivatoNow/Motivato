@@ -24,15 +24,15 @@ const arrayMissions=shuffleArray(allMissions).slice(0,5)
             mission.user?.uid !== currentUser?.uid && (
               <div
                 key={mission.id}
-                className="card bg-base-100 shadow-md hover:shadow-lg transition-shadow"
+                className=" bg-base-100 shadow-md hover:shadow-lg transition-shadow"
               >
-                <div className="card-body">
+                <div className="p-3">
                   <div className="flex items-center gap-4">
                     {/* תמונה של המשתמש */}
                     <div className="avatar">
                       <div className="w-10 h-10 mask mask-squircle">
                         <img
-                          src={mission.user?.profilePicture || ""}
+                          src={mission.user.profilePicture || ""}
                           alt="Profile"
                         />
                       </div>

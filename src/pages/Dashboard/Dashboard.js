@@ -22,10 +22,7 @@ import {
   FaComments,
   FaTasks,
   FaFileAlt,
-  FaHome,
   FaUser,
-  FaCog,
-  FaBell,
   FaChartBar,
   FaPlus,
   FaUniversity,
@@ -54,13 +51,6 @@ const Dashboard = () => {
   });
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const handleImageClick = (imageUrl) => {
-    setSelectedImage(imageUrl);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedImage(null);
-  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -248,10 +238,10 @@ const Dashboard = () => {
                   .map((user) => (
                     <tr key={user.id}>
                       <td>
-                        <div className="avatar">
+                      <div className="avatar">
                           <div
                             className="mask mask-squircle w-20 h-20 cursor-pointer"
-                            onClick={() => handleImageClick(user.studentCard)}
+                            onClick={() => setSelectedImage(user.studentCard)}
                           >
                             <img
                               src={user.studentCard}
@@ -292,6 +282,26 @@ const Dashboard = () => {
                 </tr>
               </tfoot>
             </table>
+            {selectedImage && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div className="relative p-4">
+              <button
+                className="absolute top-2 right-6 text-gray-600 text-3xl font-bold"
+                onClick={() => setSelectedImage(null)}
+              >
+                &times;
+              </button>
+              <img
+                src={selectedImage}
+                alt="Selected"
+                className="max-w-full max-h-screen rounded-lg"
+              />
+            </div>
+          </div>
+        )}
 
             {/* טבלת חברות */}
             <h3 className="text-md font-semibold mb-2">חברות</h3>

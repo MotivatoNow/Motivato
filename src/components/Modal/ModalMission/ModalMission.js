@@ -29,11 +29,12 @@ const ModalMission = ({
       );
     });
   });
+  setEducation("");
 
   return (
     <>
       <Modal
-        title="Create a Mission"
+        title="צור משימה"
         centered
         open={modalOpen}
         onOk={() => setModalOpen(false)}
@@ -46,7 +47,7 @@ const ModalMission = ({
             className="bg-blue-500 text-white hover:bg-blue-600"
             disabled={!post.length}
           >
-            Post
+            פרסום
           </Button>,
         ]}
       >
@@ -124,7 +125,7 @@ const ModalMission = ({
             <textarea
               value={post}
               className="w-full p-2 border border-gray-300 rounded-md resize-none h-28 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="What do you want to talk about?"
+              placeholder="כתוב על המשימה"
               onChange={(e) => setPost(e.target.value)}
               required
             />

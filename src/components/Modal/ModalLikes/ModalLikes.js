@@ -39,15 +39,17 @@ const ModalLikes = ({modalOpen, setModalOpen, postsId}) => {
             >
                 <div>
                     {users.map (user => (
-                        <div key={user.uid}>
+                        <div key={user.uid} >
                             <Link to={`/profile/${user.uid}`}>
-                                <p>
+                                <div className="flex gap-1 items-center mb-1">
                                     <img className="likeduser_picture" src={user.profilePicture}
                                          alt={`${user.userName}`}/>
                                     <span>{user.userName}</span>
-                                </p>
+                                </div>
                             </Link>
+                            
                         </div>
+                        
                     ))}
                 </div>
             </Modal>
